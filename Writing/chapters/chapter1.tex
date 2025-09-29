@@ -1,0 +1,200 @@
+%!TEX root = ../main.tex
+\chapter{Software Architecture Style}\label{text}
+
+There are multiple architectural styles that could be applied when designing the backend system of a web application.
+The two main categories are monolithic and distributed. Subcategories such as layered services, microservices, event-driven services, are all under 
+these two architecture styles. Each of these design have the pros and cons.
+
+\section[Monolithic Applications]{Monolithic Applications}\label{sec:newsec}
+
+A monolithic application is where all the logical components of the application is deployed as one unit. 
+This also means that the application will be ran in one process. For example, if there is a stand-alone Python Flask application deployed to a server, 
+this is monolithic applications. The general pros and cons of this architecture style are the following:
+
+Pros:
+-	Simplicity: Typically, monolithic applications have a single codebase, which makes them easier to develop and understand
+-	Cost: Monolithis are cheaper to build and operate because they tend to be simpler and require less infrastructure.
+-	Feasibility: Monoliths are simple and relatively cheap, freeing developers to experiment and deliver systems faster.
+-	Reliability: Monoliths makes few or no network calls, which usually means more reliable application.
+-	Debuggability: If a bug is spotted or get an error stack trace, debugging is easy, since all the code is in one place.
+Cons: 
+-	Scalability: 
+-	Evolvability: Making changes to monolithic applications become harder as it grows. Since the whole application is one codebase, 
+  it is not possible to adapt different technology stacks to different domains if needed.
+-	Reliability: Since monolithic applications are deployed as a single unit, any bug that degrades the service will affect the whole application.
+-	Deployability: Implementing any change will require redeploy8ing the whole application, which could introduce a lot of risk.
+
+\subsection[Layered Architecture]{Layered Architecture}
+
+Layered architecture is a sub category of the Monolithic architecture. Applications that are designed with this architecture has three layered parts: 
+the presentation layer, the workflow layer, the persistence layer, and the database layer. Each layer has it’s own tasks and separated within one application. 
+Presentation Layer:
+	The presentation layer is where the UI is displayed and where the users interact with the system.
+   All components that are related to the UI will be included in this layer.
+Workflow Layer:
+	The workflow layer consists all code that are related to logic such as business logic, workflows, and validations. This is where most of the application’s code is contained.
+Persistence Layer:
+	The persistence layer encapsulates the behavior that is needed to make objects persistent, 
+  such as mapping the architecture to code-base hierarchies into set-based relational databases.
+Database Layer:
+	The database layer is optional. This layer includes the database, or some kind of way to persist information.
+
+Each of the layer may contain multiple problem domains. For example, for a restaurant, there could be domains like place order, 
+deliver order, manage recipes, or mange inventory. Different problem domains could exist together in each layer of  the application. 
+
+An implication of the layered monolithic architecture is the MVC design pattern.
+In MVC, the model represents business logic and entities in the application; the view represents the user interface; 
+and the controller handles the workflow, stitching model elements together to provide the application’s functionality, as shown here: (head first software architecture chapter 6)
+
+General Advantages of Layered Architecture:
+-	Feasability (Simplicity)
+-	Technical Partitioning
+-	Data-intensive
+-	Performance (if well designed)
+-	Quick to build
+-	
+General Disadvantages of Layered Architecture
+-	Deployability
+-	Complexity
+-	Scalability: Non flexibility in change in problem dodmain
+-	Elasticity
+-	Testability
+Some applications using the layered architecture may have different structure from the original. Some layers might be separated, 
+such as the presentation layer being separated from the other layers. Each structure will have advantages and disadvantages within the layered architecture.
+
+\subsection[Modular Monolith]{Modular Monolith}
+Modular monolith is when an application is divided into different modules within the monolithic system. A module is one domain of the application,
+and each domain will have its independent code base. For instance, an application for a restaurant might have different domains such as orders, deliveries, or recipes.
+In this case, there could be separate databases for each modules, or multiple schemas within a single database.
+It is important to keep in mind that only the code base is independent.
+Pros: 
+-	Domain partitioning: each domain will be implemented in a different module, which allows to build teams that specializes in one or more of these domains.
+-	Performance: Since there are no network calls within the application like other monolithic applications, performance is good.
+-	Maintainability: Each module are separate from each other.
+-	Testability:
+Cons:
+-	Hard to reuse: Since each module have its own code, it is hard to reuse the logic and utilities across the modules
+-	Single set of architecture: Since all the code is within one application, logics and databases could become complicated, making it hard to scale.
+
+\subsection[Microkernal Architecture]{Microkernal Architecture}
+The microkernel architecture is consisted with a core of the application, and plugins. 
+The core of the application is where the main application is being run, and the plugins are connected to the core application. 
+It is used when a lot of customization is needed for the software
+
+
+\section[Distributed Systems]{Distributed Systems}\label{sec:newsec}
+Distributed architecture is when the logical componnents of the application are split up into multiple units. 
+These units each run in their individual process and communicate with each other over the network. 
+This architecture style encourage loose coupling of each services. The general pros and cons of this architecture style are the following:
+
+Pros:
+-	Scalability: Distributed architectures deploy different logical components separately from one another, so it is easy to add new services.
+-	Modularity: Distributed architecture encourage a high degree of modularity because their logical components must be loosely coupled.
+-	Testablility: Each deployment only serves a select group of logical components. This makes testing a log easier-even as the application grows.
+-	Deployability: Distributed architectures encourage lots of small units. They evolved after modern engineering principles like continuous integration, 
+  continuous deployments, and automated testing became the norm.
+-	Fault Tolerance: Even if one piece of the system fails, the rest of the system can continue functioning.
+Cons:
+-	Performance: Distributed architectures involve lots of small services that communicate with each other over the network.
+  This can affect performance, but there are ways to improve this.
+-	Cost: More servers are needed to deploy multiple units. These services will need to talk to each other, which entails setting up and maintaining network infrastructure.
+-	Simplicity: Distributed systems are complicated to understand from how they work to debugging errors.
+-	Debuggability: Errors could happen in any unit involved in servicing a request. Since logical components are deployed in separate units,
+  tracing errors could become complicated.
+
+There are both pros and cons for monolithic and distributed systems and choosing the appropriate architecture for each situation is crucial.
+After deciding which of the two main architecture will be used, the subcategories shows the more detailed ways of designing and structuring each units in the application(s). 
+
+\subsection[Microservices Architecture]{Microservices Architecture}
+
+A microservice is a service that is separately deployed unit of software that performs some business or infrastructure process.(chapter 10).
+A microservices architecture is part of the layered system, where microservices communicate which each other to make an application. 
+Since the system is divided into multiple parts, it is essential how to divide the application, 
+such as deciding how small or how big each microservices could get into. Some of the factors that is considered to make microservices 
+smaller are the following: cohesiveness, fault tolerance, access control, code volatility, and scalability. 
+If a part of the software has lack of cohesiveness and loosely coupled, it is a good idea to separate it into smaller microservices. 
+This will allow higher scalability. If a certain part of the application produces fatal errors, 
+having those part in a sparate microservice will decrease the probability to shut down the whole system. 
+For security and authentication, it is important to have these access controlabilities into a single microservice, 
+so it does not get too complicated when managing the information. Finally, if one part of the microservice change, 
+or scale faster than the others, it is good to consider to have a separate microservice for that application, 
+since testing the entire microservice would be much more challenging compared to a small portion of the microservice. 
+On the other hand, there are times when it is encouraged to make the microservices bigger: Database transactions, data dependencies, and workflow. 
+It is not possible to perform a single database commit or rollback when a request involves multiple microservices. 
+For data consistency and integrity, it is important to combine functionalities that require these kind of behavior into a single microservice. 
+If a part of a microservice has highly coupled data, such as when a database table refers to  the key of another database table, 
+it is better to keep these functionalities as a single microservice, to keep the data integrity of the database. 
+If a single request requires separate microservices to communicate with each other, this request is coupled. 
+If too much coupling is occurred between microsesrvices, there are many negative effects. 
+For example, performance is affected by network, security, and data latency. 
+Scalability is affected because each microservice in the call chain must scale as the other microservices scale (something that is hard to coordinate).
+Fault tolerance is affected because if one of the microservices in the chain becomes unresponsive or unavailable, the request cannot be processed.
+It is good practice to consider the workflow and decide whether to keep the microservice big.\\
+
+\noindent \textbf{Balance}
+
+\noindent Sharing functionalities
+
+There are many times when the same code has to be used in multiple microservices. 
+There are mainly two ways for sharing code when building a microservice architecture. 
+Creating a shared service, or a shared library.  
+A shared service is a separate microservice that contains a shared functionality that other microservices can call remotely.
+The advantages of using this is that eventhough a code is changed in the shared microservices, code in other microservices are not required to change.
+Also, this shared service could be written in any language, which is useful when microservices are implemented in multiple languages. 
+A disadvantage of using a shared service is coupling that happens between the microservices and the shared service. 
+This leads to risks when changing a shared service since it can affect the other microservices that call it.
+Furthermore, when the shared service is down for some reason, the microservices that require the shared service would not function.
+Another disadvantage is network latency, ….
+A shared library is a more common way for code reuse. A library will be built including all the code that are reused in different microsesrvices,
+and once they microservices are deployed, each microservice will have all the shared functionality available. 
+The biggest advantage of using a shared library is that network performance and scalability is better than shared service, 
+since it is not remote, but code is included in the compile time of the microservice. 
+However, multiple shared libraries will be needed if microservices are written in different programming languages. 
+Also, managing dependencies between microservices and shared libraries could be a challenge if there are multiple microservices using the shared code. 
+
+\noindent \textbf{Workflow}
+
+Microservices communicate with each other to make the whole application. It is important to know how these are connected, and this is where workflow comes in. The term workflow means when two or more microservices are called for a single request. There are two ways to handle workflows: centralized workflow management, or decentralized workflow management. 
+
+\noindent \textbf{Centralized workflow management:Workflow}
+
+This workflow management style is where there is a microservice that coordinates all the microservices that are needed to handle a certain single request. This microservice will be responsible for calling all related microservices, knowing the current state of the workflow and what happens next, summarize all data from each microservice, and handling errors. 
+The advantage of this workflow management style is that the order of microservices for each requests are clear. The central microservice always has the exact routes the request hast to take, which allows to track the status where each requests stopped and where to restart. This allows to handle errors efficiently. Also, it is easy to change a workflow since this all changes in one central microservice
+The disadvantage is that tight coupling between the central microservice and the other microservices. This can lead to lower scalability, since changing a microservice will affect the central microservice. Moreover, performance might get delayed since the central microservice is indeed another microservice that requires remote calls and it saves the workflow state data in a database which slows down the performance. 
+
+\noindent \textbf{Decentralized workflow management}	
+
+The decentralized workflow does not have a central microservice, but rather all microservices redirect to another microservice 
+by the given request until the request is complete. It is important to not use one of the microservices as a central microservice.
+The advantage of using this workflow pattern is that it is loosely coupled compared to the central workflow management, 
+which has better scalability. Also, since the microservices does not have to connect back to the central microservice, 
+it has better responsiveness, meaning less delay and better performance. 
+On the other hand, this pattern lacks in error handling, since each microservice is responsible for managing the error workflow, 
+which could lead to too much communication between services. Also, because there is not a central microservice that has the order 
+of microservices that needs to be called, it is hard to tell which state the response is at, which decreases the ability to recover 
+when the request is delayed and needs to be restarted again. 
+
+\noindent \textbf{Pros and Cons of microservice architecture.}
+There are moments where the microservice architecture are needed when choosing the software design. There are multiple advantages when choosing this structure. Loose coupling is a huge advantage. Since each microservices are single-purpose and they are deployed separately, and easy to maintain. This means that it is easy to change a particular function that needs modification. Also, it is easy to test the application, as the scope is much smaller compared to the monolithic architecture. Fault tolerance is another advantage that comes from loose coupling. Even if a particular microservice fails, it does not break the whole system. Furthermore, microservice architecture is easy to scale and evolve since we just have to add or modify a microservice related to the area. 
+
+However, there are also disadvantages of using the microservice architecture. 
+This architecture is complex. It requires multiple decisions(the aspects discussed above: workflow, shared code etc..) 
+depending on the situation. Since it is complex, as microservices communicate with each other, the performance also decreases.
+ The request might have to wait for the network or undergo additional security checks and make extra database calls.
+  Lastly. deploying all of these microservices will increase the cost of the entire application.  
+
+\subsection[Event-Driven Architecture(EDA)]{Event-Driven Architecture(EDA)}
+What is an Event
+An event in computer science is a way for a service to let the rest of the system know that something important has just happened. In EDA, events are the means of passing information to other services (head first chapter11). The event contains data and it is broadcasted to services using topics that are connected to the sender of the event. However, events are asynchronous, which means that although the services are connected, the sender of the event does not wait on the response of the receiving service. This is the key difference between a event and message. Messages includes a command or some kind of a request for the receiving service, and the service sending out the messages require a response, making it synchronous. Messages are also sent to only a single service using queues. 
+
+Asynchronous vs Synchronous
+Asynchronous communications do not need to wait for the response, even though the receiving services are available or not. These kinds of communications are also called Fire and Forget. On the other hand, synchronous communication needs to stop and wait until the response, which means that the service in response must be available. EDA relies on the asynchronous communication when sending and receiving events.
+
+Advantages, Disadvantages of Asynchronous Communications
+Asynchronous communications has advantages in responsiveness compared to synchronous communications. Since responses by the receiving services are unnecessary, it takes less time to complete a request. However, this is also a crucial disadvantage. Since we do not know if the receiving services have successfully completed the request, it is prone to error handling. Here is a diagram. 
+
+Advantages of EDA
+Event Driven Architecture is highly decoupled, which makes all services independent and easy to maintain. Furthermore, the asynchronous communication increases the performance of the application. Since EDAs are highly decoupled with this type of communication, it is easy to scale and evolve. 
+Disadvantages of EDA
+Similar to microservices, EDAs are complex. Deciding which database topology for the architecture, asynchronous communications and parallel event processing makes adds complexity to the application. Also, asynchronous communication makes it more difficult to test out the program. Since the request is proceeded without any response or synchronous calls, the context of the test is vague. If the application needs multiple synchronous calls, EDA is not the right choice for the product. 
+
