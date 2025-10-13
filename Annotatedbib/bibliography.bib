@@ -1,0 +1,92 @@
+% Here is an example of how to create a bibliography entry for an article using
+% BibTeX. Generally you won't have to write these out yourself, because they are
+% provided by most web sites that allow you to export citations. The string
+% "clrsAlgorithms" is a citation key, and if you were citing the source in a
+% document you would use \cite{clrsAlgorithms}.
+
+@misc{Ahmed_2025, 
+title={Backend Developer Roadmap}, 
+url={https://roadmap.sh/backend}, 
+journal={roadmap.sh}, 
+author={Ahmed, Kamran}, 
+year={2025}, 
+month={Sep},
+annote ={This website provides a recommended order for learning backend web development concepts. The road map gives a well structured guideline of which areas within the backend development are essential and need to be focused on. Furthermore, the roadmap includes a summary of each concept to give an overview of the topics, and also links to resources that would help the learning process. The roadmap will be used to explore the area of interest and identify the skills that are needed to complete the project, and also a great way to find other resources for the project.}
+} 
+
+@book{Gandhi_Richards_Ford_2024, 
+place={Beijing}, 
+title={Head first software architecture}, 
+publisher={O’Reilly},
+author={Gandhi, Raju and Richards, Mark and Ford, Neal}, 
+year={2024},
+annote={This is a textbook that introduces different types of architectures with great examples and explanations. Chapter 5, Architectural Styles will be helpful to identify the two main types of software architecture monolithic and distributed. The brief introduction and explanation of both of these types will be beneficial. Chapters 6 through 8 focuses deeply on monolithic applications, and chapters 10 through 11 focuses on the distributed architecture. These chapters will be beneficial when learning deeply about specific architectural patterns applied in backend web development.}
+}
+
+@book{Barker_2017, 
+title={Intelligent caching}, 
+publisher={O’Reilly Media, Inc}, 
+author={Barker, Tom}, 
+year={2017},
+annote={This book will be utilized to have an high level concept around how to utilize caching to protect the infrastructure from an enormous scale. While this book does not introduce all caching strategies, it gives an in-depth review of content delivery network(CDN) and frontend scaling strategies. As caching has significant effects on the performance of the application, this book will be used to understand and leverage the CDN (chapter 2), learn internal caching rules (chapter3), and how to avoid common problems when designing caching systems (chapter 4).}
+}
+
+@book{Kleppmann_2017, 
+title={Designing data-intensive applications: The big ideas behind reliable, scalable, and maintainable systems}, 
+publisher={O’Reilly}, author={Kleppmann, Martin}, 
+year={2017},
+annote={This textbook introduces how to design data-intensive applications. The textbook emphasizes the three aspects, reliability, scalability, and maintainability, that is essential when designing a database system. The author also explains strategies to increase the performance of the database when scaling databases, such as replication and partitioning, introduced at chapters 5 and 6, respectively. These chapters will provide an understanding of the concepts that are essential when creating a database that has the potential to scale in the future.}
+}
+
+@book{Harrington_2016, 
+place={Amsterdam}, 
+title={Relational database design and implementation}, 
+publisher={Morgan Kaufmann/Elsevier}, 
+author={Harrington, Jan L.}, 
+year={2016},
+eddition={4th},
+annote={This is a textbook that dives deeper into relational databases. The chapters that would be helpful to my project will be the ones related to normalization forms and increasing performance of the database. Chapter 7 introduces what normalization is in database systems and normalization forms. The concepts are well organized and provides examples that are easy to understand, which will help me when deciding the normalization form for the project. Moreover, chapter 8 contains how to design and tune database to increase performance, which will be a critical aspect when designing the database for the project. This textbook will be mostly used for researching normalization forms and applying those theories.}
+} 
+
+@misc{Amazon_Web_Services,
+title={Relational vs Nonrelational Databases - Difference Between Types of Databases - AWS},
+url={https://aws.amazon.com/compare/the-difference-between-relational-and-non-relational-databases/},
+author={Amazon Web Services},
+year={n.d.},
+note={What’s the Difference Between Relational and Non-relational Databases?},
+annote={This document provided by AWS explains what relational and non-relational databases are. It is a good starting point for researching the two main types of databases. The article clearly explains the concepts and provides comparisons between the two types. The included tables help concisely understand the key differences. It also provides external links to other AWS documents for deeper learning.}
+}
+
+@InProceedings{10.1007/978-3-032-04403-7_16,
+Author={Bianculli, Domenico and Hassan, Sartaj and Andrikopoulos, Vasilios and Pautasso, Cesare and Mikkonen, Tommi and Perez, Jennifer and Bures, Tomas and De Sanctis, Martina and Muccini, Henry and Navarro, Elena and Soliman, Mohamed and Zdun, Uwe},
+title={Assessing the Impact of Asynchronous Communication on Resilience and Robustness: A Comparative Study of Microservice and Monolithic Architectures},
+booktitle={Software Architecture. ECSA 2025 Tracks and Workshops},
+year={2026},
+publisher={Springer Nature Switzerland},
+address={Cham},
+pages={171--186},
+abstract={Context: Microservice architectures offer advantages such as scalability and independent deployment compared to traditional monolithic systems. Nonetheless, the specific impact of asynchronous communication patterns within microservice architectures on critical quality attributes, such as resilience and robustness, particularly when directly compared to monolithic systems under failure conditions, remains insufficiently explored empirically. Objective: This study empirically examines the influence of asynchronous communication mechanisms on the resilience and robustness of microservice architectures in comparison to equivalent monolithic architectures, identifying associated benefits and operational trade-offs. Method: Two equivalent systems representing a simplified e-commerce order process were developed: a synchronous monolith and an event-driven microservice architecture utilizing asynchronous communication. Controlled Chaos Engineering experiments simulating service crashes were conducted under load. Key metrics, including failure rate, system availability, request duration, and processed requests, were measured and compared across architectures under identical fault scenarios. Results: The asynchronous microservice architecture demonstrated significantly enhanced resilience and robustness under simulated failures. Compared to the monolith, it exhibited lower failure rates (up to a 12\% 
+reduction observed), maintained higher availability, and processed requests more effectively during fault conditions. Asynchronous decoupling localized failures and facilitated continued partial operation. However, the microservice architecture exhibited increased operational complexity and higher resource requirements. Conclusion: Asynchronous communication substantially improves the resilience and robustness of microservice architectures against failures compared to traditional monolithic approaches. While offering significant fault tolerance advantages, the adoption necessitates careful consideration of increased operational complexity, resource consumption, and the need for sophisticated monitoring and debugging infrastructures.},
+isbn={978-3-032-04403-7},
+annote={This research article explains the differences between a distributed architecture(using asynchronous communication) and a monolithic architecture. The research question in the article are beneficial to learn an indepth understanding of how system architecture has an effect in case of failure, system robustness, such as error rates and response times during fault conditions, and tradeoffs including complexity and resource usage. This article will be used to further investigate and aid the understanding gained from the Head First Software Architecture.}
+}
+
+@inproceedings{10.1145/3551349.3556911,
+author = {Turcotte, Alexi and Aldrich, Mark W. and Tip, Frank},
+title = {reformulator: Automated Refactoring of the N+1 Problem in Database-Backed Applications},
+year = {2023},
+isbn = {9781450394758},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3551349.3556911},
+doi = {10.1145/3551349.3556911},
+abstract = {An Object-Relational Mapping (ORM) provides an object-oriented interface to a database and facilitates the development of database-backed applications. In an ORM, programmers do not need to write queries in a separate query language such as SQL, they instead write ordinary method calls that are mapped by the ORM to database queries. This added layer of abstraction hides the significant performance cost of database operations, and misuse of ORMs can lead to far more queries being generated than necessary. Of particular concern is the infamous “N+1 problem”, where an initial query yields N results that are used to issue N subsequent queries. This anti-pattern is prevalent in applications that use ORMs, as it is natural to iterate over collections in object-oriented languages. However, iterating over data that originates from a database and calling an ORM method in each iteration may result in suboptimal performance. In such cases, it is often possible to reduce the number of round-trips to the database by issuing a single, larger query that fetches all desired results at once. We propose an approach for automatically refactoring applications that use ORMs to eliminate instances of the “N+1 problem”, which relies on static analysis to detect data flow between ORM API calls. We implement this approach in a tool called reformulator, targeting the Sequelize ORM in JavaScript, and evaluate it on 8 JavaScript projects. We found 44 N+1 query pairs in these projects, and reformulator refactored all of them successfully, resulting in improved performance (up to 7.67x) while preserving program behavior. Further experiments demonstrate that the relative performance improvements grew as the database size was increased (up to 38.58x), and show that front-end page load times were also improved.},
+booktitle = {Proceedings of the 37th IEEE/ACM International Conference on Automated Software Engineering},
+articleno = {84},
+numpages = {12},
+keywords = {JavaScript, ORMs, databases, program analysis, refactoring},
+location = {Rochester, MI, USA},
+series = {ASE '22},
+annote = {Although this article is mostly focused on the code refactoring to solve the N+1 Problem, it is a great explanation of the N+1 problem and why it occurs. This is specifically contained in the abstract and the introduction section. This article will be helpful to understand the N+1 problem that is common in database queries which has high relation to the performance of the application. Furthermore, the solution that the article focuses on could be a potential research topic after understanding the common solutions for the N+1 problem.}
+
+}
