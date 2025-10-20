@@ -1,0 +1,168 @@
+\subsection{Database Design and Performance}
+The design of databases and quering the database are the ones that has the most impact on the performance of the database.
+In this subsection, we will be talking about ways to structure and queyr efficient database systems.
+
+\subsubsection[Normalization]{Normalization}
+Compared to a nonrelational database, relational databases benefit from integrity, with the process of normalization. 
+The definition of normalization is a way of organizing data in a database. 
+During this process, redundant data will be reduced to improve data quality and optimize database performance. 
+There are types of normalization such as 1NF and 2NF, and as the normal form gets higher, 
+it is a better design of the relation. However, most databases tend to be needed until the third normal form, 
+which avoids most of the problems common to bad relational designs. 
+
+\textbf{The Second Normal Form(2NF)}
+The two criterias that 1NF meet are the following:
+
+\begin{enumerate}
+    \item The data are stored in a two-dimensional table.
+    \item There are no repeating groups. (rddI chapt 7)
+\end{enumerate}
+
+
+Here the repeating groups mean that if an attribute that has more than one value in each row of a table. (relational database design and implementation 4th) 
+For instance, if there is a column that requires more than one value, such as items (instead of item), this will be a repeating group. (show table) 
+Having three or more dimensions or having repeated groups for a single table results in more complexity and difficulties when querying the database. 
+This is why we need the 1NF normalization.The 1NF is the most simple normalization that could be done in a relational database and it is pretty clear. 
+However, the first normalization form is not enough from benefiting from using relational databases. 
+
+\textbf{Problems with 1NF}
+
+Data could become redundant even though repeated rows are deleted. 
+For example, If there is a table called students with columns(id, name, birthday, course id, course name), every time the same student adds a class, 
+their name will be repeated in each record. Furthermore, there are anomalies in update, insertion, and deletion. 
+Making an update to one of the records (student name) 
+would require to update other records that are associated. Missing out any of the records with the student name will result in data inconsistency. 
+Inserting a new entity could be difficult unless there are related data. For instance, if a new course is to be added to the table, 
+this would be unavailable until there is a student taking the course since the primary key will be the student’s id, and there could not be a row without a primary key. 
+Deletion could also be a problem when the row deleted contained the last data for a certain column. For example, 
+if one student is taking a class called CS200, and that record is deleted, the table would not have the information that the class CS200 exists. 
+To solve these problems, we must use higher levels of the normalization form.
+
+\textbf{The Second Normal Form(2NF)}
+
+The two criterias that 2NF meet are the following:
+\begin{enumerate}
+    \item The relation is in first normal form
+    \item All nonkey attributes are functionally dependent on the entire primary key. 
+\end{enumerate}
+
+Functional dependency is the key term in the 2NF. A functional dependency is a one-way relationship between two attributes, 
+such that at any given time, for each unique value of attribute A, only one value of attribute B is associated with it throughout the relation (RDDI chapt7). 
+In other words, this means that all other columns except the columns of the primary key or keys, are dependent on the primary key or the candidate key. 
+
+By using the functional dependencies, we could create the second normal form relations. After analyzing the functional dependencies, 
+primary keys would be decided. It is common to decide attributes that have dependencies 
+for the primary key of the table, and the all the other attributes will be the non-key attributes. 
+For example, going back to the student table example, Student name, and birthday would be dependent on the student id, so the student id will be the primary key. 
+Courses the student takes does not depend on the student id, but rather on the course id. 
+We could create another table using the course id as the primary key, and the course name as the functional dependencies. 
+However, the courses the student takes will be dependent on the courses, so there will be a foreign key to construct that relationship. 
+So far, we can identify the relationship of the tables as the following:
+
+So far, we can identify the relationship of the tables as the following:
+
+\begin{itemize}
+    \item \textbf{Student}(\textit{student\_id} (PK), \textit{course\_id} (FK), \textit{name}, \textit{birthday}, \textit{room\_num}) 
+    \item \textbf{Courses}(\textit{course\_id} (PK), \textit{name})
+\end{itemize}
+
+\noindent
+*We are assuming that each student can only take one course.*
+
+\noindent
+The relationship can be represented as:
+\[
+\text{Student}(\text{course\_id}) \rightarrow \text{Courses}(\text{course\_id})
+\]
+
+By doing this, some of the problems from the first normal form are solved. 
+The functional dependency solves the insertion, deletion, and update anomalies.
+We can now insert a new course into the course table without needing to insert a student at the same time, 
+delete a student’s course without losing the record of the course itself, and update course information in one place instead of multiple rows, 
+which preserves data integrity. This will provide more stable and consistent database design compared to 1NF.
+
+\textbf{Problems with 2NF}
+
+Although some of the problems with 1NF were solved, there are still anomalies to be resolved. Insertion, deletion, and update anomalies still exist. For example, let us assume we have the following dependencies:
+
+\begin{itemize}
+    \item \textbf{Student}(\textit{student\_id} (PK), \textit{course\_id} (FK), \textit{name}, \textit{birthday}, \textit{room\_num}) 
+    \[
+    \text{Student}(\text{course\_id}) \rightarrow \text{Course}(\text{course\_id}, \text{name}, \text{room\_num} (FK))
+    \]
+    
+    \item \textbf{Course}(\textit{course\_id} (PK), \textit{name}, \textit{room\_num} (FK)) 
+    \[
+    \text{Course}(\text{room\_num}) \rightarrow \text{Room Number}(\text{room\_num} (PK), \text{name})
+    \]
+    
+    \item \textbf{Room Number}(\textit{room\_num} (PK), \textit{name})
+\end{itemize}
+
+Even though the tables are in 2NF, insertion, deletion, and update anomalies can still occur due to these transitive dependencies.
+
+The functional dependency Course -> Room Number introduces anomalies that still remain in 2NF. 
+For example, we cannot record a student’s enrollment in a course if the course’s room number has not been decided, which creates an insertion anomaly. 
+Also, if we delete the last student enrolled in a course, we also lose the record of the room number for that course, which is a deletion anomaly. 
+Finally, if a course’s room number changes, we must update it in every student’s record for that course, creating an update anomaly. 
+These problems occur because the room number depends on the course (a non-key attribute) rather than directly on the student ID, 
+and they are resolved by moving the design into 3NF.
+
+\textbf{The Third Normalization Form(3NF)}
+The two criterias that 3NF meet are the following:
+
+\begin{enumerate}
+    \item The relationship is in second normal form.
+    \item There are no transitive dependencies.
+\end{enumerate}
+
+\textbf{Transitive dependencies}
+Transitive dependencies exist when the following functional dependency pattern occurs:  
+\[
+A \rightarrow B \text{ and } B \rightarrow C \text{, therefore } A \rightarrow C
+\] 
+(Chapter 7).  
+
+This is the same type of relationship where we had problems with 2NF. For example:
+
+\begin{itemize}
+    \item \textbf{Student}(\textit{student\_id} (PK), \textit{course\_id} (FK), \textit{name}, \textit{birthday}, \textit{room\_num}) 
+    \[
+    \text{Student}(\text{course\_id}) \rightarrow \text{Course}(\text{course\_id}, \text{name}, \text{room\_num} (FK))
+    \]
+    
+    \item \textbf{Course}(\textit{course\_id} (PK), \textit{name}, \textit{room\_num} (FK)) 
+    \[
+    \text{Course}(\text{room\_num}) \rightarrow \text{Room Number}(\text{room\_num} (PK), \text{name})
+    \]
+\end{itemize}
+
+Going back to this example, we can see that a non-key attribute in the \textbf{Student} table (\textit{room\_num}) depends on another non-key attribute (\textit{course\_id}).  
+
+To remove transitive dependencies, we should break the relations into separate tables. In this case, we can:
+
+\begin{itemize}
+    \item Remove the \textit{room\_num} column from the \textbf{Student} table to remove the relationship between non-key attributes.
+    \item Alternatively, make the second determinant in a table a candidate key so that no non-key attribute depends on another non-key attribute within the same table.
+\end{itemize}
+
+Applying either method will resolve the anomalies we encountered in the second normalization form (2NF).
+
+
+
+\subsection[Bad Designs]{Bad Designs}
+There are multiple ways how relational databases could be badly designed. Bad designs will not benefit from data integrity, 
+which is one of the advantages of relational databases. 
+
+There are mainly three problems related to bad design of relational databases:
+\begin{enumerate}
+    \item Unnecessary duplicated data and data consistency
+    \item Data Insertion Problem
+    \item Data Deletion Problem
+\end{enumerate}
+
+\subsubsection[Partitioning and Sharding]{Partitioning and Sharding}
+
+\subsubsection[Indexing]{Indexing}
+
+\subsubsection[N+1 Problem]{N+1 Problem}

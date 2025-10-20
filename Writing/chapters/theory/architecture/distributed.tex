@@ -1,88 +1,4 @@
-%!TEX root = ../main.tex
-\chapter{Software Architecture Style}\label{text}
-
-There are multiple architectural styles that could be applied when designing the backend system of a web application.
-The two main categories are monolithic and distributed. Subcategories such as layered services, microservices, event-driven services, are all under 
-these two architecture styles. Each of these design have the pros and cons.
-
-\section[Monolithic Applications]{Monolithic Applications}\label{sec:newsec}
-
-A monolithic application is where all the logical components of the application is deployed as one unit. 
-This also means that the application will be ran in one process. For example, if there is a stand-alone Python Flask application deployed to a server, 
-this is monolithic applications. The general pros and cons of this architecture style are the following:
-
-Pros:
--	Simplicity: Typically, monolithic applications have a single codebase, which makes them easier to develop and understand
--	Cost: Monolithis are cheaper to build and operate because they tend to be simpler and require less infrastructure.
--	Feasibility: Monoliths are simple and relatively cheap, freeing developers to experiment and deliver systems faster.
--	Reliability: Monoliths makes few or no network calls, which usually means more reliable application.
--	Debuggability: If a bug is spotted or get an error stack trace, debugging is easy, since all the code is in one place.
-Cons: 
--	Scalability: 
--	Evolvability: Making changes to monolithic applications become harder as it grows. Since the whole application is one codebase, 
-  it is not possible to adapt different technology stacks to different domains if needed.
--	Reliability: Since monolithic applications are deployed as a single unit, any bug that degrades the service will affect the whole application.
--	Deployability: Implementing any change will require redeploy8ing the whole application, which could introduce a lot of risk.
-
-\subsection[Layered Architecture]{Layered Architecture}
-
-Layered architecture is a sub category of the Monolithic architecture. Applications that are designed with this architecture has three layered parts: 
-the presentation layer, the workflow layer, the persistence layer, and the database layer. Each layer has it’s own tasks and separated within one application. 
-Presentation Layer:
-	The presentation layer is where the UI is displayed and where the users interact with the system.
-   All components that are related to the UI will be included in this layer.
-Workflow Layer:
-	The workflow layer consists all code that are related to logic such as business logic, workflows, and validations. This is where most of the application’s code is contained.
-Persistence Layer:
-	The persistence layer encapsulates the behavior that is needed to make objects persistent, 
-  such as mapping the architecture to code-base hierarchies into set-based relational databases.
-Database Layer:
-	The database layer is optional. This layer includes the database, or some kind of way to persist information.
-
-Each of the layer may contain multiple problem domains. For example, for a restaurant, there could be domains like place order, 
-deliver order, manage recipes, or mange inventory. Different problem domains could exist together in each layer of  the application. 
-
-An implication of the layered monolithic architecture is the MVC design pattern.
-In MVC, the model represents business logic and entities in the application; the view represents the user interface; 
-and the controller handles the workflow, stitching model elements together to provide the application’s functionality, as shown here: (head first software architecture chapter 6)
-
-General Advantages of Layered Architecture:
--	Feasability (Simplicity)
--	Technical Partitioning
--	Data-intensive
--	Performance (if well designed)
--	Quick to build
--	
-General Disadvantages of Layered Architecture
--	Deployability
--	Complexity
--	Scalability: Non flexibility in change in problem dodmain
--	Elasticity
--	Testability
-Some applications using the layered architecture may have different structure from the original. Some layers might be separated, 
-such as the presentation layer being separated from the other layers. Each structure will have advantages and disadvantages within the layered architecture.
-
-\subsection[Modular Monolith]{Modular Monolith}
-Modular monolith is when an application is divided into different modules within the monolithic system. A module is one domain of the application,
-and each domain will have its independent code base. For instance, an application for a restaurant might have different domains such as orders, deliveries, or recipes.
-In this case, there could be separate databases for each modules, or multiple schemas within a single database.
-It is important to keep in mind that only the code base is independent.
-Pros: 
--	Domain partitioning: each domain will be implemented in a different module, which allows to build teams that specializes in one or more of these domains.
--	Performance: Since there are no network calls within the application like other monolithic applications, performance is good.
--	Maintainability: Each module are separate from each other.
--	Testability:
-Cons:
--	Hard to reuse: Since each module have its own code, it is hard to reuse the logic and utilities across the modules
--	Single set of architecture: Since all the code is within one application, logics and databases could become complicated, making it hard to scale.
-
-\subsection[Microkernal Architecture]{Microkernal Architecture}
-The microkernel architecture is consisted with a core of the application, and plugins. 
-The core of the application is where the main application is being run, and the plugins are connected to the core application. 
-It is used when a lot of customization is needed for the software
-
-
-\section[Distributed Systems]{Distributed Systems}\label{sec:newsec}
+\subsection[Distributed Systems]{Distributed Systems}\label{sec:newsec}
 Distributed architecture is when the logical componnents of the application are split up into multiple units. 
 These units each run in their individual process and communicate with each other over the network. 
 This architecture style encourage loose coupling of each services. The general pros and cons of this architecture style are the following:
@@ -105,7 +21,7 @@ Cons:
 There are both pros and cons for monolithic and distributed systems and choosing the appropriate architecture for each situation is crucial.
 After deciding which of the two main architecture will be used, the subcategories shows the more detailed ways of designing and structuring each units in the application(s). 
 
-\subsection[Microservices Architecture]{Microservices Architecture}
+\subsubsection[Microservices Architecture]{Microservices Architecture}
 
 A microservice is a service that is separately deployed unit of software that performs some business or infrastructure process.(chapter 10).
 A microservices architecture is part of the layered system, where microservices communicate which each other to make an application. 
@@ -183,7 +99,7 @@ depending on the situation. Since it is complex, as microservices communicate wi
  The request might have to wait for the network or undergo additional security checks and make extra database calls.
   Lastly. deploying all of these microservices will increase the cost of the entire application.  
 
-\subsection[Event-Driven Architecture(EDA)]{Event-Driven Architecture(EDA)}
+\subsubsection[Event-Driven Architecture(EDA)]{Event-Driven Architecture(EDA)}
 What is an Event
 An event in computer science is a way for a service to let the rest of the system know that something important has just happened. In EDA, events are the means of passing information to other services (head first chapter11). The event contains data and it is broadcasted to services using topics that are connected to the sender of the event. However, events are asynchronous, which means that although the services are connected, the sender of the event does not wait on the response of the receiving service. This is the key difference between a event and message. Messages includes a command or some kind of a request for the receiving service, and the service sending out the messages require a response, making it synchronous. Messages are also sent to only a single service using queues. 
 

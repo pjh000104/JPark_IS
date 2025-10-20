@@ -1,0 +1,74 @@
+\subsection[Monolithic]{Monolithic}
+A monolithic application is where all the logical components of the application is deployed as one unit. 
+This also means that the application will be ran in one process. For example, if there is a stand-alone Python Flask application deployed to a server, 
+this is monolithic applications. The general pros and cons of this architecture style are the following:
+
+Pros:
+-	Simplicity: Typically, monolithic applications have a single codebase, which makes them easier to develop and understand
+-	Cost: Monolithis are cheaper to build and operate because they tend to be simpler and require less infrastructure.
+-	Feasibility: Monoliths are simple and relatively cheap, freeing developers to experiment and deliver systems faster.
+-	Reliability: Monoliths makes few or no network calls, which usually means more reliable application.
+-	Debuggability: If a bug is spotted or get an error stack trace, debugging is easy, since all the code is in one place.
+Cons: 
+-	Scalability: 
+-	Evolvability: Making changes to monolithic applications become harder as it grows. Since the whole application is one codebase, 
+  it is not possible to adapt different technology stacks to different domains if needed.
+-	Reliability: Since monolithic applications are deployed as a single unit, any bug that degrades the service will affect the whole application.
+-	Deployability: Implementing any change will require redeploy8ing the whole application, which could introduce a lot of risk.
+
+\subsubsection[Layered Architecture]{Layered Architecture}
+
+Layered architecture is a sub category of the Monolithic architecture. Applications that are designed with this architecture has three layered parts: 
+the presentation layer, the workflow layer, the persistence layer, and the database layer. Each layer has it’s own tasks and separated within one application. 
+Presentation Layer:
+	The presentation layer is where the UI is displayed and where the users interact with the system.
+   All components that are related to the UI will be included in this layer.
+Workflow Layer:
+	The workflow layer consists all code that are related to logic such as business logic, workflows, and validations. This is where most of the application’s code is contained.
+Persistence Layer:
+	The persistence layer encapsulates the behavior that is needed to make objects persistent, 
+  such as mapping the architecture to code-base hierarchies into set-based relational databases.
+Database Layer:
+	The database layer is optional. This layer includes the database, or some kind of way to persist information.
+
+Each of the layer may contain multiple problem domains. For example, for a restaurant, there could be domains like place order, 
+deliver order, manage recipes, or mange inventory. Different problem domains could exist together in each layer of  the application. 
+
+An implication of the layered monolithic architecture is the MVC design pattern.
+In MVC, the model represents business logic and entities in the application; the view represents the user interface; 
+and the controller handles the workflow, stitching model elements together to provide the application’s functionality, as shown here: (head first software architecture chapter 6)
+
+General Advantages of Layered Architecture:
+-	Feasability (Simplicity)
+-	Technical Partitioning
+-	Data-intensive
+-	Performance (if well designed)
+-	Quick to build
+-	
+General Disadvantages of Layered Architecture
+-	Deployability
+-	Complexity
+-	Scalability: Non flexibility in change in problem dodmain
+-	Elasticity
+-	Testability
+Some applications using the layered architecture may have different structure from the original. Some layers might be separated, 
+such as the presentation layer being separated from the other layers. Each structure will have advantages and disadvantages within the layered architecture.
+
+\subsubsection[Modular Monolith]{Modular Monolith}
+Modular monolith is when an application is divided into different modules within the monolithic system. A module is one domain of the application,
+and each domain will have its independent code base. For instance, an application for a restaurant might have different domains such as orders, deliveries, or recipes.
+In this case, there could be separate databases for each modules, or multiple schemas within a single database.
+It is important to keep in mind that only the code base is independent.
+Pros: 
+-	Domain partitioning: each domain will be implemented in a different module, which allows to build teams that specializes in one or more of these domains.
+-	Performance: Since there are no network calls within the application like other monolithic applications, performance is good.
+-	Maintainability: Each module are separate from each other.
+-	Testability:
+Cons:
+-	Hard to reuse: Since each module have its own code, it is hard to reuse the logic and utilities across the modules
+-	Single set of architecture: Since all the code is within one application, logics and databases could become complicated, making it hard to scale.
+
+\subsubsection[Microkernal Architecture]{Microkernal Architecture}
+The microkernel architecture is consisted with a core of the application, and plugins. 
+The core of the application is where the main application is being run, and the plugins are connected to the core application. 
+It is used when a lot of customization is needed for the software
