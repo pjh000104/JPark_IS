@@ -8,10 +8,12 @@ and each row represents an instance of that data(aws document). Each table must 
 The primary keys are used to establish relationships between tables, by using the related rows between tables as the foreign key in another table. 
 Once two tables are connected, it is now possible to get data from both tables in a single SQL query.
 
-Advantages and Disadvantages:
+\noindent \textbf{Advantages and Disadvantages}
+
 Relational databases follow a strict structure, which allows users to process complex queries on structured data while maintaining data integrity and consistency. 
 The strict structure also follows the ACID (atomic, consistency, isolation, and durability) properties for enhanced data integrity. 
 However, because of the rigid structure, it is hard to scale compared to nonrelational database.  
+
 \subsubsection[Non-Relational Databases]{Non-Relational Databases}
 Nonrelational databases means that there isn’t a schema to manage and store data. 
 This means that data does not require constraints that the relational database required, such as fixed schema, primary key constraint, or not null constraints. 
@@ -23,7 +25,8 @@ Since it is readable by both human and the machine, it has the ease of developme
 where they are used when a graph-like relationships are needed. Unlike the relational databases, which store data in rigid schema, 
 graph databases store data as a network of entities and relationships, providing more flexibility to anything that is prone to change. 
 
-Advantages and disadvantages:
+\noindent \textbf{Advantages and Disadvantages}
+
 Nonrelational databases have a less rigid structure allowing more flexibility.
 This is useful when the data changes requirements often. For example, when a specific table needs to changes in columns, 
 this would be hard to preform because other tables might be associated with the specific column. 

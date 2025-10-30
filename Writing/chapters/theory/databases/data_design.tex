@@ -1,4 +1,4 @@
-\subsection{Database Design and Performance}
+\subsection{Database Design and Evolution}
 The design of databases and quering the database are the ones that has the most impact on the performance of the database.
 In this subsection, we will be talking about ways to structure and queyr efficient database systems.
 
@@ -150,19 +150,112 @@ Applying either method will resolve the anomalies we encountered in the second n
 
 
 
-\subsection[Bad Designs]{Bad Designs}
-There are multiple ways how relational databases could be badly designed. Bad designs will not benefit from data integrity, 
-which is one of the advantages of relational databases. 
 
-There are mainly three problems related to bad design of relational databases:
+\subsubsection[Database Evolution]{Database Evolution}
+
+The database design also has influence on how the database evolves over time. As the size of data increases, performance, latency, and fault tolerance are affected by the database designs. There are multiple techniques to design a database suitable for scaling. Vertical scaling refers to when the physical parts of the computer such as CPU or RAM is upgraded so that the database could handle more data and queries. Horizontal scaling is when having multiple machines with independent physical parts (CPU and RAM), but stores the data on an array of disks that are shared among multiple other machines. 
+One advantage of using vertical scaling is that the structure is very simple. Only one database needs to be taken care of, which could be easier compared to handling multiple databases. However, there are more disadvantages. Cost increase faster than linearly as higher performance is required. Fault tolerance is another thing as there is only one database running, failure in the service will damage the connected services. 
+For horizontal scaling, there are mainly two strategies that we will discuss: replication and partitioning. These two strategies have its own sub strategies which will be discussed in the next subsection.
+
+\paragraph{Replication:}
+
+The definition of replication is when there are multiple copies of the database in different locations. This leads to redunduntcy in data, but it also allows fault tolerance in case a database is unavailable. (Designing Data Intensive ch5) Some other reasons why someone might want to use a replica is to increase availability by having databases in different regions to decrease latency. Also, having multiple database to read queries also help increase the performance of the application. 
+
+There are multiple ways to implement this strategy in different situations. The three topics discussed will be Leader and Followers, Multi Leader Replication, and Leaderless Replication.
+
+\paragraph{Leaders and Followers:}
+Going deeper into how the replicas are actually set up, it is important to make sure that each of the replicas have the same data. For example when a user updates a table, this should include all the other replicas to update the same table. The leader and follower structure has one lead node(leader) that allows writes to the database, and the rest of the nodes are assigned as followers. If there is a change data in the leader, the followers are updated accordingly. Reading the database could be done by any of the nodes including the leader node, but writing the database could only be done by through the leader node. Here is a quick example how the flow might look like
+(add an example figure)
+
+\subparagraph{Synchronous vs Asynchronous Replication}
+One important factor when setting up replication of databases are whether the replication happens synchronously verses asynchronously. After the leader receives a write query, synchronous replication waits until all of the followers are updated and synced. The leader will not take any queries before this process is finished. However, asynchronous replication keeps taking queries regardless of the status of the followers. Although database replications are fast which usually happens less than a second(Designing Data-Intensive Applications ch 5), there is no guarantee of how long it would take to perform a synchronous replication. This is an advantage of synchronous replication, since it is certain that all database replications are up-to-date with the leader database, but it could be a disadvantage in a perspective where the database queries will be slow. If all of the followers are synchronous, the system would be too slow. Most of the times, one of the followers will be set to being synchrounous so that there will be at least two replications(one leader, one follower) up-to-date with all the write queries, and the rest of the followers being asynchronous. This configuration is sometimes also called semi-synchronous. (Designing Data-Intensive App ch5) 
+
+Asynchronous replications on the other hand are very fast since the leader does not have to wait until the followers are have synced data. However it does have a disadvantage that all of the followers might not be up-to-date right away, which is also known as the replication lag. This might sound like a huge disadvantage, but asynchronous replication is often times used if there are many followers or if they are geographically distributed. Eventually, all the followers will have a synced replication of the leader, since inconsistency is just a temporary state. This effect is called as eventual consistency (Designing Data-Intensive App ch5). If the application that is being created is okay with possibility of inconsistency due to replication lag, asynchrounous replication is perfect. However, if consistency is crucial to the application, other solutions such as synchrounous or semi-synchronous replication will be the go-to when using leaders and followers method. 
+
+
+\paragraph{Multi-Leader Replication}
+One down side of a Leader and Follower replication was that the write queries were only allowed in the leader replica. If the application could not connect to the leader for any reason such as network causes, write queries could not be performed. Multi-Leader replication allows multiple leaders, which means that write queries could be done in multiple replicas. 
+Although it is rare for a multi-leader replication structure to over weigh the benefits among the complexity added, there are a few use cases for this structure.
+\begin{itemize}
+    \item Multi datacenter operation
+    \item Clients with offline operation
+    \item Collaborative editing
+\end{itemize}
+However the biggest issue in the multi-leader replication structure is handling multiple write query conflict. This was not an issue for a single leader and followers structure since only one leader accepted write queries and they were processed one by one. However, if multiple leaders receive queries at the same time, the conflict should be resolved. There are multiple ways to handle write conflicts.
+
+The simplest strategy is to just avoid the conflicts. If the write queries could be avoided in the application layer, where the application ensures that all write queries for a particular record go through the same leader. This would work until a particular records needs to change its designated leader. In this case, simply avoiding conflicts in the application layer would not work
+
+The next strategy is to converge toward a consistent state. When there is a situation where avoiding conflicts do not work, the conflicts should be handled. There are various ways to converge the replicas into a consistent state. One way could be to simply give each write query a unique ID, and if there is a conflict, the higher unique ID overwrites the conflict. Another way is to give each replica a unique ID, and the higher unique ID overwrites the conflict. Or, there could be another explicit data structure that preserves the information and write application code to resolve the conflict in a certain logic. There are trade offs such as which part of the data is going to be saved over the other, so it is essential to choose the write way to handle write conflicts in a multi-leader replica structure.
+
+Replication is a way to not only have fault tolerance but also improve the performance of the database. This will be useful as the size of the database and the application grows. It is essential to choose the right strategy for replication depending on the situation to support the evolution of databases and maximize performance.
+
+\paragraph{Partitioning:}
+Partitioning is when a data is divided into multiple smaller pieces of data such as a record, a row, or a document. Replication was used for scalability and performance, but as the size of the database increases, only replication itself become inefficient since all the data has to be copied to the replicas. In order to scale database applications, partitioning is commonly used. As the data is distributed among multiple partitions, multiple queries could be ran at the same time. 
+
+\subparagraph{Partitioning by Key-Value Data}
+Having a key-value data is one way to create partitions. The reason for partitioning was to scale the database by distributing the query load on one node. One way to achieve this is to have a key range for each partition. For example, when we think of a dictionary, we know that words that start with the letter “a” is in the beginning, the letter “m” is somewhere in the middle, and the letter “z” is at the end. By dividing the range of partitions by the key-value data, it will be easier to locate which partition contains the data and distribute the query. In this case, the partitions might not be evenly divided since the each range of key-value pairs could contain a different amount of data. It is important which key-value pair to use. If a key is assigned as a column that is not evenly distributed, this leads to a hot spot (a partition with disproportionately high load) (Designing Data-Intensive App  ch6). 
+
+A method that has a lower chance of being affected by hot spots is partitioning by hash of key. A good hash function makes a the key-value pairs evenly distributed among the partitions. However, this looses the efficiency that the key range had. It is now hard to find the range queries efficiently without the key range. 
+
+When choosing the strategy, hashing keys and having key ranges to partition data both have advantages and trade-offs, so it is important to choose the one suitable in the situation. Key range could be used if there is a key range that is evenly distributed, and key hash when there are still a lot of hotspots by using the key range. 
+
+\subparagraph{Partitioning and Secondary Indexes}
+Partitioning by key-value pairs work nicely with the partitioning strategies discussed above. However things get more complicated with secondary indexes. Secondary indexes will be discussed more in the upcoming sections. A brief introduction for secondary indexes is that they are created to improve the query performance that are based on multiple keys. For example, when searching for a job in a job board, selecting criteria such as industry or experience level could be a situation to use secondary indexes. Secondary indexes makes sharding more complicated since they don’t identify a single record, but rather search for records based on the conditions. Partitioning by key-value pairs wouldn’t work in this situation.
+
+Scatter/gather is a technique where each partition has its own secondary indexes. In this case, writing data would be efficient since only the partition containing that specific part of the index is where the data is written. However, reading queries are less efficient.  If queries require to search on different partitions, each partition is searched separately which is inefficient. 
+
+It is also possible to partition secondary indexes by the term. Instead of having distributed secondary indexes across the partitions, this approach has a global index that covers all the partitions. Having a range of secondary indexes partitioned in separate partitions make read queries more efficient from the scatter/gather technique. If write queries are used more often, it is better to use the scatter/gather technique, and if read queries are dominantly used, partitioning indexes by term is the structure to choose. 
+
+\paragraph{Request Routing}
+After partitioning the dataset into multiple nodes, it is important to make sure the request connects to the right partition. On a high level there are mainly three ways to achieve this. 
 \begin{enumerate}
-    \item Unnecessary duplicated data and data consistency
-    \item Data Insertion Problem
-    \item Data Deletion Problem
+    \item Allow clients to contact any node (e.g., via a round-robin load balancer). If that node coincidentally owns the partition to which the request applies, it can handle the request directly; otherwise, it forwards the request to the appropriate node, receives the reply, and passes the reply along to the client.
+    \item Send all requests from clients to a routing tier first, which determines the node that should handle each request and forwards it accordingly. This routing tier does not itself handle any requests; it only acts as a partition-aware load balancer.
+    \item Require that clients be aware of the partitioning and the assignment of partitions to nodes. In this case, a client can connect directly to the appropriate node, without any intermediary. (Designing Data-Intensive App Ch 6)
 \end{enumerate}
 
-\subsubsection[Partitioning and Sharding]{Partitioning and Sharding}
+The key problem is that how does the component, (which could be the routing tier, the client, or the partition in the node) know about changes in the other partitions in other nodes? If the deciding component is not up to date with the location where data that the client is requesting, this could lead into data inconsistency. 
 
-\subsubsection[Indexing]{Indexing}
+To solve this problem, many distributed data systems use a separate coordination service such as the ZooKeeper to keep track of the data. The whenever a partition changes or a node is added or removed the ZooKeeper is updated to keep data consistency. 
 
-\subsubsection[N+1 Problem]{N+1 Problem}
+\paragraph{Performance and Querying Optimization}
+There are multiple factors that affect the performance of the database. The design of the database, including normalization, and partitioning, which was discussed in the previous subsection is one of the factors. Indexing is another huge part of increasing the performance of the database as the amount of data increases. Lastly, changing the physical query of the database is a way optimize the performance of the database. In this section, we will be discussing about specific ways to optimize performance of databases.
+
+\subparagraph{Indexing:}
+Suppose that there is a table called students with the following keys: id, name, grade. If we want to find students with a certain grade (80\%), we could run a SQL query something like this.
+\begin{verbatim}
+SELECT * 
+FROM Students
+WHERE grade = 80;
+\end{verbatim}
+This query will visit all the rows and then find the students with grades 80. However this query becomes more inefficient as the size of the table grows, as the time complexity would be O(n). If the table was sorted by grades, this will be much easier, since we could do a binary search to make the search speed O(log n). This is where indexing is applied. 
+
+An index could be created where the grades are sorted in order, each having a reference to the row of the student table. This way, whenever we want to find the name of the students with a certain grade, instead of looking at the Students table, we can look at the index, where the grades are sorted, find rows with the certain grade, for each row find the reference of the student table, and return the name of the student. This shows that Indexes significantly improves the read queries for databases. 
+
+There are multiple data structures that could be used to implement indexes, but the most common one are b+trees. B trees are somewhat similar to the binary search trees. However, instead of having one value every node, it contains multiple nodes. This allows multiple partitions, allowing a balanced, and a faster search. Furthermore, as multiple values could be in a single node, the height of the tree would be smaller. This means that there are fewer disk I/O’s per file operation as database stores data on disk, resulting in faster query execution(pg 645 Database Systems the Complete Book). One down side of b trees is when making range queries, such as finding all students who have grads 20 to 80. If these two data are separated from the root, this could be inefficient. (create diagram). B+trees are a variation of b trees to solve this issue. B+trees store data only in the leaf node. The other nodes store keys only for navigation. Also, all the leaf nodes are connected to the next leaf node. (create diagram and explain). 
+
+B+trees are commonly used in indexes for modern databases management system such as MYSQL, PostgreSQL, and SQLite. 
+
+\subparagraph{Query Optimization:}
+Optimizing the SQL queries could also increase the performance of the database. Here are the 6 queries tune SQL queries. 
+\url{https://www.geeksforgeeks.org/sql/sql-performance-tuning/}
+\begin{itemize}
+    \item SELECT fields instead of using SELECT *
+    \item Avoid SELECT DISTINCT
+    \item Use INNER JOIN instead of WHERE for Joins
+    \item Use WHERE instead of HAVING
+    \item Limit Wildcards to the end of a search term
+    \item Use LIMIT for sampling query results
+\end{itemize}
+
+\paragraph{N+1 problem}
+The N+1 problem is a common problem when using the ORM. The definition of the problem is when an application retrieves a list then performs additional queries for each item’s related data, which results in an inefficient query. (1 + N queries instead of optimized joins). In a nutshell, it is just having too much queries that decreases the performance. This problem usually happens in ORMs. 
+
+Similar to the example above, assume there is a students table with keys student\_id, student\_name, and another table called courses with the keys course\_id, student\_id, and course\_name. 
+
+If we were to get all students and courses they are taking in plain SQL, we would write something like this:
+\begin{verbatim}
+SELECT s.student_id, s.student_name, c.course_name
+FROM students s
+JOIN courses c ON s.student_id = c.student_id;
+\end{verbatim}

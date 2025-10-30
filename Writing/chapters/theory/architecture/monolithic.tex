@@ -1,6 +1,6 @@
 \subsection[Monolithic]{Monolithic}
 A monolithic application is where all the logical components of the application is deployed as one unit. 
-This also means that the application will be ran in one process. For example, if there is a stand-alone Python Flask application deployed to a server, 
+This also means that the application will be run in one process. For example, if there is a stand-alone Python Flask application deployed to a server, 
 this is monolithic applications. The general pros and cons of this architecture style are the following:
 
 Pros:
@@ -34,7 +34,7 @@ Database Layer:
 Each of the layer may contain multiple problem domains. For example, for a restaurant, there could be domains like place order, 
 deliver order, manage recipes, or mange inventory. Different problem domains could exist together in each layer of  the application. 
 
-An implication of the layered monolithic architecture is the MVC design pattern.
+An implication of the layered monolithic architecture is the MVC design pattern, which is a abbreviation for model view and context.
 In MVC, the model represents business logic and entities in the application; the view represents the user interface; 
 and the controller handles the workflow, stitching model elements together to provide the application’s functionality, as shown here: (head first software architecture chapter 6)
 
@@ -58,7 +58,8 @@ such as the presentation layer being separated from the other layers. Each struc
 Modular monolith is when an application is divided into different modules within the monolithic system. A module is one domain of the application,
 and each domain will have its independent code base. For instance, an application for a restaurant might have different domains such as orders, deliveries, or recipes.
 In this case, there could be separate databases for each modules, or multiple schemas within a single database.
-It is important to keep in mind that only the code base is independent.
+It is important to keep in mind that only the code base is independent in the software structure, meaning that since modular monolithics
+is still follows the monolithic architecture, the code will be compiled together as a single application and run in one process.
 Pros: 
 -	Domain partitioning: each domain will be implemented in a different module, which allows to build teams that specializes in one or more of these domains.
 -	Performance: Since there are no network calls within the application like other monolithic applications, performance is good.
