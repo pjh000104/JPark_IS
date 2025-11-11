@@ -10,17 +10,17 @@ import com.example.localcuisine.Cuisine.service.CuisineService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cuisines")
+@RequestMapping("/api/cuisines")
 public class CuisineController {
+
     private final CuisineService cuisineService;
+
     public CuisineController(CuisineService cuisineService) {
         this.cuisineService = cuisineService;
     }
 
-    @GetMapping("{area}")
-    public ResponseEntity<List<String>> getAllLocations(@PathVariable String area) {
-            
-            List<String> cuisines = cuisineService.getCuisinesByCity(area);
-            return ResponseEntity.ok(cuisines);
+    @GetMapping("/byRegion/{regionName}")
+    public List<String> getByRegion(@PathVariable String regionName) {
+        return cuisineService.getCuisinesByRegion(regionName);
     }
 }

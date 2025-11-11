@@ -6,9 +6,15 @@ There are multiple database caching strategies that could be applied when design
 
 Cache Aside is also called Lazy Loading. The application is in control of managing the cache. Let’s look at the diagram below.
 
-\begin{center}
-(put cache aside diagram)
-\end{center}
+% \begin{center}
+% (put cache aside diagram)
+% \input{myFigures/cacheAside.tex}
+% \end{center}
+
+\input{myFigures/cacheFigures.tex}
+
+
+\cacheAsideFigure
 
 As the diagram shown above, the client first checks the cache to see if the read request data is in the cache. If the cache exists, this is called a cache hit, and the client uses it right away. If the cache does not exist, this is called a cache miss. When a cache miss occurs, the client then sends a request to the database server to fetch the data. After that, the client transfers the data to the cache, so that there could be a cache hit the next time the data is needed. This will increase the performance of the application when the same data is called multiple times. When there is a write request, the application will first communicate with the database and then update the cache.
 
@@ -18,9 +24,11 @@ This strategy is useful when the application requires a lot of read requests fro
 
 In the read-through strategy, the cache level manages fetching data from the database. Here is a diagram of how the read-through strategy works:
 
-\begin{center}
-(put read-through diagram)
-\end{center}
+% \begin{center}
+% (put read-through diagram)
+% \end{center}
+
+\readThroughFigure
 
 Whenever there is a read request from the application, the application first checks the cache. If there is a cache hit, it simply returns the data back to the application. If there is a cache miss, the cache level fetches the data from the database. Since the cache manages fetching data, it simplifies the application logic when retrieving data compared to when the application handles fetching data.
 
@@ -30,9 +38,10 @@ This strategy only involves read requests from the application, which means that
 
 The write-through strategy is very similar to the read-through strategy. The diagram is almost identical.
 
-\begin{center}
-(put diagram)
-\end{center}
+% \begin{center}
+% (put diagram)
+% \end{center}
+\writeThroughFigure
 
 Nothing happens when there is a read request from the application, but when there is a write request, the data will first be written in the cache and then into the database. This ensures data consistency when paired with the read-through strategy. One downside of this strategy is that since it writes to both the cache and the database layer, the latency of the request increases.
 
@@ -42,9 +51,10 @@ The read-through and the write-through strategies are not meant to be used for a
 
 The write-back strategy is similar to the write-through strategy, but the writes to the database happen with a delay. The cache is still in charge of writing data to the database. Let’s look at the diagram:
 
-\begin{center}
-(write-back diagram)
-\end{center}
+% \begin{center}
+% (write-back diagram)
+% \end{center}
+\writeBackFigure
 
 Since the cache only writes to the database after a certain amount of time, this strategy is beneficial when there are multiple write requests to the same data at the application level. This will decrease the write queries from the cache level to the database, which could increase the performance. However, similar to the read-through and write-through strategies, since the data is written to the cache first, writing data to the database could potentially fail if the caching fails.
 
@@ -52,8 +62,9 @@ Since the cache only writes to the database after a certain amount of time, this
 
 This strategy is similar to the cache-aside strategy, but it has more specific instructions for write requests.
 
-\begin{center}
-(write-around diagram)
-\end{center}
+% \begin{center}
+% (write-around diagram)
+% \end{center}
+\writeAroundFigure
 
 The difference between the write-around strategy and the cache-aside strategy is that when there is a write request, only the data in the database is updated. The data in the cache is only updated when there is a cache miss from a read request. This way, the cache is not overflooded with unnecessary data. The disadvantage of this strategy is that recently written data will always result in a cache miss. This is why the write-around strategy is suitable when the application has a lot of read requests and data is rarely updated.

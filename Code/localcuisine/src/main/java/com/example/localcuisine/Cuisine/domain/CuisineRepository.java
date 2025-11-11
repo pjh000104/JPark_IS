@@ -1,23 +1,10 @@
 package com.example.localcuisine.Cuisine.domain;
 
+import com.example.localcuisine.entity.Cuisine;
+import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.stereotype.Repository;
-
-@Repository
-public class CuisineRepository {
-        private Map<String, List<String>> sampleMap = Map.of(
-        "Tokyo", List.of("Sushi", "Ramen", "Tempura"),
-        "Osaka", List.of("Takoyaki", "Okonomiyaki"),
-        "Kyoto", List.of("Kaiseki", "Yudofu")
-        );
-    public List<String> findByArea (String city) {
-        List<String> cuisines = sampleMap.get(city);
-        if (cuisines != null) {
-            return cuisines;
-        } else {
-            throw new IllegalArgumentException("City not found: " + city);
-        }
-    }
+public interface CuisineRepository extends JpaRepository<Cuisine, Long> {
+    List<Cuisine> findByRegion_RegionName(String regionName);
+    List<Cuisine> findByRegion_Country(String country);
 }
