@@ -10,7 +10,7 @@ There are types of normalization such as 1NF and 2NF, and as the normal form get
 it is a better design of the relation. However, most databases tend to be needed until the third normal form, 
 which avoids most of the problems common to bad relational designs. 
 
-\textbf{The Second Normal Form(2NF)}
+\textbf{The First Normal Form(1NF)}
 The two criterias that 1NF meet are the following:
 
 \begin{enumerate}
@@ -20,9 +20,17 @@ The two criterias that 1NF meet are the following:
 
 
 Here the repeating groups mean that if an attribute that has more than one value in each row of a table. (relational database design and implementation 4th) 
-For instance, if there is a column that requires more than one value, such as items (instead of item), this will be a repeating group. (show table) 
+For instance, if there is a column that requires more than one value, such as items (instead of item), this will be a repeating group.
+
+\input{tables/1nfbefore.tex}
+
+This table shows the example of a table before the first normalized form. We  can see that there are multiple items in the items column separated by a comma.
 Having three or more dimensions or having repeated groups for a single table results in more complexity and difficulties when querying the database. 
 This is why we need the 1NF normalization.The 1NF is the most simple normalization that could be done in a relational database and it is pretty clear. 
+
+\input{tables/1nfafter.tex}
+
+As we can see on the table above, there is only one item in the items column by creating a new record for each item.
 However, the first normalization form is not enough from benefiting from using relational databases. 
 
 \textbf{Problems with 1NF}
@@ -36,7 +44,8 @@ Inserting a new entity could be difficult unless there are related data. For ins
 this would be unavailable until there is a student taking the course since the primary key will be the student’s id, and there could not be a row without a primary key. 
 Deletion could also be a problem when the row deleted contained the last data for a certain column. For example, 
 if one student is taking a class called CS200, and that record is deleted, the table would not have the information that the class CS200 exists. 
-To solve these problems, we must use higher levels of the normalization form.
+To solve these problems, we must use higher levels of the normalization form.\\
+
 
 \textbf{The Second Normal Form(2NF)}
 
@@ -75,6 +84,9 @@ The relationship can be represented as:
 \text{Student}(\text{course\_id}) \rightarrow \text{Courses}(\text{course\_id})
 \]
 
+\input{tables/2nfbefore.tex}
+\input{tables/2nfafter.tex}
+
 By doing this, some of the problems from the first normal form are solved. 
 The functional dependency solves the insertion, deletion, and update anomalies.
 We can now insert a new course into the course table without needing to insert a student at the same time, 
@@ -83,7 +95,8 @@ which preserves data integrity. This will provide more stable and consistent dat
 
 \textbf{Problems with 2NF}
 
-Although some of the problems with 1NF were solved, there are still anomalies to be resolved. Insertion, deletion, and update anomalies still exist. For example, let us assume we have the following dependencies:
+Although some of the problems with 1NF were solved, there are still anomalies to be resolved. Insertion, deletion, and update anomalies still exist. 
+For example, let us assume we have the following dependencies and the table:
 
 \begin{itemize}
     \item \textbf{Student}(\textit{student\_id} (PK), \textit{course\_id} (FK), \textit{name}, \textit{birthday}, \textit{room\_num}) 
@@ -98,6 +111,8 @@ Although some of the problems with 1NF were solved, there are still anomalies to
     
     \item \textbf{Room Number}(\textit{room\_num} (PK), \textit{name})
 \end{itemize}
+
+\input{tables/3nfbefore.tex}
 
 Even though the tables are in 2NF, insertion, deletion, and update anomalies can still occur due to these transitive dependencies.
 
@@ -147,6 +162,8 @@ To remove transitive dependencies, we should break the relations into separate t
 \end{itemize}
 
 Applying either method will resolve the anomalies we encountered in the second normalization form (2NF).
+
+\input{tables/3nfafter.tex}
 
 
 

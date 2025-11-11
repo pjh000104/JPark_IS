@@ -1,35 +1,38 @@
 \subsection[Monolithic]{Monolithic}
 A monolithic application is where all the logical components of the application is deployed as one unit. 
 This also means that the application will be run in one process. For example, if there is a stand-alone Python Flask application deployed to a server, 
-this is monolithic applications. The general pros and cons of this architecture style are the following:
+this is monolithic application. This means that the UI components should also be included in the same unit. If thre is a separate frontend server, 
+this is not a monolithic application anymore. There are multiple reasons to build a project with the monolithic architecture.
 
-Pros:
--	Simplicity: Typically, monolithic applications have a single codebase, which makes them easier to develop and understand
--	Cost: Monolithis are cheaper to build and operate because they tend to be simpler and require less infrastructure.
--	Feasibility: Monoliths are simple and relatively cheap, freeing developers to experiment and deliver systems faster.
--	Reliability: Monoliths makes few or no network calls, which usually means more reliable application.
--	Debuggability: If a bug is spotted or get an error stack trace, debugging is easy, since all the code is in one place.
-Cons: 
--	Scalability: 
--	Evolvability: Making changes to monolithic applications become harder as it grows. Since the whole application is one codebase, 
-  it is not possible to adapt different technology stacks to different domains if needed.
--	Reliability: Since monolithic applications are deployed as a single unit, any bug that degrades the service will affect the whole application.
--	Deployability: Implementing any change will require redeploy8ing the whole application, which could introduce a lot of risk.
+One of the benifits of the monolithic architecture is its simplicity. Since a tipical monolithic application have a single codebase, it is easier for
+the developers and collaborators to understand the overall structure. Even when a developer joins in the middle of the development process or 
+reading an older code base, understanding program will be generally easier compared to distributed systems structure. Another advantage of using the monolithic
+structure is the cost. Since only one unit has to be deployed, which is simple and requires less infrastructure, it is cheaper to operate overall. 
+Because of the cheap cost, developers are able to experiment and deliver systems faster, benificial in a fast pace environment.
+Reliability is another aspect, where monolithic applications make few or no network calls, which usually means more reliable application.
+Lastly, it is easier to find bugs when spotted compared to distributed systems since all the code is in one place.
+
+On the other hand, there are also disadvantages of using the monolithic architecture. As the monolithic application grows, the application becomes harder to scale. 
+Since all the code is in one codebase, it is not possible to adapt different technology stacks to different domains if needed. 
+This also connects to reliability, because incase any bug occures in the application, this could degrade the service and affect the whole application.
+Lastly, when deploying the application, Implementing any change will require redeploying the whole application, which could introduce a lot of risk.
+
 
 \subsubsection[Layered Architecture]{Layered Architecture}
 
 Layered architecture is a sub category of the Monolithic architecture. Applications that are designed with this architecture has three layered parts: 
 the presentation layer, the workflow layer, the persistence layer, and the database layer. Each layer has it’s own tasks and separated within one application. 
-Presentation Layer:
-	The presentation layer is where the UI is displayed and where the users interact with the system.
-   All components that are related to the UI will be included in this layer.
-Workflow Layer:
-	The workflow layer consists all code that are related to logic such as business logic, workflows, and validations. This is where most of the application’s code is contained.
-Persistence Layer:
-	The persistence layer encapsulates the behavior that is needed to make objects persistent, 
-  such as mapping the architecture to code-base hierarchies into set-based relational databases.
-Database Layer:
-	The database layer is optional. This layer includes the database, or some kind of way to persist information.
+
+\begin{itemize}
+  \item \textbf{Presentation Layer:} The presentation layer is where the user interface (UI) is displayed and where the users interact with the system. All components that are related to the UI are included in this layer.
+  
+  \item \textbf{Workflow Layer:} The workflow layer consists of all code related to logic such as business logic, workflows, and validations. This is where most of the application's code is contained.
+  
+  \item \textbf{Persistence Layer:} The persistence layer encapsulates the behavior required to make objects persistent, such as mapping the architecture or code-base hierarchies into set-based relational databases.
+  
+  \item \textbf{Database Layer:} The database layer is optional. This layer includes the database or any mechanism used to persist information.
+\end{itemize}
+
 
 Each of the layer may contain multiple problem domains. For example, for a restaurant, there could be domains like place order, 
 deliver order, manage recipes, or mange inventory. Different problem domains could exist together in each layer of  the application. 
@@ -38,19 +41,16 @@ An implication of the layered monolithic architecture is the MVC design pattern,
 In MVC, the model represents business logic and entities in the application; the view represents the user interface; 
 and the controller handles the workflow, stitching model elements together to provide the application’s functionality, as shown here: (head first software architecture chapter 6)
 
-General Advantages of Layered Architecture:
--	Feasability (Simplicity)
--	Technical Partitioning
--	Data-intensive
--	Performance (if well designed)
--	Quick to build
--	
-General Disadvantages of Layered Architecture
--	Deployability
--	Complexity
--	Scalability: Non flexibility in change in problem dodmain
--	Elasticity
--	Testability
+The layered architecture has several advantages. One of them is the feasability of the application. Since the structure is organized into distinct layers
+with specific responsibilities, it is clear for developers to understand the overall strcutrue of the code. This separation also allows technical partitioning, which makes it 
+much easier to manage and maintain big projects. The division of each section decreases the possibility of bugs, which could be a crucial disadvange of monolithic applications.
+Furthermore, the layered architecture is quick to build particuarly among the projects that have clear relationships among the components since different development teams can work on different layers in parallel.
+
+There are also disadvantages to consider. The layer could add complextity to the application compared to a simple monolithic application. 
+However, this would still be less complicated compared to the complexity of the distributed systems. 
+Testing is another problem since most layers are dependent on each other, testing a specific layer requres mock data or simulation of 
+the related layers, which could decrease the quality of the testing. 
+
 Some applications using the layered architecture may have different structure from the original. Some layers might be separated, 
 such as the presentation layer being separated from the other layers. Each structure will have advantages and disadvantages within the layered architecture.
 
@@ -60,16 +60,25 @@ and each domain will have its independent code base. For instance, an applicatio
 In this case, there could be separate databases for each modules, or multiple schemas within a single database.
 It is important to keep in mind that only the code base is independent in the software structure, meaning that since modular monolithics
 is still follows the monolithic architecture, the code will be compiled together as a single application and run in one process.
-Pros: 
--	Domain partitioning: each domain will be implemented in a different module, which allows to build teams that specializes in one or more of these domains.
--	Performance: Since there are no network calls within the application like other monolithic applications, performance is good.
--	Maintainability: Each module are separate from each other.
--	Testability:
-Cons:
--	Hard to reuse: Since each module have its own code, it is hard to reuse the logic and utilities across the modules
--	Single set of architecture: Since all the code is within one application, logics and databases could become complicated, making it hard to scale.
+
+One of the benifits of using the modular monolithic structure is the domain partitioning. Similary to the layered architecture, this allows to have
+separate devlopment teams that specializes in one or more of these domains, which will incereae the efficiencey of the work.
+Similar to other monolithic applications, the performance of the application will be fast since there are no network calls within the application. 
+Furthremore, since each modules are separted from each other, it is easier to maintain the the code. 
+
+However, code could be hard to reuse since each module have its own code. The logic and utilities could be tightly coupled to each domain,
+decreasing the flexibility to reuse the code compared to the modular monolithic structure. Also, similar to other modular monolithic architecture 
+applications, as the applications grows, the logics and the databases could become complicated since all the code base is in one single aplication. 
+
+
+% Cons:
+% -	Hard to reuse: Since each module have its own code, it is hard to reuse the logic and utilities across the modules
+% -	Single set of architecture: Since all the code is within one application, logics and databases could become complicated, making it hard to scale.
 
 \subsubsection[Microkernal Architecture]{Microkernal Architecture}
 The microkernel architecture is consisted with a core of the application, and plugins. 
 The core of the application is where the main application is being run, and the plugins are connected to the core application. 
 It is used when a lot of customization is needed for the software
+
+There are multiple design choices that could be made within the monolithic architecture. Each structure has its 
+own advantages and disadvantages, so it is important to choose the suitable structure in every situation.

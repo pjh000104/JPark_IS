@@ -1,0 +1,46 @@
+\begin{table}[h!]
+\centering
+\caption{Student Table (same as 2NF)}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Student\_ID (PK)} & \textbf{Name} & \textbf{Birthday} & \textbf{Course\_ID (FK)} & \textbf{Room\_Name} \\
+\hline
+S001 & Alice & 2002-03-14 & C101 & Database Room \\
+S002 & Bob & 2001-06-02 & C102 & CS Lab \\
+S003 & Charlie & 2002-07-22 & C101 & Database Room \\
+S004 & Diana & 2003-01-18 & C103 & Systems Lab \\
+\hline
+\end{tabular}
+\end{table}
+
+\vspace{1em}
+
+\begin{table}[h!]
+\centering
+\caption{Course Table}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Course\_ID (PK)} & \textbf{Course\_Name} & \textbf{Room\_Name} \\
+\hline
+C101 & Database Systems & Database Room \\
+C102 & Data Structures & CS Lab \\
+C103 & Operating Systems & Systems Lab \\
+\hline
+\end{tabular}
+\end{table}
+
+\vspace{1em}
+
+% \begin{table}[h!]
+% \centering
+% \caption{Room Table}
+% \begin{tabular}{|c|c|}
+% \hline
+% \textbf{Room\_Num (PK)} & \textbf{Room\_Name} \\
+% \hline
+% R12 & Database Room \\
+% R14 & CS Lab \\
+% R15 & Systems Lab \\
+% \hline
+% \end{tabular}
+% \end{table}

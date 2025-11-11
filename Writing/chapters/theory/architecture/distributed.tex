@@ -1,22 +1,43 @@
 \subsection[Distributed Systems]{Distributed Systems}\label{sec:newsec}
 Distributed architecture is when the logical componnents of the application are split up into multiple units. 
 These units each run in their individual process and communicate with each other over the network. 
-This architecture style encourage loose coupling of each services. The general pros and cons of this architecture style are the following:
+This architecture style encourage loose coupling of each services, which could be a huge benifit. 
 
-Pros:
--	Scalability: Distributed architectures deploy different logical components separately from one another, so it is easy to add new services.
--	Modularity: Distributed architecture encourage a high degree of modularity because their logical components must be loosely coupled.
--	Testablility: Each deployment only serves a select group of logical components. This makes testing a log easier-even as the application grows.
--	Deployability: Distributed architectures encourage lots of small units. They evolved after modern engineering principles like continuous integration, 
-  continuous deployments, and automated testing became the norm.
--	Fault Tolerance: Even if one piece of the system fails, the rest of the system can continue functioning.
-Cons:
--	Performance: Distributed architectures involve lots of small services that communicate with each other over the network.
-  This can affect performance, but there are ways to improve this.
--	Cost: More servers are needed to deploy multiple units. These services will need to talk to each other, which entails setting up and maintaining network infrastructure.
--	Simplicity: Distributed systems are complicated to understand from how they work to debugging errors.
--	Debuggability: Errors could happen in any unit involved in servicing a request. Since logical components are deployed in separate units,
-  tracing errors could become complicated.
+There are multiple advantages by choosing the distributed systems. The one that contrasts with the monolithic architecture is
+scalability. Since distributed architectures deploy different logical components separately from one another, so it is easy to add new services.
+Furthermore, similar to modular monolithics, distributed architecture encourage a high degree of modularity. 
+This is because distributed systems have loosely coupled logical components. 
+The benifit of having multiple distributed systems is also shown during the testing phase as well. Since each unit are 
+loosely coupled, they could be tested separatley. This becomes a huge advantage as the size of the application grows compared to 
+monolithic systems. Lastly, fault tolerance is a big difference compared to the monolithic system. Since multiple units are 
+deployed in several units, even though one part of the system is down, the other parts of the system could still be available,
+depending on the couppling.
+
+On the other hand, there are also disadvantages when choosing to build and distributed systems architecture.
+Performance is generally slower than an monolithic application since distributed system architectures involve 
+lots of small services that communicate with each other over the network. 
+This can affect performance, but there are ways to improve this.
+Another aspect is cost, since more servers are needed to deploy multiple units. 
+These services will need to talk to each other, which entails setting up and maintaining network infrastructure.
+This leads to more complexity in the system, and makes the developers harder to understand the overall design.
+Also, errors could happen in any unit involved in servicing a request. Since logical components are deployed in separate units,
+tracing errors could become complicated.
+
+
+% Pros:
+% -	Scalability: Distributed architectures deploy different logical components separately from one another, so it is easy to add new services.
+% -	Modularity: Distributed architecture encourage a high degree of modularity because their logical components must be loosely coupled.
+% -	Testablility: Each deployment only serves a select group of logical components. This makes testing a log easier-even as the application grows.
+% -	Deployability: Distributed architectures encourage lots of small units. They evolved after modern engineering principles like continuous integration, 
+%   continuous deployments, and automated testing became the norm.
+% -	Fault Tolerance: Even if one piece of the system fails, the rest of the system can continue functioning.
+% Cons:
+% -	Performance: Distributed architectures involve lots of small services that communicate with each other over the network.
+%   This can affect performance, but there are ways to improve this.
+% -	Cost: More servers are needed to deploy multiple units. These services will need to talk to each other, which entails setting up and maintaining network infrastructure.
+% -	Simplicity: Distributed systems are complicated to understand from how they work to debugging errors.
+% -	Debuggability: Errors could happen in any unit involved in servicing a request. Since logical components are deployed in separate units,
+%   tracing errors could become complicated.
 
 There are both advantages and disadvantages for monolithic and distributed systems and choosing the appropriate architecture for each situation is crucial.
 After deciding which of the two main architecture will be used, then we could decide on which subcategory of either of the architecture to implement.

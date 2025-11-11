@@ -1,0 +1,30 @@
+\begin{table}[h!]
+\centering
+\caption{Decomposition into 2NF}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multicolumn{4}{|c|}{\textbf{Student Table}} \\
+\hline
+\textbf{Student\_ID (PK)} & \textbf{Student\_Name} & \textbf{Birthday} & \textbf{Course\_ID (FK)} \\
+\hline
+S001 & Alice & 2002-03-14 & C101 \\
+S002 & Bob & 2001-06-02 & C102 \\
+S003 & Charlie & 2002-07-22 & C101 \\
+S004 & Diana & 2003-01-18 & C103 \\
+\hline
+\end{tabular}
+
+\vspace{1em}
+
+\begin{tabular}{|c|c|}
+\hline
+\multicolumn{2}{|c|}{\textbf{Courses Table}} \\
+\hline
+\textbf{Course\_ID (PK)} & \textbf{Course\_Name} \\
+\hline
+C101 & Database Systems \\
+C102 & Data Structures \\
+C103 & Operating Systems \\
+\hline
+\end{tabular}
+\end{table}

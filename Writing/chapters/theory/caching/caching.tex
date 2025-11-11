@@ -1,4 +1,16 @@
 \section[Caching]{Caching}\label{sec:newsec}
 
-\input{chapters/theory/caching/serverside}
+\subsection[What is Caching]{What is Caching}
+Caching data means to store frequently accessed data in a location that is easy and fast to access (usually in RAM). 
+The reason why caching is used is to ultimately increase the performance and efficiency when retrieving data. 
+Data in the database are usually stored in a disk, which could be a hard drive or an SSD, which usually takes more time to process I/O. 
+Caching could help decrease the amount of time to process this data significantly. One might suggest then why not put all the data in the cache, 
+but this would not work since the cache could not store a lot of data as much as the database does. The cost of the hardware of the cache is much more expensive, 
+and as the size of the cache increases, the search time will also increase, decreasing the speed and defeating the whole purpose of caching. 
+Caching can be used at several levels. This article will mainly focus on caching in databases and web pages. 
+There are multiple strategies that could be used when caching these two areas. Another important part of caching is the invalidation strategies. 
+Deciding when the cache expires and when it updates could affect the performance and data consistency. Choosing the right technique in the given situation will be essential.
+
+\input{chapters/theory/caching/dbStrategies}
+
 \input{chapters/theory/caching/clientside}
