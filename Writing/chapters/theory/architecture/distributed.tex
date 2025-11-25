@@ -45,8 +45,9 @@ Same as the monolithic structure, distributed systems architecture has multiple 
 
 \subsubsection[Microservices Architecture]{Microservices Architecture}
 
-A microservice is a service that is separately deployed unit of software that performs some business or infrastructure process.(chapter 10).
-A microservices architecture is part of the layered system, where microservices communicate which each other to make an application. 
+A microservice is a service that is separately deployed unit of software that performs some business or infrastructure process \cite{Gandhi_Richards_Ford_2024}.
+% (chapter 10).
+Microservices architecture is part of the layered system, where microservices communicate which each other to make an application. 
 Since the system is divided into multiple parts, it is essential how to divide the application, 
 such as deciding how small or how big each microservices could get into. Generally, it is better to make microservices smaller for 
 multiple reasons. Some of the factors that is considered to make microservices 
@@ -147,7 +148,7 @@ Lastly, deploying all of these microservices will increase the cost of the entir
 \subsubsection[Event-Driven Architecture(EDA)]{Event-Driven Architecture(EDA)}
 \noindent \textbf{What is an Event}
 
-An event in computer science is a way for a service to let the rest of the system know that something important has just happened. In EDA, events are the means of passing information to other services (head first chapter11). The event contains data and it is broadcasted to services using topics that are connected to the sender of the event. However, events are asynchronous, which means that although the services are connected, the sender of the event does not wait on the response of the receiving service. This is the key difference between a event and message. Messages includes a command or some kind of a request for the receiving service, and the service sending out the messages require a response, making it synchronous. Messages are also sent to only a single service using queues. 
+An event in computer science is a way for a service to let the rest of the system know that something important has just happened. In EDA, events are the means of passing information to other services \cite{Gandhi_Richards_Ford_2024} (head first chapter11). The event contains data and it is broadcasted to services using topics that are connected to the sender of the event. However, events are asynchronous, which means that although the services are connected, the sender of the event does not wait on the response of the receiving service. This is the key difference between a event and message. Messages includes a command or some kind of a request for the receiving service, and the service sending out the messages require a response, making it synchronous. Messages are also sent to only a single service using queues. 
 
 \noindent \textbf{Asynchronous vs Synchronous}
 
