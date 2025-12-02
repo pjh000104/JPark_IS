@@ -1,29 +1,29 @@
-\subsection[Types of Databases]{Types of Databases}
+\section[Types of Databases]{Types of Databases}
 There are mainly two types of database that are used in software engineering: Relational database and non-relational databases. 
 These two databases defer by how they store and data, which influences different aspects if databases including the structure, data integrity mechanism, performance and more. 
 
-\subsubsection[Relational Databases]{Relational Databases}
+\subsection[Relational Databases]{Relational Databases}
 Relational Databases store data in tables by columns and rows, where each column represents a specific data attribute, 
 and each row represents an instance of that data(aws document). Each table must have a primary key, which is an identifier column that identifies the table uniquely.
 The primary keys are used to establish relationships between tables, by using the related rows between tables as the foreign key in another table. 
-Once two tables are connected, it is now possible to get data from both tables in a single SQL query.
+Once two tables are connected, it is now possible to get data from both tables in a single SQL query.\\
 
 \noindent \textbf{Advantages and Disadvantages}
 
 Relational databases follow a strict structure, which allows users to process complex queries on structured data while maintaining data integrity and consistency. 
 The strict structure also follows the ACID (atomic, consistency, isolation, and durability) properties for enhanced data integrity. 
-However, because of the rigid structure, it is hard to scale compared to nonrelational database.  
+However, because of the rigid structure, it is hard to scale compared to nonrelational database \cite{Amazon_Web_Services}
 
-\subsubsection[Non-Relational Databases]{Non-Relational Databases}
-Nonrelational databases means that there isn’t a schema to manage and store data. 
+\subsection[Non-Relational Databases]{Non-Relational Databases}
+Nonrelational databases mean that there isn’t a schema to manage and store data. 
 This means that data does not require constraints that the relational database required, such as fixed schema, primary key constraint, or not null constraints. 
 This allows more flexibility in the structure and size of the database, or anything that may change in the future. 
-There are different types of non relational databases: Key-Value databases, Document database, and Graph database. 
+There are different types of nonrelational databases: Key-Value databases, Document database, and Graph database. 
 Key-Value database store data as a collection of key-value pair, where the key is served as the unique identifier. 
 Both the key and values could be anything as objects or complex compound objects. Document databases are used to store data as JSON objects. 
 Since it is readable by both human and the machine, it has the ease of development. Lastly, there are graph databases, 
 where they are used when a graph-like relationships are needed. Unlike the relational databases, which store data in rigid schema, 
-graph databases store data as a network of entities and relationships, providing more flexibility to anything that is prone to change. 
+graph databases store data as a network of entities and relationships, providing more flexibility to anything that is prone to change. \\
 
 \noindent \textbf{Advantages and Disadvantages}
 
@@ -33,9 +33,9 @@ this would be hard to preform because other tables might be associated with the 
 However, nonrelational databases are not constraint to fixed schema, which allows easy changes on specific columns or unique identifier.
 Performance is another strength of nonrelational database. 
 The performance of these databases depend on outer factor such as network latency, hardware cluster size,
-which is different from relational databases which depends internal factors such as the structure of the schema. 
+which is different from relational databases which depends on internal factors such as the structure of the schema. 
 However, because of the flexibility in the structure, data integrity is not always maintained. 
-Consistency is an issue since the state of the database changes over time as structures might not be consistent.
+Consistency is also an issue since the state of the database changes over time as structures might not be consistent.
 
 
 

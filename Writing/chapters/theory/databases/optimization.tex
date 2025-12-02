@@ -1,0 +1,199 @@
+\section[Optimization]{Optimization}
+\input{myFigures/FiguresCommand.tex}
+
+Several factors influence the performance of the database.
+The design of the database, including normalization and partitioning, which was discussed in the previous subsection, is one of the factors.
+Indexing is another huge part of increasing the performance of the database as the amount of data increases.
+Lastly, changing the physical query of the database is a way to optimize the performance of the database.
+In this section, we will be discussing specific ways to optimize the performance of databases.
+
+\subsection{Indexing}
+
+Suppose that there is a table called students with the following keys: id, name, grade.
+Here is an example table: 
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{ID(PK)} & \textbf{Name} & \textbf{Grade} \\ \hline
+1 & Alice   & 90 \\ \hline
+2 & Bob     & 80 \\ \hline
+3 & Charlie & 70 \\ \hline
+4 & David   & 70 \\ \hline
+5 & Eva     & 80 \\ \hline
+\end{tabular}
+\caption{Original Students Table with ID, Name, and Grade}
+\label{tab:students_original}
+\end{table}
+
+If we want to find students with a certain grade (80\%),
+we could run a SQL query something like this.
+\begin{verbatim}
+SELECT * 
+FROM Students
+WHERE grade = 80;
+\end{verbatim}
+
+This query will visit all the rows and then find the students with grades 80. However, this query becomes more inefficient as the size of the table grows,
+as the time complexity would be O(n). If the table was sorted by grades, this will be much easier, since we could do a binary search to make the search speed O(log n).
+This is where indexing is applied. 
+
+An index could be created where the grades are sorted in order, each having a reference to the row of the student table.
+This way, whenever we want to find the name of the students with a certain grade, instead of looking at the Students table, we can look at the index,
+where the grades are sorted, find rows with a certain grade, for each row, find the reference of the student table, and return the name of the student.
+Here is an example how the index might look like:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Grade} & \textbf{ID}  \\ \hline
+70 & 3  \\ \hline
+70 & 4  \\ \hline
+80 & 2  \\ \hline
+80 & 5  \\ \hline
+90 & 1  \\ \hline
+\end{tabular}
+\caption{Index on Grade: sorted by Grade with references to Original Table}
+\label{tab:students_index}
+\end{table}
+
+In this index, grades are sorted by order, and they include a reference to the student table's primary key, which is the student's id.
+This will significantly improve the read queries for databases for large sets of data.
+
+However, indexes take up additional memory and can slow down write operations, such as inserts, updates, or deletes. It is important to use indexes on every column.
+Indexes should be used in situations where they could significantly increase the performance of read queries.
+
+There are multiple data structures that could be used to implement indexes,
+but the most common ones are b+trees. B-trees are somewhat similar to the binary search trees.
+However, instead of having one value for every node, it contains multiple values for each node.
+\binaryTreeFigure
+\bTreeFigure
+
+As we can see from the figures above, b-trees can hold multiple nodes, such as nodes 2 and 4, or 10 and 15.
+This allows multiple partitions, allowing a balanced and faster search.
+Furthermore, as multiple values could be in a single node, the height of the tree would be smaller.
+This means that there are fewer disk I/O’s per file operation as the database stores data on disk, resulting in faster query execution \cite{Garcia-Molina_Ullman_Widom_2014}.
+% (pg 645 Database Systems the Complete Book). 
+One down side of b-trees is when making range queries, such as finding all students who have grades 20 to 80.
+If these two data are separated from the root, this could be inefficient. B+trees are a variation of b-trees to solve this issue.
+\bPlusTreeFigure
+B+trees store data only in the leaf node. The other nodes store keys only for navigation, like the explanations on the internal node 
+(less than equal to six goes left, greater than six goes right) on the figure above. Also, all the leaf nodes are connected to the next leaf node.
+B+trees are commonly used in indexes for modern database management systems such as MYSQL, PostgreSQL, and SQLite. 
+
+\subsection{Query Optimization}
+
+Optimizing the SQL queries could also increase the performance of the database. Here are the 6 queries tune SQL queries. 
+\url{https://www.geeksforgeeks.org/sql/sql-performance-tuning/}
+
+\begin{itemize}
+    \item SELECT fields instead of using SELECT *
+    \item Avoid SELECT DISTINCT
+    \item Use INNER JOIN instead of WHERE for Joins
+    \item Use WHERE instead of HAVING
+    \item Limit Wildcards to the end of a search term
+    \item Use LIMIT for sampling query results
+\end{itemize}
+
+\subsection{N+1 problem}
+
+The N+1 problem is a common problem when using the ORM. The definition of the problem is when an application retrieves a list, then performs additional queries for each item’s related data, which results in an inefficient query. (1 + N queries instead of optimized joins). In a nutshell, it is just having too much queries that decreases the performance. This problem usually happens in ORMs. 
+
+
+Similar to the example above, assume there is a students table with keys student\_id, student\_name, and another table called courses with the keys course\_id, student\_id, and course\_name. 
+
+If we were to get all students and courses they are taking in plain SQL, we would write something like this:
+
+\begin{verbatim}
+SELECT s.student_id, s.student_name, c.course_name
+FROM students s
+JOIN courses c ON s.student_id = c.student_id;
+\end{verbatim}
+
+Using an ORM, we could do something like this:
+
+\begin{verbatim}
+students = session.query(Student).all()
+for s in students:
+    for c in s.courses:
+        print(s.name, c.name)
+\end{verbatim}
+
+This is where the n+1 problem happens. The way of getting all students and their courses through the ORM translates to the following raw SQL query: 
+
+\begin{verbatim}
+SELECT * FROM students;
+SELECT * FROM courses WHERE student_id = 1;
+SELECT * FROM courses WHERE student_id = 2;
+SELECT * FROM courses WHERE student_id = 3;
+\end{verbatim}
+
+This is inefficient since we are performing 1 query (\texttt{SELECT * FROM students}),
+and then performing $n$ queries (\texttt{SELECT * FROM course WHERE student\_id = n;}).
+The performance of the database will get worse as the size of n increases.
+It might be questioned why the ORM translates to inefficient SQL code, and the reason for this is lazy loading.
+Many ORM frameworks have lazy loading as the default, and only call the related data when it is accessed.
+In this example, the ORM does not know that all the students and their courses are going to be fetched.
+They only understand each iteration of the nested for loop as a separate query and fetch the data for that specific iteration \cite{Jacky_2023}.
+% https://dev.to/jackynote/solving-the-notorious-n1-problem-optimizing-database-queries-for-java-backend-developers-2o0p
+
+There are a few ways to solve the n+1 problem, depending on the tools available by the ORM.
+Most ORMs provide eager loading, which allows for fetching the related data right away instead of waiting until specific data is called.
+This is the opposite of eager loading. This reduces the need for additional queries and increases the efficiency when fetching data. Most ORMs
+provide customization to decide when and how to perform eager loading, allowing optimization when querying databases.
+For example, if we want to use eager loading in SQL Alchemy, we would do something like this:
+
+\begin{verbatim}
+from sqlalchemy.orm import joinedload
+
+students = session.query(Student).options(joinedload(Student.courses)).all()
+for s in students:
+    for c in s.courses:
+        print(s.name, c.name)
+\end{verbatim}
+
+The difference from the previous query is that instead of just fetching data from the students table,
+this query fetches all course data related to the student beforehand to prevent lazy loading.
+
+Another way to solve the N+1 problem is batch fetching. Batch fetching still keeps the idea of lazy loading,
+but instead of fetching a single row of data, it fetches multiple rows of data at once. For example, 
+we can write something like this in SQL Alchemy:
+
+\begin{verbatim}
+from sqlalchemy.orm import relationship
+
+class Student(Base):
+    __tablename__ = "students"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    courses = relationship(
+        "Course",
+        back_populates="student",
+        lazy="selectin",       # enable batch fetching
+        batch_size=10          # load 10 parent IDs per batch
+    )
+
+students = session.query(Student).all()
+\end{verbatim}
+
+When creating the relation in SQLAlchemy, we can specify the batch size. 
+In this example, by setting \texttt{lazy="selectin"} and \texttt{batch\_size=10}, 
+we are telling the ORM when to fetch courses from students and to load 
+10 student IDs per batch, resulting in the following query:
+
+\begin{verbatim}
+SELECT courses.id, courses.name, courses.student_id
+FROM courses
+WHERE courses.student_id IN (1,2,3,4,5,6,7,8,9,10);
+
+-- Batch 2
+SELECT courses.id, courses.name, courses.student_id
+FROM courses
+WHERE courses.student_id IN (11,12,13,14,15,16,17,18,19,20);
+\end{verbatim}
+
+This will avoid the N+1 problem by instead of fetching for n queries, it will fetch for m queries, where m is n/batch size.
+Furthermore, batch fetching is useful when the size of the data becomes larger. Unlike eager loading, this avoids data duplication,
+where we do not get the same student row repeated for every course.
+Being able to adjust the batch size is also beneficial when scaling the application.

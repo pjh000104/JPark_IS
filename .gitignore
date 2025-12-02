@@ -347,3 +347,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+## Latex Original Build File ##
+original_build.json
+
+## Draw io files ##
+*.drawio

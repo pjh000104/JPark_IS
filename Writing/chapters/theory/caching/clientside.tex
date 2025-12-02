@@ -1,19 +1,46 @@
-\subsection[Client Side Caching]{Client Side Caching}
-People find it annoying when it takes too long or laggy to load a website they want to access. 
-This is where client side caching could be benificial.
-Client side caching is a technique where data is cached inside the client's device unlike the application level caching. 
-Frequently used static data are normally cahced on the client side to improve the performance and efficiency of 
-web applications. The redueced time to load the webpages result in enhanced user's s tisfication and the overall experience.
+\section[Client Side Caching]{Client Side Caching}
+People find it annoying when it takes too long or laggy to load a website they want to access.
+This is where client side caching could be beneficial.
+Client side caching is a technique where data is cached inside the client's device unlike the application level caching.
+Frequently used static data are normally cached on the client side to improve the performance and efficiency of
+web applications. The reduced time to load the webpages result in enhanced user's satisfaction and the overall experience.
+Static data could also be available when the user's device is offline, which could be useful for some mobile and web applications. 
 % https://www.geeksforgeeks.org/system-design/server-side-caching-and-client-side-caching/
 
-Cache control
+% Types of Client Side Caching:
+% browser, service workers, local storage 
 
-One type of client side caching is browser cache. The browser can cache static files such as HTML, CSS, Javascript, 
-and even images and fonts. The browser usually automatically decides what to cache, but this is dependant on by the 
-HTTP cache-control header. 
-Here are the 15 types of the headers that are accepted:
+
+
+
+There are different types of client side caching that could be used, but the most common ones are local storage, session storage, and browser cache.
+Local storage and session storage are types of web storage APIs, where developers can store data on the client side that is not automatically cached by the browser.
+This could include saving users' preferences such as theme or language, or simple offline data. The difference between local storage and 
+Session storage is the scope of the browser. Local storage is shared among all tabs and windows of the same origin, but session storage is specific to a single tab.
+For session storage, they will be deleted once a tab is closed. However, local storage will be saved even after the tab and the browser are closed.
+
+Browser cache is where most of the static elements of the web application, such as HTML, CSS, JavaScript, and images, are automatically cached.
+The way how and where these caches are stored depend on the browser the user is using, but the core concepts are the same.
+Although browser cache is automatically stored, there are some parts that could be controlled within the browser cache, which is called cache control.
+Cache control is an HTTP response header that gives instructions to the browser on how to cache resources. 
+There are 15 total cache control techniques, and each of these techniques serves different purposes,
+depending on how often the data changes and how much freshness the application requires, but we will be discussing the most common ones. 
+
+
+% The top five strategies that would be most used in myy application are the following: 
+% cache forever with immutable, no-cache, no-store, short-lived caching, and stale-while-revalidate.
+
+% The most common strategy is cache forever with immutable. This is mostly used for static files like JavaScript,
+% CSS, images, and fonts. Many projects use hashed filenames, so the file name changes when the content does.
+% This lets developers allow browsers to store these files for a long time without worrying about outdated content.
+% The immutable option tells the browser the file will not change, so it can skip extra checks and load pages faster for returning users.
+
+   
+% One type of client side caching is browser cache. The browser can cache static files such as HTML, CSS, Javascript, 
+% and even images and fonts. The browser usually automatically decides what to cache, but this is dependant on by the 
+% HTTP cache-control header. 
+% Here are the 15 types of the headers that are accepted:
 % https://www.geeksforgeeks.org/computer-networks/http-headers-cache-control/
 % https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control
 
-Etags
 
