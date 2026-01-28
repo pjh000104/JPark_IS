@@ -1,7 +1,7 @@
 \section{Database Design and Evolution}
 The design of databases and querying the database are the ones that have the most impact on the performance of the database.
-In this section, we will be investigating strategies to design the database to increase performance and efficency,
-consider scalability and evolution of databases, and ways to optimize the database and queries.
+This section investigates strategies to design the database to increase performance and efficiency,
+consider scalability, evolution of databases, and ways to optimize the database and queries.
 
 \subsection[Normalization]{Normalization}
 Compared to a non-relational database, relational databases benefit from integrity with the process of normalization.
@@ -9,7 +9,7 @@ The definition of normalization is a way of organizing data in a database.
 During this process, redundant data will be reduced to improve data quality and optimize database performance.
 There are several levels of normalization, and as the normalization form gets higher,
 it generally indicates a more refined relational design. However, most databases tend to be needed until the third normal form,
-which avoids most of the problems common to bad relational designs.\\
+which avoids most of the problems common to bad relational designs \cite{Harrington_2016}.\\
 
 \textbf{The First Normal Form (1NF)}
 
@@ -21,19 +21,19 @@ The two criteria that 1NF meet are the following:
 \end{enumerate}
 % (rddI chapt 7) \cite{Harrington_2016} 
 
-Here, the repeating groups mean that if an attribute has more than one value in each row of a table \cite{Harrington_2016}. 
+Here, the repeating groups mean that if an attribute has more than one value in each column of a row \cite{Harrington_2016}. 
 % (relational database design and implementation 4th) 
 For instance, if there is a column that requires more than one value, such as items (instead of item), this will be a repeating group.
 
 \input{tables/1nfbefore.tex}
 
-This table shows the example of a table before the first normalized form. We can see that there are multiple items in the items' column separated by a comma.
+This table shows the example of a table before the first normalized form. We can see that students have multiple classes in the same column separated by a comma.
 Having three or more dimensions or having repeated groups for a single table results in more complexity and difficulties when querying the database. 
 This is why we need the 1NF normalization. The 1NF is the simplest normalization that could be done in a relational database, and it is pretty clear. 
 
 \input{tables/1nfafter.tex}
 
-As we can see on the table above, there is only one item in the items column by creating a new record for each item.
+As we can see on the table above, there is only one course in the course column by creating a new record for each item.
 However, the first normalization form is not enough to benefit from using relational databases.\\
 
 \textbf{Problems with 1NF}
@@ -140,7 +140,7 @@ Transitive dependencies exist when the following functional dependency pattern o
 \[
 A \rightarrow B \text{ and } B \rightarrow C \text{, therefore } A \rightarrow C
 \] 
-\cite{Harrington_2016}
+% \cite{Harrington_2016}
 % (Chapter 7).  
 
 This is the same type of relationship where we had problems with 2NF. For example:
@@ -201,13 +201,13 @@ There are multiple ways to implement this strategy in different situations. The 
 \noindent \textbf{Leaders and Followers}
 \input{myFigures/FiguresCommand.tex}
 
-Going deeper into how the replicas are actually set up, it is important to make sure that each of the replicas have the same data.
+Going deeper into how the replicas are established, it is important to ensure that each of the replicas have the same data.
 For example when a user updates a table, this should include all the other replicas to update the same table.
 Here is an example how the leader follower replication setup could look like:
 
 \leaderFollowerFigure
 
-The leader and follower structure has one lead node(leader) that allows writes to the database,
+The leader and follower structure has one lead node (leader) that allows writes to the database,
 and the rest of the nodes are assigned as followers. If there is a change data in the leader, the followers are updated accordingly.
 Reading the database could be done by any of the nodes including the leader node,
 but writing the database could only be done by through the leader node. \\
@@ -219,20 +219,29 @@ but writing the database could only be done by through the leader node. \\
 \noindent \textbf{Multi-Leader Replication}
 
 One downside of a Leader and Follower replication was that write queries were only allowed in the leader replica.
-If the application could not connect to the leader for any reason such as network causes, write queries could not be performed.
+If the application could not connect to the leader for any reason such as network issues, write queries could not be performed.
 Multi-Leader replication allows multiple leaders, which means that write queries could be done in multiple replicas. 
-Although it is rare for a multi-leader replication structure to over weigh the benefits among the complexity added, there are a few use cases for this structure.
+Although it is rare for a multi-leader replication structure to outweigh the benefits against the complexity added, there are a few use cases for this structure.
 \begin{itemize}
     \item Multi datacenter operation
     \item Clients with offline operation
     \item Collaborative editing
 \end{itemize}
-However the biggest issue in the multi-leader replication structure is handling multiple write query conflict.
+
+In situations where there are multiple datacenter operation, multi-leader replication allows each datacenter to process write requests locally,
+which will reduce latency and improve availability during datacenter or network failures. Also, for applications that are necessary to support offline operation, 
+each device can function as an independent leader, enabling uninterrupted read and write access when disconnected. If this were to be a single-leader replication, 
+clients would not be able to perform write operations offline, limiting usability in environments with low network connectivity. 
+Finally, in collaborative editing systems, multi-leader replication enables multiple users to make concurrent updates with low latency. 
+If using a single-leader replication, all edits would need to pass through the leader, and clients would need to wait for others to finish their changes.
+This will increase latency and reduce the responsiveness of real-time collaboration \cite{Kleppmann_2017}.
+
+However, the biggest issue in the multi-leader replication structure is handling multiple write query conflict.
 For instance, if a same record was modified by multiple users on different leader replicas, 
 there will be different data among replicas resulting in data inconsistency.
 This was not an issue for a single leader and followers structure since only one leader accepted write queries, and they were processed one by one. However, if multiple leaders receive queries at the same time, the conflict should be resolved. There are multiple ways to handle write conflicts.
 
-The simplest strategy is to just avoid the conflicts. If the write queries could be avoided in the application layer,
+The simplest strategy is to just avoid the conflicts. If write queries could be avoided in the application layer,
 where the application ensures that all write queries for a particular record go through the same leader.
 This would work until a particular records needs to change its designated leader. In this case, simply avoiding conflicts in the application layer would not work
 
@@ -286,10 +295,19 @@ As the data is distributed among multiple partitions, multiple queries could be 
 % \subparagraph{Partitioning by Key-Value Data}
 \noindent \textbf{Partitioning by Key-Value Data}
 
-Having a key-value data is one way to create partitions. The reason for partitioning was to scale the database by distributing the query load on one node. One way to achieve this is to have a key range for each partition. For example, when we think of a dictionary, we know that words that start with the letter “a” is in the beginning, the letter “m” is somewhere in the middle, and the letter “z” is at the end. By dividing the range of partitions by the key-value data, it will be easier to locate which partition contains the data and distribute the query. In this case, the partitions might not be evenly divided since each range of key-value pairs could contain a different amount of data. It is important which key-value pair to use. If a key is assigned as a column that is not evenly distributed, this leads to a hot spot (a partition with disproportionately high load) \cite{Kleppmann_2017}.
+Having a key-value data is one way to create partitions. The reason for partitioning is to scale the database by distributing the query load on one node.
+One way to achieve this is to have a key range for each partition. For example, when we think of a dictionary,
+we know that words that start with the letter “a” is in the beginning, the letter “m” is somewhere in the middle, and the letter “z” is at the end.
+By dividing the range of partitions by the key-value data, it will be easier to locate which partition contains the data and distribute the query.
+In this case, the partitions might not be evenly divided since each range of key-value pairs could contain a different amount of data.
+It is important which key-value pair to use. If a key is assigned as a column that is not evenly distributed, this leads to a hot spot 
+(a partition with disproportionately high load) \cite{Kleppmann_2017}.
 % (Designing Data-Intensive App  ch6). 
 
-A method that has a lower chance of being affected by hot spots is partitioning by hash of key. A good hash function makes the key-value pairs evenly distributed among the partitions. However, this looses the efficiency that the key range had. It is now hard to find the range queries efficiently without the key range. 
+A method that has a lower chance of being affected by hot spots is partitioning by hash of key.
+A good hash function makes the key-value pairs evenly distributed among the partitions.
+However, this loses the efficiency that the key range had, since keys that are close in value may be distributed across different partitions.
+This leads to range queries to access multiple partitions and merge their results, which will increase query latency.  
 
 When choosing the strategy, hashing keys and having key ranges to partition data both have advantages and trade-offs,
 so it is important to choose the one suitable in the situation.
@@ -299,23 +317,27 @@ and key hash when there are still a lot of hotspots by using the key range. \\
 % \subparagraph{Partitioning and Secondary Indexes}
 \noindent \textbf{Partitioning and Secondary Indexes}
 
-Partitioning by key-value pairs work nicely with the partitioning strategies discussed above. However, things get more complicated with secondary indexes. Secondary indexes will be discussed more in the upcoming sections. A brief introduction for secondary indexes is that they are created to improve the query performance that are based on multiple keys. For example, when searching for a job in a job board, selecting criteria such as industry or experience level could be a situation to use secondary indexes. Secondary indexes make sharding more complicated since they don’t identify a single record, but rather search for records based on the conditions. Partitioning by key-value pairs wouldn’t work in this situation.
+Partitioning by key-value pairs work nicely with the partitioning strategies discussed above. However, things get more complicated with secondary indexes. Secondary indexes will be discussed more in the upcoming sections. A brief introduction for secondary indexes is that they are created to improve the query performance that are based on multiple keys. For example, when searching for a job in a job board, selecting criteria such as industry or experience level could be a situation to use secondary indexes.
+Secondary indexes make partitioning more complicated since they don’t identify a single record, but rather search for records based on the conditions. Partitioning by key-value pairs wouldn’t work in this situation.
 
 Scatter/gather is a technique where each partition has its own secondary indexes. In this case, writing data would be efficient since only the partition containing that specific part of the index is where the data is written. However, reading queries are less efficient.  If queries require searching on different partitions, each partition is searched separately which is inefficient. 
 
 It is also possible to partition secondary indexes by the term.
 Instead of having distributed secondary indexes across the partitions, 
 this approach has a global index that covers all the partitions.
-Having a range of secondary indexes partitioned in separate partitions make read queries more efficient 
-from the scatter/gather technique. If write queries are used more often, it is better to use the scatter/gather technique, 
-and if read queries are dominantly used, partitioning indexes by term is the structure to choose. \\
+Having a range of secondary indexes separated in multiple partitions make read queries more efficient 
+from the scatter/gather technique. 
+
+Based on the situation, it is important to choose the correct technique. 
+If write queries are used more often, it is better to use the scatter/gather technique, whereas if read queries are dominantly used,
+partitioning indexes by term is the structure to choose. \\
 
 % \paragraph{Request Routing}
 \noindent \textbf{Request Routing}
 
 After partitioning the dataset into multiple nodes, it is important to make sure the request connects to the right partition. On a high level there are mainly three ways to achieve this. 
 \begin{enumerate}
-    \item Allow clients to contact any node (e.g., via a round-robin load balancer). If that node coincidentally owns the partition to which the request applies, it can handle the request directly; otherwise, it forwards the request to the appropriate node, receives the reply, and passes the reply along to the client.
+    \item Allow clients to contact any node (e.g., via a round-robin load balancer, which distributes incoming requests evenly across nodes without considering partition ownership.). If that node coincidentally owns the partition to which the request applies, it can handle the request directly; otherwise, it forwards the request to the appropriate node, receives the reply, and passes the reply along to the client.
     \item Send all requests from clients to a routing tier first, which determines the node that should handle each request and forwards it accordingly. This routing tier does not itself handle any requests; it only acts as a partition-aware load balancer.
     \item Require that clients be aware of the partitioning and the assignment of partitions to nodes. In this case, a client can connect directly to the appropriate node, without any intermediary \cite{Kleppmann_2017}. 
     % (Designing Data-Intensive App Ch 6)
@@ -323,5 +345,7 @@ After partitioning the dataset into multiple nodes, it is important to make sure
 
 The key problem is that how does the component, (which could be the routing tier, the client, or the partition in the node) know about changes in the other partitions in other nodes? If the deciding component is not up-to-date with the location where data that the client is requesting, this could lead into data inconsistency. 
 
-To solve this problem, many distributed data systems use a separate coordination service such as the ZooKeeper to keep track of the data. The whenever a partition changes or a node is added or removed the ZooKeeper is updated to keep data consistency. 
+To solve this problem, many distributed data systems use a separate coordination service such as the ZooKeeper, which registers each node
+and maintains the authoritative mapping of partitions to nodes, to keep track of the data \cite{Kleppmann_2017}.
+Whenever a partition changes or a node is added or removed the ZooKeeper is updated to keep data consistency. 
 

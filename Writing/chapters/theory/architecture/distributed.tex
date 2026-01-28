@@ -1,16 +1,16 @@
 \section[Distributed Systems]{Distributed Systems}\label{sec:newsec}
 Distributed architecture is a design approach where the logical components of an application are divided into multiple units.
 These units each run in their individual process and communicate with each other over the network.
-This architecture style encourage loose coupling of each service, which could be a huge benefit.
+This architecture style encourages loose coupling of each service, which could be a huge benefit.
 
 There are multiple advantages to choosing distributed systems. The one that contrasts with the monolithic architecture is
 scalability. Since distributed architectures deploy different logical components separately from one another, it is easy to add new services.
 Furthermore, similar to modular monolithics, distributed architecture encourages a high degree of modularity.
 This is because distributed systems have loosely coupled logical components.
 The benefit of having multiple distributed systems is also shown during the testing phase as well. Since each unit is
-loosely coupled, they could be tested separately. This becomes a huge advantage as the size of the application grows compared to
-monolithic systems. Lastly, fault tolerance is a big difference compared to the monolithic system. Since multiple units are
-deployed in several units, even though one part of the system is down, the other parts of the system could still be available,
+loosely coupled, they can be tested separately. This becomes a huge advantage as the size of the application grows compared to
+monolithic systems. Lastly, fault tolerance is a big difference compared to the monolithic system as multiple units are
+deployed in several units. Even though one part of the system is down, the other parts of the system could still be available
 depending on the coupling.
 
 On the other hand, there are also disadvantages when choosing to build a distributed systems architecture.
@@ -19,7 +19,7 @@ lots of small services that communicate with each other over the network.
 This can affect performance, but there are ways to improve this.
 Another aspect is cost, since more servers are needed to deploy multiple units.
 These services will need to talk to each other, which entails setting up and maintaining network infrastructure.
-This leads to more complexity in the system, and makes the developers harder to understand the overall design.
+This leads to more complexity in the system, and makes it more challenging for the developers harder to understand the overall design.
 Also, errors could happen in any unit involved in servicing a request. Since logical components are deployed in separate units,
 tracing errors could become complicated.
 
@@ -41,7 +41,7 @@ tracing errors could become complicated.
 
 There are both advantages and disadvantages of monolithic and distributed systems, and choosing the appropriate architecture for each situation is crucial.
 After deciding which of the two main architecture will be used, then we could decide on which subcategory of either of the architectures to implement.
-Same as the monolithic structure, distributed systems architecture has multiple types of subcategories, each having advantages and disadvantages.
+Each types of subcategories, have their own advantages and disadvantages.
 
 \subsection[Microservices Architecture]{Microservices Architecture}
 
@@ -53,10 +53,12 @@ such as deciding how small or how big each microservices could get. Generally, i
 multiple reasons. Some of the factors that are considered to make microservices
 smaller are the following: cohesiveness, fault tolerance, access control, code volatility, and scalability.
 
-If a part of the software has lack of cohesiveness and loosely coupled, it is a good idea to separate it into smaller microservices.
-This will allow higher scalability. If a certain part of the application produces fatal errors,
+If a part of the software has lack of cohesiveness and loosely coupled, it is a good idea to separate it into smaller microservices. 
+Here, cohesiveness means that how close the parts of the application are related to each other \cite{Gandhi_Richards_Ford_2024}.
+This will allow higher scalability, since separated microservices could be built independently based on the workload and resource requirements.
+If a certain part of the application produces fatal errors,
 having those parts in a separate microservice will decrease the probability of shutting down the whole system.
-For security and authentication, it is important to have these access control in a single microservice,
+For security and authentication, it is important to have these access controls in a single microservice,
 so it does not get too complicated when managing the information. Finally, if one part of the microservice change,
 or scale faster than the others, it is good to consider having a separate microservice for that application,
 since testing the entire microservice would be much more challenging compared to a small portion of the microservice.
@@ -66,7 +68,8 @@ It is not possible to perform a single database commit or rollback when a reques
 For data consistency and integrity, it is important to combine functionalities that require this kind of behavior into a single microservice.
 If a part of a microservice has highly coupled data, such as when a database table refers to the key of another database table,
 it is better to keep these functionalities as a single microservice to keep the data integrity of the database.
-Furthermore, if a single request requires separate microservices to communicate with each other, this request is coupled and recommended to kept in the same service. \\
+Furthermore, if a single request requires separate microservices to communicate with each other, 
+this request is coupled and recommended to kept in the same service. \\
 
 % \textbf{Needs Revision. Needs Clear explanation of negative effects of tight coupling.}
 % Understanding the negative effects of tight coupling in microservices is also crucial.
@@ -95,9 +98,9 @@ workflow and what happens next, summarize all data from each microservice, and h
 
 The advantage of this workflow management style is that the order of microservices for each request is clear.
 The central microservice always has the exact routes the request has to take, which allows to track the status of where all requests stopped and where to restart.
-This allows to handle errors efficiently and easy to change a workflow.
+This allows more efficient error handling and simplifies the process of changing a workflow.
 
-The disadvantage is that tight coupling between the central microservice and the other microservices.
+The disadvantage is the tight coupling between the central microservice and the other microservices.
 This can lead to lower scalability, since changing a microservice will affect the central microservice.
 Moreover, performance might get delayed since the central microservice is indeed another microservice that requires remote calls, 
 and it saves the workflow state data in a database, which slows down the performance. 
@@ -124,7 +127,7 @@ There are many times when the same code has to be used in multiple microservices
 There are mainly two ways for sharing code when building a microservice architecture.
 Creating a shared service or a shared library.
 A shared service is a separate microservice that contains a shared functionality that other microservices can call remotely.
-The advantages of the shared service are that even though a code is changed in the shared microservices, code in other microservices are not needed to be changed.
+One advantage of the shared service is that even though code may change in the shared microservices, code in other microservices are not needed to be changed.
 Also, this shared service could be written in any language, which is useful when microservices are implemented in multiple languages.
 A disadvantage of using a shared service is the coupling that happens between the microservices and the shared service.
 This leads to risks when changing a shared service since it can affect the other microservices that call it.
@@ -157,11 +160,11 @@ depending on the situation. Because of its complexity, as microservices communic
 The request might have to wait for the network or undergo additional security checks and make extra database calls.
 Lastly, deploying all of these microservices will increase the cost of the entire application.  
 
-\subsection[Event-Driven Architecture(EDA)]{Event-Driven Architecture(EDA)}
+\subsection[Event-Driven Architecture (EDA)]{Event-Driven Architecture (EDA)}
 \noindent \textbf{What is an Event}
 
 An event in computer science is a way for a service to let the rest of the system know that something important has just happened.
-In EDA, events are the means of passing information to other services \cite{Gandhi_Richards_Ford_2024} 
+In EDA, events are the means of passing information to other services \cite{Gandhi_Richards_Ford_2024} .
 % (head first chapter11).
 The event contains data, and it is broadcast to services using topics that are connected to the sender of the event.
 However, events are asynchronous, which means that although the services are connected,

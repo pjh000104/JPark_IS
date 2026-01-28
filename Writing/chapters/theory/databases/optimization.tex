@@ -65,20 +65,22 @@ However, indexes take up additional memory and can slow down write operations, s
 Indexes should be used in situations where they could significantly increase the performance of read queries.
 
 There are multiple data structures that could be used to implement indexes,
-but the most common ones are b+trees. B-trees are somewhat similar to the binary search trees.
+but the most common ones are B+trees. In order to understand why B+trees are used the most we have to learn what are B trees.
+B trees are somewhat similar to the binary search trees.
 However, instead of having one value for every node, it contains multiple values for each node.
 \binaryTreeFigure
 \bTreeFigure
 
-As we can see from the figures above, b-trees can hold multiple nodes, such as nodes 2 and 4, or 10 and 15.
+As we can see from the figures above, B trees can hold multiple nodes, such as nodes 2 and 4, or 10 and 15.
 This allows multiple partitions, allowing a balanced and faster search.
 Furthermore, as multiple values could be in a single node, the height of the tree would be smaller.
 This means that there are fewer disk I/O’s per file operation as the database stores data on disk, resulting in faster query execution \cite{Garcia-Molina_Ullman_Widom_2014}.
 % (pg 645 Database Systems the Complete Book). 
-One down side of b-trees is when making range queries, such as finding all students who have grades 20 to 80.
-If these two data are separated from the root, this could be inefficient. B+trees are a variation of b-trees to solve this issue.
+One down side of B trees is when making range queries, such as finding all students who have grades 20 to 80.
+If these two data are separated from the root, this could be inefficient. B+trees are a variation of B trees to solve this issue.
 \bPlusTreeFigure
-B+trees store data only in the leaf node. The other nodes store keys only for navigation, like the explanations on the internal node 
+B+trees store data only in the leaf node, which are the bottom most nodes without any children.
+The other nodes store keys only for navigation, like the explanations on the internal node 
 (less than equal to six goes left, greater than six goes right) on the figure above. Also, all the leaf nodes are connected to the next leaf node.
 B+trees are commonly used in indexes for modern database management systems such as MYSQL, PostgreSQL, and SQLite. 
 
@@ -98,8 +100,10 @@ Optimizing the SQL queries could also increase the performance of the database. 
 
 \subsection{N+1 problem}
 
-The N+1 problem is a common problem when using the ORM. The definition of the problem is when an application retrieves a list, then performs additional queries for each item’s related data, which results in an inefficient query. (1 + N queries instead of optimized joins). In a nutshell, it is just having too much queries that decreases the performance. This problem usually happens in ORMs. 
-
+The N+1 problem is a common problem when using the object relational mapping, or simply ORM. 
+ORM is the process of abstracting the connection between programming language entities and their corresponding database elements \cite{Amazon_Web_Services}.
+The definition of the problem is when an application retrieves a list, then performs additional queries for each item’s related data, which results in an inefficient query. 
+(1 + N queries instead of optimized joins).  
 
 Similar to the example above, assume there is a students table with keys student\_id, student\_name, and another table called courses with the keys course\_id, student\_id, and course\_name. 
 
@@ -120,7 +124,7 @@ for s in students:
         print(s.name, c.name)
 \end{verbatim}
 
-This is where the n+1 problem happens. The way of getting all students and their courses through the ORM translates to the following raw SQL query: 
+This is where the N+1 problem happens. The way of getting all students and their courses through the ORM translates to the following raw SQL query: 
 
 \begin{verbatim}
 SELECT * FROM students;
@@ -133,14 +137,14 @@ This is inefficient since we are performing 1 query (\texttt{SELECT * FROM stude
 and then performing $n$ queries (\texttt{SELECT * FROM course WHERE student\_id = n;}).
 The performance of the database will get worse as the size of n increases.
 It might be questioned why the ORM translates to inefficient SQL code, and the reason for this is lazy loading.
-Many ORM frameworks have lazy loading as the default, and only call the related data when it is accessed.
+Lazy loading is when the application loads data only when the related data is accessed, and this is a default setting in many ORM frameworks.
 In this example, the ORM does not know that all the students and their courses are going to be fetched.
 They only understand each iteration of the nested for loop as a separate query and fetch the data for that specific iteration \cite{Jacky_2023}.
 % https://dev.to/jackynote/solving-the-notorious-n1-problem-optimizing-database-queries-for-java-backend-developers-2o0p
 
-There are a few ways to solve the n+1 problem, depending on the tools available by the ORM.
+There are a few ways to solve the N+1 problem, depending on the tools available by the ORM.
 Most ORMs provide eager loading, which allows for fetching the related data right away instead of waiting until specific data is called.
-This is the opposite of eager loading. This reduces the need for additional queries and increases the efficiency when fetching data. Most ORMs
+This is the opposite of lazy loading. This reduces the need for additional queries and increases the efficiency when fetching data. Most ORMs
 provide customization to decide when and how to perform eager loading, allowing optimization when querying databases.
 For example, if we want to use eager loading in SQL Alchemy, we would do something like this:
 
