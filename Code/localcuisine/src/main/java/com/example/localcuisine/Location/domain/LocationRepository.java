@@ -2,15 +2,11 @@ package com.example.localcuisine.Location.domain;
 
 import org.springframework.stereotype.Repository;
 
-@Repository
-public class LocationRepository {
-    private String city = "samplecity";
-    public String findByName(String city) {
-        if(city == this.city) {
-            return this.city;
-        }
-        else{
-            return "no city";
-        }
-    }
+import com.example.localcuisine.entity.Region;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface LocationRepository extends JpaRepository<Region, Long> {
+    // List<Cuisine> findByRegion_RegionName(String regionName);
+    // List<Cuisine> findByRegion_Country(String country);
 }

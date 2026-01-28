@@ -11,7 +11,7 @@ import java.util.List;
 // location is needed to display location data later
 
 @RestController
-@RequestMapping("/locations")
+@RequestMapping("/api/locations")
 public class LocationController {
 
     private final LocationService locationService;
@@ -22,11 +22,12 @@ public class LocationController {
 
     // returns all locations saved
     @GetMapping("/all")
-    public ResponseEntity<String> getAllLocations() {
+    public List<String> getAllRegions() {
         // make it into list later
-        String locations = locationService.findByName("test");
-        return ResponseEntity.ok(locations);
+        return locationService.getAllRegions();
     }
+
+    // Need api for specific locaion
 }
 
 
