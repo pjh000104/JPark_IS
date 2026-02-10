@@ -3,7 +3,14 @@ package com.example.localcuisine.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cuisines")
+@Table(
+    name = "cuisines",
+    indexes = {
+        @Index(name = "idx_cuisines_region_id", columnList = "region_id"),
+        @Index(name = "idx_cuisines_region_name", columnList = "region_id, cuisineName")
+    }
+)
+
 public class Cuisine {
 
     @Id
