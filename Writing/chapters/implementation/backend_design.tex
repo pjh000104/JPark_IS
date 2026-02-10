@@ -1,0 +1,536 @@
+\section[Backend Design]{Backend Design}\label{sec:newsec}
+Multiple options are available when selecting a web framework for backend development. Java Spring Boot is chosen for this project for mainly two reasons.
+First, this project provided an opportunity to explore a backend framework beyond Python Flask, which was the only framework I have previously used.
+When I was choosing my framework at the beginning of the project, I was planning to go back to South Korea after graduation.
+I wanted to choose a framework commonly used in the software industry in South Korea, which was Java Spring Boot. Other backend 
+web frameworks, such as Django and Ruby on Rails, were used in South Korea, but Java was the most dominant, making it practical and relevant to the industry.
+
+The second reason for selecting Java Spring Boot emerged during the development process. 
+It became clear that Spring Boot integrates effectively with the chosen software architecture,
+particularly in terms of modular design. This architectural compatibility is discussed in greater detail in a later subsection. 
+
+Beyond the backend framework, additional technologies were selected to support development efficiency and scalability.
+Supabase was chosen as the database hosting solution to leverage a managed cloud service, allowing the project to focus on application
+logic rather than database maintenance and infrastructure management. Redis was selected as the caching solution due to its widespread industry adoption,
+proven performance, and suitability for implementing efficient caching strategies within the application.
+
+\subsubsection{Software Architecture}
+
+\noindent \textbf{Monolithic vs Distributed}
+
+Multiple design approaches were considered when deciding whether the local cuisine application should adopt a monolithic architecture or a distributed system architecture.
+Until now, all the applications that I have created were monolithic applications. As a student, the scope of solo projects were small enough that 
+monolithic architectures were a fit, and all software developed or contributed to during internships also employed a monolithic architecture.
+
+For this reason, I wanted to create an application that has a distributed system architecture in the beginning. I wanted to try something that I have not tried,
+and also gain experience relevant to future career goals. Developing an application using both monolithic and distributed architectural styles provides valuable
+perspective when selecting an appropriate software architecture, as it enables a deeper understanding of the trade-offs involved in architectural decision-making. 
+
+However, monolithic architecture was ultimatley chosen for this project. There are a few reasons behind this decision.
+I plan to keep maintaining and expanding on this project even after graduation and the final submission of the independent study.
+Through the study of software architecture theory, it became clear that adopting a distributed system architecture at an early stage would introduce unnecessary complexity.
+The benefits that I would gain by setting up the distributed system architecture outweigh the drawbacks.
+
+Scalability is one of the primary advantages of a distributed system architecture. If the local cuisine application were to grow significantly and attract thousands of daily users,
+a distributed architecture could provide clear benefits in handling increased traffic and workload. However, there is no guarantee, and it is not certain
+whether the local cuisine application would need this level of scalability in the future.
+
+While monolithic architectures are often considered less scalable than distributed systems,
+they still offer various strategies for improving scalability. Techniques such as horizontal scaling, caching,
+and efficient resource management can be applied within a monolithic architecture to accommodate moderate growth,
+making it a viable choice for the current scope of the project.
+
+Furthermore, as the local cuisine application is still relatively small, it would not benefit from the loose coupling that the distributed system architecture has.
+It is possible to divide each part of the application into different services, such as having an individual service for cuisines, regions, and reviews. 
+However, introducing this level of separation would be unnecessary at the current stage unless the applications scales.
+The distributed architecture approach becomes more valuable only when the application scales significantly and requires independently evolving services.
+For the present scope of the local cuisine application, the advantages of loose coupling provided by a distributed architecture do not outweigh the added complexity.
+
+Lastly, the biggest reason the monolithic architecture was chosen was the cost. Although a distributed system architecture offers several advantages,
+the associated infrastructure costs are critical. Deploying and maintaining multiple servers to support distributed services can rapidly increase the cost,
+that exceeds the scope of a personal project. On the other hand, the monolithic architecture only needs one server, which is cost-effective and easier
+ to maintain over the long term.
+
+Fault tolerance was the main trade-off considered in the architectural decision-making process.
+While a distributed system architecture provides stronger fault tolerance,
+the overall requirements and constraints of the project led to the selection of a monolithic architecture for the local cuisine application.
+
+\noindent \textbf{Which Monolithic}
+
+There are two monolithic architectures introduced in the theory section: the Layered architecture and the Modular Monolithic architecture.
+For the local cuisine application, I decided to use the modular monolithic approach.
+The main reason behind this decision is the clear separation of concerns it provides between different parts of the application.
+
+The application is composed of three main components: regions, which allow users to explore the geographic areas supported by the local cuisine application;
+cuisines, which provide detailed information about the culinary offerings within a selected region;
+and reviews, which enable users to interact with one another by submitting and viewing feedback on specific cuisines.
+
+The modularity of the modular monolithic architecture is well-suited to this application, since the local cuisine application
+has a clear separation of functional domains: region, cuisine, and reviews. If this were implemented using a layered architecture,
+the application would be organized strictly by technical layers (such as controller, service, and repository)
+rather than being structured around the distinct functional domains of the system. 
+This structure not only mirrors the real-world organization of the application but also improves maintainability by isolating changes to individual modules
+and reducing the risk of unintended side effects across the system.
+
+Furthermore, the modular monolithic architecture could also retain the organizational benefits of a layered architecture.
+For example, Within each module, technical layers—such as presentation, workflow, persistence, and database—can be implemented independently,
+ensuring clear separation of concerns and consistent layering practices across the system.
+Each module could contain these layers within its own module, which allows modular monolithic inherit the advantages 
+of the layered architecture. Here is the structure of the modular monolithic architecture for the local cuisine application.
+
+% Include directory tree after pushing.
+
+The figure above shows three modules in the local cuisine application: the region, cuisine, and reviews.
+Within each module, the  api, service, and domain packages are included. The api package is a part of the presentation layer, where 
+information is organized and sent to the front end. The service package is the workflow layer where all the business logic is included.
+Finally, the domain package is the persistent layer where entities are mapped persistently to the relational database.
+
+This architecture of the modular monolithic structure allows separation of modules and layers, which makes it easier to maintain the code.
+The separation is also beneficial when the application would be developed collaboratively in the future as well.
+
+However, it is possible that the decision to implement the modular monolithic architecture for this project 
+could be viewed as an overkill. There are only three modules for the local cuisine application, and it is possible to 
+just have all of these modules under the layers of the layered monolithic architecture. 
+Although it is currently a small-sized application, the decision to adopt a modular monolith was guided by the potential for future scalability,
+allowing the system to evolve without requiring a major architectural overhaul. 
+Moreover, I have already experienced the layered monolithic architecture throughout class
+projects in the past, and I wanted to explore different structures to enhance decision-making skills.
+Practical considerations, including personal learning goals and the desire to experiment with modular design, also informed this decision.
+
+% Could include how it could be done with the micro service architecture?
+
+\subsubsection{Database Systems}
+
+\input{myFigures/FiguresCommand.tex}
+
+% relational vs non relational
+
+
+\noindent \textbf{ERD Diagram and Normalization}
+
+\erdFigure
+
+The database for the local cuisine application is designed to store three main pieces of information: the region, the cuisine, and the reviews.
+Accordingly, there are three main tables: the regions table, the cuisines table, and the reviews table. 
+As shown in the entity relationship diagram, the regions table has a one-to-many relationship with the cuisines table, 
+since one region can contain multiple cuisines, while each cuisine belongs to a single region. 
+The cuisines table also has a similar relationship with the reviews table. Each cuisine will have multiple reviews,
+but each review is associated with one cuisine. 
+These relationships are implemented using foreign keys. The region\_id in the cuisines table references the regions table,
+and the cuisine\_id in the reviews table references the cuisines table.
+The regions table includes information about the area, and has attributes id (primary key), country, name, and region. 
+The cuisines table contains details about individual cuisines, including id, cuisineName,
+and description, and references the associated region through region\_id.
+The reviews table stores reviews for each cuisine and includes the attributes id, rating, comment, reviewer\_name, and created\_at.
+
+To enforce the integrity of databases, normalization the data is crutial.
+In the local cuisine database, each table satisfies the requirements of 3NF.
+All non-key attributes in the regions table depend solely on the primary key region\_id.
+Similarly, in the cuisines table, attributes such as cuisine name and description depend only on cuisine\_id,
+while the region\_id is used as a foreign key to represent relationships rather than introducing transitive dependencies.
+Finally, in the reviews table, attributes related to the reviews (such as rating and comment) depend only on the primary key review\_id.
+
+As a result, the database structure avoids transitive dependencies, minimizes redundancy, and ensures data integrity.
+This fulfills the requirements of the third normal form. The third normalization form for the database ensures that redundant storage of
+region or cuisine data across multiple tables to reduce the risk of inconsistent data, and allows the database to scale without adding or 
+restructuring existing tables. This database design also goes well with the modular design of the application
+since each module (region, cuisine, and review) is clearly separated.
+
+Currently, the region and cuisines table are filled with data from the Wikipedia API. The data was gathered through scraping using Claude AI.
+There were other options when choosing the information for these tables such as external APIs or datasets. However, they did not include all the information
+that the local cuisine application requires. For example, some APIs and datasets did not include the original region of the cuisine, or the description of the cuisine.
+For the following reasons, the Wikepedia API was chosen since it included all the information needed for the local cuisine application, and was able to gather information
+efficiently.
+The reviews table includes sample reviews generated by artificial intelligence for testing purposes, but will be filled with human written reviews in the future.
+
+
+\noindent \textbf{Optimization}
+
+When testing the API endpoints of the local cuisine application, there weren't any significant performance issues when 
+tested locally. However, considering that the database will grow and there will be multiple clients connecting to the API 
+simultaneously in the future, a few database optimization techniques were implemented. 
+
+The local cuisine application is designed that the cuisines and the reviews are searched the most and make database queries.
+When the user searches for the cuisines, the cuisines table is accessed and the reviews of each cuisine are also loaded from 
+the reviews table. Furthermore, the cuisines table currently has only about 30 rows, but will expand in the future.
+The reviews table will also grow exponentially as the number of cuisines and the active users increase over time.
+This is why the cuisines table and the reviews table need to be optimized.
+
+Among the database optimization and the evolution techniques discussed in the theory section, indexing is used for the 
+cuisines table. Indexing is applied to the cuisines table to improve search performance and reduce query execution time.
+One of the core features of the system is retrieving all cuisines belonging to a specific region, and this requires frequent filtering using the region\_id attribute.
+
+Without indexing, queries that filter cuisines by region would require a full table scan, resulting in increased response time as the number of records grows.
+This is why an index was created on the region\_id column of the cuisines table. This allows the database to efficiently
+locate relevant rows using an index scan instead of scanning the entire table.
+
+The index was created using the following SQL statement:
+
+\begin{verbatim}
+CREATE INDEX idx_cuisines_region_id
+ON cuisines (region_id);
+\end{verbatim}
+
+By indexing the foreign key attribute region\_id, the database can quickly retrieve all
+cuisines associated with a given region and significantly improve performance for read-heavy operations.
+This optimization is effective for the application, since cuisine data is queried frequently but updated infrequently.
+As a result, the application has minimal write overhead while providing faster search and retrieval times. As the dataset scales, this indexing strategy
+helps maintain consistent performance and improves the overall responsiveness of the application.
+
+Another optimization done in the local cuisine application is avoiding the N+1 prohblem.
+As mentioned in the query section, the N+1 query problem is a common performance issue in ORM-based applications, and this application uses the Hibernate ORM.
+When fetching the cuisines, the cuisine repository uses the following gmethods.
+
+\begin{verbatim}
+public interface CuisineRepository extends JpaRepository<Cuisine, Long> {
+    List<Cuisine> findByRegion_RegionName(String regionName);
+    List<Cuisine> findByRegion_Country(String country);
+}
+\end{verbatim}
+
+These methods generate SQL queries similar to 
+
+\begin{verbatim}
+-- Example for findByRegion_RegionName
+SELECT c.id, c.cuisinename, c.description, c.region_id
+FROM cuisines c
+JOIN regions r ON c.region_id = r.id
+WHERE r.region_name = ?;
+
+-- Example for findByRegion_Country
+SELECT c.id, c.cuisinename, c.description, c.region_id
+FROM cuisines c
+JOIN regions r ON c.region_id = r.id
+WHERE r.country = ?;
+\end{verbatim}
+
+If the application were to access the region for each cuisine individually, such as calling \texttt{cuisine.getRegion().getRegionName()},
+this could trigger one additional query per cuisine, resulting in the classical N+1 problem.
+However, the local cuisine application avoids this entirely by performing all filtering and joining at the repository level. 
+
+For example, the service method:
+
+\begin{verbatim}
+public List<String> getCuisinesByRegion(String regionName) {
+    List<Cuisine> cuisines = cuisineRepository.findByRegion_RegionName(regionName);
+    return cuisines.stream()
+                   .map(Cuisine::getCuisineName)
+                   .collect(Collectors.toList());
+}
+\end{verbatim}
+
+only accesses the cuisineName field of each Cuisine entity. 
+The findByRegion\_RegionName is a repository-level method that performs filtering and joining directly in the database, 
+returning only the relevant Cuisine records. 
+Since the related Region entity is never traversed in application code, no additional queries are executed per cuisine. 
+This ensures that the number of executed queries remains constant regardless of the number of cuisines returned and effectively preventing the N+1 problem.
+
+Furthermore, lazy loading is used for the region association in the Cuisine entity:
+
+\begin{verbatim}
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "region_id", nullable = false) 
+private Region region;
+\end{verbatim}
+
+When a Cuisine is fetched, only the region\_id foreign key is retrieved from the database, 
+and the full Region entity is loaded only if it is explicitly accessed in the application. 
+
+Of course, eager loading could be used instead of lazy loading to prevent any potential N+1 problems, but this approach would be inefficient because
+all region data would be loaded for every cuisine, even if the region information is not needed for the operation. 
+
+The combination of lazy loading and repository-level filtering allows the application to retrieve only the necessary data, 
+which makes sure that the performance is efficient while still avoiding N+1 queries. 
+The repository query returns all relevant Cuisine records in a single SQL statement, 
+and the service layer only accesses the fields it needs. This will never traverse the Region entity unless explicitly required and avoid the N+1 problem.
+
+Batch fetching was also not necessary in this design because the repository query already fetches all required data in a single call. 
+The total size of the data (number of cuisines and regions) is small enough that performance is not a concern as of now. 
+
+\noindent \textbf{Evolution}
+
+To prepare for scaling the application, partitioning is applied to the reviews table.
+The reviews table is partitioned through the partitioning by key-value pair technique discussed in the theory section.
+The reviews table has the potential to have the most rows in the future, so scalability is crucial to this specific table.
+Partitioning the reviews table will improve scalability and query performances by distributing data and query load across multiple nodes.
+Most queries in the local cuisine application are centered around a single entity, such as retrieving cuisines by region or reviews by cuisine.
+Partitioning by key-value allows requests to be routed directly to the partition that owns the relevant data.
+
+Here is the query that is used to partition the reviews table. 
+
+\begin{verbatim}
+CREATE TABLE reviews_p0 PARTITION OF reviews
+    FOR VALUES WITH (MODULUS 4, REMAINDER 0);
+
+CREATE TABLE reviews_p1 PARTITION OF reviews
+    FOR VALUES WITH (MODULUS 4, REMAINDER 1);
+
+CREATE TABLE reviews_p2 PARTITION OF reviews
+    FOR VALUES WITH (MODULUS 4, REMAINDER 2);
+
+CREATE TABLE reviews_p3 PARTITION OF reviews
+    FOR VALUES WITH (MODULUS 4, REMAINDER 3);
+\end{verbatim}
+
+The reviews table is partitioned using hash-based partitioning on the partition key. The \texttt{MODULUS 4} clause specifies that the table is divided into four partitions,
+while the \texttt{REMAINDER} value determines which partition a row belongs to based on the hash value of the partition key modulo 4.
+As a result, each review record is assigned to one of the four partitions as shown in the ERD diagram.
+
+This will distribute the reviews data evenly across each partition, and also reduce the probability of hot spots. This way of partitioning will improve
+scalability as data increases.
+Hash-based partitioning also aligns with how the application accesses data in the database, since most queries retrieve reviews by a specific cuisine identifier.
+By distributing reviews across partitions, query can be processed parallel, and improve query performance as well.
+
+At the current stage of development, secondary indexes were not introdueced into the database design.
+Although secondary indexes can significantly improve query performance when filtering or sorting data by multiple attributes,
+they also add complexity to partitioned systems, particularly in terms of request routing and index maintenance.
+In this application, reviews are mostly accessed through their associated cuisine, and there is no requirement to sort or
+filter reviews by multiple criteria such as rating and reviewer name, or creation time and rating.
+
+Since queries do not involve complex search conditions across multiple attributes, the benefits of secondary
+indexes are limited in the current use case. Avoiding secondary indexes simplifies the database design and reduces overhead for write operations.
+However, this does not mean that secondary indexes will not be implemented in the future. If the application scales and requires
+filtering reviews by multiple criteria, secondary index could be incorporated to optimize read performance. This approach allows the system to remain efficient 
+and easy to maintain while still being open for future optimization.
+
+In this system, Supabase’s managed cloud database (PostgreSQL) is responsible for handling replication across database instances.
+Supabase supports read replicas, which are additional databases kept in sync with the primary database using PostgreSQL’s
+native replication mechanisms. Read replicas are asynchronously replicated from the primary database.
+This means that changes on the primary are streamed to replicas without blocking writes, which helps avoid slowing down the primary
+for scalability while still providing consistent read copies of the data. This approach aligns with the leader–follower pattern discussed earlier,
+where the primary node handles writes and replicas handle read queries, improving performance and load distribution without introducing the complexity
+of multi-leader conflict resolution. Supabase provides read replicas that remain read-only and reduce load on the primary to enable low-latency reads across regions
+if multiple replicas are deployed \cite{Supabase_2026}.
+% https://supabase.com/docs/guides/database/replication
+
+
+
+\subsubsection{Caching}
+
+Caching is implemented in the local cuisine application to enhance performance and 
+reduce latency for frequently accessed data.  
+
+Caching in the local cuisine application improves performance by reducing database access for frequently requested data.
+By storing frequently accessed information in memory, such as cuisine names by region,
+the application can serve responses faster, leading to a smoother user experience and reduced database load.
+This is particularly effective for operations that are read-heavy, such as displaying lists of cuisines
+when users browse popular regions.
+
+Cuisine data and the reviews data implemented the caching strategy in the local cuisine application.
+Among the caching strategy discussed in the theory section, the cache-aside pattern for the cuisine data.
+As the cuisine data won't be written or updated by the users, all the caching strategies that involved writting was not applicable,
+and the cuisine data is primarily read-heavy.
+Unlike read-through caching, where the cache automatically loads data on a miss,
+cache-aside allows the service to explicitly control when and how data is loaded and stored in the cache.
+This approach provides flexibility for handling cache misses and controlling caching logic, which is ideal for our application
+where writes are rare and controlled by the system.
+Write-through or write-back, and write-around techniques were not applicable, as users do not modify cuisine data directly.  
+
+For cache invalidation, a time-based expiration strategy was used. 
+Cached entries are set to expire after a fixed duration (e.g., 1 hour) to ensure that the data remains reasonably 
+fresh while still benefiting from caching. 
+Event-based or validation-based invalidation strategies were not used because they require active
+notifications or triggers when data changes. In this application, cuisine and region data are rarely updated,
+so implementing event-based or validation-based invalidation would introduce unnecessary complexity without significant benefit.
+
+The cache-aside strategy described above is implemented in the CuisineService class.
+The service checks the cache before querying the database and stores the result
+in the cache on a cache miss. This ensures that subsequent requests for the same region
+can be served directly from memory.
+
+
+\begin{verbatim}
+public List<String> getCuisinesByRegion(String regionName) {
+
+    String cacheKey = "region:" + regionName + ":cuisineNames";
+
+    // 1. Check cache
+    Object cached = cacheService.get(cacheKey);
+    if (cached != null) {
+        return (List<String>) cached;
+    }
+
+    // 2. Cache miss → query database
+    List<Cuisine> cuisines =
+            cuisineRepository.findByRegion_RegionName(regionName);
+
+    List<String> cuisineNames = cuisines.stream()
+            .map(Cuisine::getCuisineName)
+            .collect(Collectors.toList());
+
+    // 3. Store result in cache (1 hour TTL)
+    cacheService.put(cacheKey, cuisineNames, 3600);
+
+    return cuisineNames;
+}
+\end{verbatim}
+
+The caching process follows the cache-aside pattern and is implemented in three steps.
+First, a unique cache key is generated using the requested region name. This ensures that
+each region’s cuisine list is cached independently.
+
+Next, the application queries the cache using the generated key. If the data exists
+(cache hit), the cached list of cuisine names is returned immediately,
+bypassing the database entirely. This significantly reduces response time and database load.
+
+If the data is not found in the cache (cache miss), the service queries the database
+using the CuisineRepository. The retrieved cuisine entities are then transformed
+into a list of cuisine names. Finally, the result is stored in the cache with time based invalidation of one hour before being returned to the client.
+
+This explicit control over cache access and population reflects the cache-aside strategy,
+allowing the application to balance performance improvements with data consistency while
+keeping the caching logic simple and maintainable.
+
+
+For the review data, initially, a write-through caching strategy was considered. Because reviews are created and deleted by users, it seemed beneficial to keep
+the cache fully synchronized with the database on every write operation.
+Under this approach, each write operation would immediately update the cached review list, ensuring strong consistency between the cache and the database.
+Here is the original code for the write-through caching strategy.
+
+\begin{verbatim}
+public ReviewResponse createReview(CreateReviewRequest request) {
+
+    Cuisine cuisine = cuisineRepository.findById(request.getCuisineId())
+            .orElseThrow(() -> new IllegalArgumentException("Cuisine not found"));
+
+    Review review = new Review(
+            cuisine,
+            request.getRating(),
+            request.getComment()
+    );
+
+    Review saved = reviewRepository.save(review);
+
+    String cacheKey = "cuisine:" + cuisine.getId() + ":reviews";
+    List<ReviewResponse> updatedReviews =
+            reviewRepository.findByCuisineId(cuisine.getId())
+                    .stream()
+                    .map(r -> new ReviewResponse(
+                            r.getId(),
+                            r.getRating(),
+                            r.getComment(),
+                            r.getCreatedAt()
+                    ))
+                    .collect(Collectors.toList());
+
+    cacheService.put(cacheKey, updatedReviews, 300);
+
+    return new ReviewResponse(
+            saved.getId(),
+            saved.getRating(),
+            saved.getComment(),
+            saved.getCreatedAt()
+    );
+}
+\end{verbatim}
+
+We can see from that a created review is both written in the cache and the database.
+This approach ensured that cached data remained fully up to date, but it introduced significant overhead.
+Each write operation required an additional database query to rebuild the cached review list, followed by a cache update.
+As review activity increased for popular cuisines, I thought that this design could become write-heavy and inefficient.
+
+To address these issues, the caching design was changed to use the cache-aside pattern. Instead of updating the cache on every write, 
+the cache is now updated whenever there is a read request.
+
+\begin{verbatim}
+public ReviewResponse createReview(CreateReviewRequest request) {
+
+    Cuisine cuisine = cuisineRepository.findById(request.getCuisineId())
+            .orElseThrow(() -> new IllegalArgumentException("Cuisine not found"));
+
+    Review review = new Review(
+            cuisine,
+            request.getRating(),
+            request.getComment()
+    );
+
+    Review saved = reviewRepository.save(review);
+
+    String cacheKey = "cuisine:" + cuisine.getId() + ":reviews";
+    cacheService.evict(cacheKey);
+
+    return new ReviewResponse(
+            saved.getId(),
+            saved.getRating(),
+            saved.getComment(),
+            saved.getCreatedAt()
+    );
+}
+\end{verbatim}
+
+The difference from the write through database caching method is that new reviews are now only written in the database, and the existing cache is not evicted.
+In this scope, evicted means that the original cache is deleted.
+With this approach, write operations remain lightweight, consisting only of the database transaction and cache eviction.
+The cache is repopulated only when a read request occurs:
+
+\begin{verbatim}
+public List<ReviewResponse> getReviewsByCuisine(Long cuisineId) {
+
+    String cacheKey = "cuisine:" + cuisineId + ":reviews";
+
+    Object cached = cacheService.get(cacheKey);
+    if (cached != null) {
+        return (List<ReviewResponse>) cached;
+    }
+
+    List<ReviewResponse> responses =
+            reviewRepository.findByCuisineId(cuisineId)
+                    .stream()
+                    .map(r -> new ReviewResponse(
+                            r.getId(),
+                            r.getRating(),
+                            r.getComment(),
+                            r.getCreatedAt()
+                    ))
+                    .collect(Collectors.toList());
+
+    cacheService.put(cacheKey, responses, 300);
+    return responses;
+}
+\end{verbatim}
+
+This cache-aside design reduces write overheads, improves scalability, and aligns more effectively with the read-heavy access patterns of the application.
+By combining explicit cache eviction on writes with time-based expiration,
+the system maintains acceptable data freshness while significantly improving performance.
+
+Event-based cache invalidation was also considered during the design of the review caching strategy. 
+In an event-based approach, cache entries are refreshed or invalidated in response to domain events published by the system.
+In the case of the local cuisine application the only meaningful domain event related to reviews occurs when a new review is created for a cuisine.
+
+An example of an event-based cache invalidation approach would involve publishing a
+ReviewCreatedEvent whenever a review is persisted, and having a separate
+event listener respond by evicting or updating the cached reviews for the affected cuisine.
+
+For example, a review creation event could be created as following:
+
+\begin{verbatim}
+public class ReviewCreatedEvent {
+    private final Long cuisineId;
+
+    public ReviewCreatedEvent(Long cuisineId) {
+        this.cuisineId = cuisineId;
+    }
+
+    public Long getCuisineId() {
+        return cuisineId;
+    }
+}
+\end{verbatim}
+
+And a corresponding event listener could invalidate the cache entry:
+
+\begin{verbatim}
+@Component
+public class ReviewEventListener {
+
+    @CacheEvict(value = "reviews", key = "#event.cuisineId")
+    @EventListener
+    public void handleReviewCreated(ReviewCreatedEvent event) {
+        // Cache is evicted in response to the event
+    }
+}
+\end{verbatim}
+
+However, in this system the cache eviction already occurs directly within the review creation workflow.
+Because the system has a single, well-defined write path for reviews, introducing a full event-based validation mechanism would add unnecessary complexity to the application. 
+The chosen approach achieves the same consistency guarantees while remaining simpler and easier to maintain.
