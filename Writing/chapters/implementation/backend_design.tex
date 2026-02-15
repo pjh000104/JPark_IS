@@ -1,17 +1,19 @@
 \section[Backend Design]{Backend Design}\label{sec:newsec}
-Multiple options are available when selecting a web framework for backend development. Java Spring Boot is chosen for this project for mainly two reasons.
+Multiple options are available when selecting a web framework for backend development. Java Spring Boot is chosen for this project for two reasons.
 First, this project provided an opportunity to explore a backend framework beyond Python Flask, which was the only framework I have previously used.
-When I was choosing my framework at the beginning of the project, I was planning to go back to South Korea after graduation.
+When I was choosing my framework at the beginning of the project, I planned to go back to South Korea after graduation.
 I wanted to choose a framework commonly used in the software industry in South Korea, which was Java Spring Boot. Other backend 
-web frameworks, such as Django and Ruby on Rails, were used in South Korea, but Java was the most dominant, making it practical and relevant to the industry.
+web frameworks, such as Django and NestJS, are used in South Korea, but Java is the most dominant, making it practical and relevant to the industry \cite{Prime_Career}.
 
 The second reason for selecting Java Spring Boot emerged during the development process. 
 It became clear that Spring Boot integrates effectively with the chosen software architecture,
-particularly in terms of modular design. This architectural compatibility is discussed in greater detail in a later subsection. 
+particularly in terms of modular design. Java's structured organization around pacakges, classes, and interfaces aligns naturallly with modular boundaries.
+Each domain (cuisine, region, reviews) can be encapsulated within its own package hierarchy, promoting high cohesion within modules and reduced coupling between them.
+This architectural compatibility is discussed in greater detail in a later subsection. 
 
 Beyond the backend framework, additional technologies were selected to support development efficiency and scalability.
 Supabase was chosen as the database hosting solution to leverage a managed cloud service, allowing the project to focus on application
-logic rather than database maintenance and infrastructure management. Redis was selected as the caching solution due to its widespread industry adoption,
+logic rather than data and infrastructure management. Redis was selected as the caching solution due to its widespread industry adoption,
 proven performance, and suitability for implementing efficient caching strategies within the application.
 
 \subsubsection{Software Architecture}
@@ -20,42 +22,46 @@ proven performance, and suitability for implementing efficient caching strategie
 
 Multiple design approaches were considered when deciding whether the local cuisine application should adopt a monolithic architecture or a distributed system architecture.
 Until now, all the applications that I have created were monolithic applications. As a student, the scope of solo projects were small enough that 
-monolithic architectures were a fit, and all software developed or contributed to during internships also employed a monolithic architecture.
+monolithic architectures were appropriate, and all software developed or contributed to during internships also employed a monolithic architecture.
 
 For this reason, I wanted to create an application that has a distributed system architecture in the beginning. I wanted to try something that I have not tried,
-and also gain experience relevant to future career goals. Developing an application using both monolithic and distributed architectural styles provides valuable
+and also gain experience using this architectural pattern. Developing an application using both monolithic and distributed architectural styles provides valuable
 perspective when selecting an appropriate software architecture, as it enables a deeper understanding of the trade-offs involved in architectural decision-making. 
 
-However, monolithic architecture was ultimatley chosen for this project. There are a few reasons behind this decision.
+However, as I continued exploring architectural style for the local cuisine application, the monolithic architecture seemed to be a more compelling option.
 I plan to keep maintaining and expanding on this project even after graduation and the final submission of the independent study.
-Through the study of software architecture theory, it became clear that adopting a distributed system architecture at an early stage would introduce unnecessary complexity.
+Through the study of software architecture theory, it became clear that adopting a distributed system architecture at an early stage could introduce unnecessary complexity,
+which may not be justified for a system of this scale. 
 The benefits that I would gain by setting up the distributed system architecture outweigh the drawbacks.
 
-Scalability is one of the primary advantages of a distributed system architecture. If the local cuisine application were to grow significantly and attract thousands of daily users,
-a distributed architecture could provide clear benefits in handling increased traffic and workload. However, there is no guarantee, and it is not certain
-whether the local cuisine application would need this level of scalability in the future.
-
-While monolithic architectures are often considered less scalable than distributed systems,
-they still offer various strategies for improving scalability. Techniques such as horizontal scaling, caching,
-and efficient resource management can be applied within a monolithic architecture to accommodate moderate growth,
-making it a viable choice for the current scope of the project.
+First, Modular monolithic architecture is appropriate for the local cuisine application compared to the distributed system architecture in terms of scaling.
+Scalability is one of the primary advantages of a distributed system architecture. It is possible that the local cuisine application could grow significantly and attract thousands of daily users,
+and a distributed architecture could provide clear benefits in handling increased traffic and workload. However, in the current stage of development where the aim of 
+average users is less than thousands of users, the modular monolithic architecture is easier to maintain the application.  
 
 Furthermore, as the local cuisine application is still relatively small, it would not benefit from the loose coupling that the distributed system architecture has.
 It is possible to divide each part of the application into different services, such as having an individual service for cuisines, regions, and reviews. 
 However, introducing this level of separation would be unnecessary at the current stage unless the applications scales.
 The distributed architecture approach becomes more valuable only when the application scales significantly and requires independently evolving services.
-For the present scope of the local cuisine application, the advantages of loose coupling provided by a distributed architecture do not outweigh the added complexity.
+For the present scope of the local cuisine application, the advantages of loose coupling provided by a distributed architecture do not outweigh the added complexity
+such as inter-service communication or network latency.
 
-Lastly, the biggest reason the monolithic architecture was chosen was the cost. Although a distributed system architecture offers several advantages,
+Another big reason the monolithic architecture was chosen was the cost. Although a distributed system architecture offers several advantages,
 the associated infrastructure costs are critical. Deploying and maintaining multiple servers to support distributed services can rapidly increase the cost,
 that exceeds the scope of a personal project. On the other hand, the monolithic architecture only needs one server, which is cost-effective and easier
- to maintain over the long term.
+to maintain over the long term.
+
+Finally, the modular monolithic architecture was chosen since it preserves the possibility of futer evolution into a distributed system architecture.
+In case the local cuisine application needs to scale, the existing modular structure provides two options: maintain the current monolithic deployjment, 
+or incrementally refactoring modules into independent services.
+The clear separation of concerns within the modular monolith allows potential transition, as the well-defined module boundaries can serve as a foundation for service extraction.
+This flexibility allows architectural decisions to be revisited based on observed system growth, performance requirements, and usage patterns, rather than being determined from the beginning.
 
 Fault tolerance was the main trade-off considered in the architectural decision-making process.
 While a distributed system architecture provides stronger fault tolerance,
 the overall requirements and constraints of the project led to the selection of a monolithic architecture for the local cuisine application.
 
-\noindent \textbf{Which Monolithic}
+\noindent \textbf{Layered or Modular Monolithic}
 
 There are two monolithic architectures introduced in the theory section: the Layered architecture and the Modular Monolithic architecture.
 For the local cuisine application, I decided to use the modular monolithic approach.
@@ -65,7 +71,7 @@ The application is composed of three main components: regions, which allow users
 cuisines, which provide detailed information about the culinary offerings within a selected region;
 and reviews, which enable users to interact with one another by submitting and viewing feedback on specific cuisines.
 
-The modularity of the modular monolithic architecture is well-suited to this application, since the local cuisine application
+The modular architecture is well-suited to this application, since the local cuisine application
 has a clear separation of functional domains: region, cuisine, and reviews. If this were implemented using a layered architecture,
 the application would be organized strictly by technical layers (such as controller, service, and repository)
 rather than being structured around the distinct functional domains of the system. 
@@ -81,7 +87,7 @@ of the layered architecture. Here is the structure of the modular monolithic arc
 % Include directory tree after pushing.
 
 The figure above shows three modules in the local cuisine application: the region, cuisine, and reviews.
-Within each module, the  api, service, and domain packages are included. The api package is a part of the presentation layer, where 
+Within each module, the API, service, and domain packages are included. The api package is a part of the presentation layer, where 
 information is organized and sent to the front end. The service package is the workflow layer where all the business logic is included.
 Finally, the domain package is the persistent layer where entities are mapped persistently to the relational database.
 
@@ -89,7 +95,7 @@ This architecture of the modular monolithic structure allows separation of modul
 The separation is also beneficial when the application would be developed collaboratively in the future as well.
 
 However, it is possible that the decision to implement the modular monolithic architecture for this project 
-could be viewed as an overkill. There are only three modules for the local cuisine application, and it is possible to 
+could be viewed as excessive. There are only three modules for the local cuisine application, and it is possible to 
 just have all of these modules under the layers of the layered monolithic architecture. 
 Although it is currently a small-sized application, the decision to adopt a modular monolith was guided by the potential for future scalability,
 allowing the system to evolve without requiring a major architectural overhaul. 
@@ -379,8 +385,9 @@ into a list of cuisine names. Finally, the result is stored in the cache with ti
 
 This explicit control over cache access and population reflects the cache-aside strategy,
 allowing the application to balance performance improvements with data consistency while
-keeping the caching logic simple and maintainable.
-
+keeping the caching logic simple and maintainable. 
+The same caching approach is also applied to the getCuisinesByName method, which follows a similar structure
+and purpose. This also ensures consistent performance improvements when accessing across different cuisines by the cuisine name.
 
 For the review data, initially, a write-through caching strategy was considered. Because reviews are created and deleted by users, it seemed beneficial to keep
 the cache fully synchronized with the database on every write operation.
@@ -534,3 +541,213 @@ public class ReviewEventListener {
 However, in this system the cache eviction already occurs directly within the review creation workflow.
 Because the system has a single, well-defined write path for reviews, introducing a full event-based validation mechanism would add unnecessary complexity to the application. 
 The chosen approach achieves the same consistency guarantees while remaining simpler and easier to maintain.
+
+\subsection{Backend Request Workflow}
+
+Now that it is clear which decisions were made when building the backend of the project, this section introduces the backend workflow 
+that is executed when a user makes a request to the system. It outlines the sequence of interactions between the client and the backend components, 
+including the controller, service, repository, caching, and database layers. 
+
+The following sequence diagram shows the lifecycle of a backend request starting from a user. 
+It shows the order in which the client interacts with the backend components and how the request processes through the 
+controller, service, caching, repository, and database layers.
+This diagram focuses on a single request of a cuisine search, and highlights the responsibilities of each component involved.
+While the example shown uses the cuisine module, the same request flow and architectural pattern are consistently applied across other modules in the system,
+such as regions and reviews.
+
+\seqFigure
+
+When a user initiates a cuisine search, the backend processes the request in the following order:
+
+\begin{enumerate}
+    \item The client sends an HTTP request to the backend API.
+    \item The request is received by the corresponding controller.
+    \item The controller delegates the request to the service layer.
+    \item The service layer checks the cache for existing data related to the request.
+    \item If the requested data is found in the cache, it is returned immediately.
+    \item If the data is not found or the cache entry is invalid, the service queries the repository layer.
+    \item The repository retrieves the required data from the database.
+    \item The service processes the retrieved entities and maps them.
+    \item The processed result is stored in the cache for future requests.
+    \item The controller returns the final response to the client.
+\end{enumerate}
+
+
+As shown in the sequential diagram above, the workflow begins when the user initiates a search action from the frontend interface.
+In this example, the user searches for ``Hakata ramen''.
+
+The frontend translates this action into an HTTP request and sends it to the backend API.
+
+\begin{verbatim}
+GET /cuisines?query=ramen
+\end{verbatim}
+
+The frontend is responsible only for user interaction and request initiation, while all business logic is handled by the backend.
+The request is received by the CuisineController, which serves as the entry point to the backend.
+The controller extracts request parameters and sends the request to the service layer.
+
+\begin{verbatim}
+@RestController
+@RequestMapping("/api/cuisines")
+public class CuisineController {
+
+    private final CuisineService cuisineService;
+
+    public CuisineController(CuisineService cuisineService) {
+        this.cuisineService = cuisineService;
+    }
+
+    @GetMapping("/byRegion/{regionName}")
+    public List<String> getByRegion(@PathVariable String regionName) {
+        return cuisineService.getCuisinesByRegion(regionName);
+    }
+    @GetMapping("/{cuisineName}")
+    public ResponseEntity<CuisineResponse> getByCuisineName(@PathVariable String cuisineName) {
+        return ResponseEntity.ok(cuisineService.getCuisineByName(cuisineName));
+    }
+}
+\end{verbatim}
+
+The controller contains no business logic, ensuring a clear separation of the layers.
+
+The CuisineService contains the business logic for retrieving a cuisine by name. 
+It first checks the cache using the cache-aside pattern.
+
+\begin{verbatim}
+public CuisineResponse getCuisineByName(String cuisineName) {
+
+    String cacheKey = "cuisine:name:" + cuisineName.toLowerCase();
+
+    // 1. Check cache
+    Object cached = cacheService.get(cacheKey);
+    if (cached != null) {
+        CuisineResponse response =
+            objectMapper.convertValue(cached, CuisineResponse.class);
+        System.out.println("cache hit"); 
+        return response;
+    }
+
+    System.out.println("cache miss");
+}
+\end{verbatim}
+
+If the cache contains a valid entry, it is converted into a CuisineResponse using ObjectMapper, which is a uitility class of a Java library used for mapping Java objects
+and JSON-compatible structures.
+In this contex, it transforms the cached generic object retrieved from Redis back to the CuisineRepsonse type. This will be explained more in detailed in the next step.
+This avoids unnecessary database access and reduces response time.
+
+If the cache does not contain the requested cuisine, the service queries the database through the repository:
+
+\begin{verbatim}
+Cuisine cuisine = cuisineRepository
+        .findByCuisineNameIgnoreCase(cuisineName)
+        .orElseThrow(() -> new RuntimeException("Cuisine not found"));
+
+CuisineResponse response = CuisineResponse.from(cuisine);
+\end{verbatim}
+
+Here, the repository retrieves the Cuisine entity by name. If there are no matching entity, an exception is thrown and and propagated back to the controller.
+The controller handles the exception and returns an appropriate HTTP error response to the frontend, typically a 404 Not Found status with a descriptive error message.
+The error message is sent to the frontend, and the user is informed them that the requested cuisine could not be found.
+If the cuisine data is found in the database that matches the cuisine name, the response is converted into a CuisineResponse object, which is an object that is 
+responsible for transferring data to the frontend. 
+
+\begin{verbatim}
+cacheService.put(cacheKey, response, 3600);
+
+return response;
+\end{verbatim}
+
+The response is cached with a time invalidation of 3600 seconds (1 hour) in Redis.
+Finally, the controller returns the CuisineResponse to the frontend, which displays it to the user.
+Below is the full FindCuisineByName method. 
+
+\begin{verbatim}
+public CuisineResponse getCuisineByName(String cuisineName) {
+
+    String cacheKey = "cuisine:name:" + cuisineName.toLowerCase();
+
+    // 1. Check cache
+    Object cached = cacheService.get(cacheKey);
+    if (cached != null) {
+        CuisineResponse response =
+            objectMapper.convertValue(cached, CuisineResponse.class);
+    System.out.println("cache hit"); 
+        return response;
+    }
+
+    System.out.println("cache miss");
+
+    // 2. Cache miss → original logic
+    Cuisine cuisine = cuisineRepository
+            .findByCuisineNameIgnoreCase(cuisineName)
+            .orElseThrow(() -> new RuntimeException("Cuisine not found"));
+
+    CuisineResponse response = CuisineResponse.from(cuisine);
+
+    // 3. Store result in cache
+    cacheService.put(cacheKey, response, 3600);
+
+    return response;
+}
+
+\end{verbatim}
+
+\subsection{Modular Architecture Overview}
+
+In the previous subsection, we explored the workflow for a backend request. This section will introduce indepth
+what happens  how the Java classes interact with each other
+to enable those workflows as a part of the modular monolithic architecture. 
+
+\classFigure
+
+The class diagram reflects the internal structure of the backend system, which follows a modular monolithic architecture. 
+Although the application is deployed as a single backend service,
+it is internally organized into three primary functional modules: the Cuisine module, the Review module, and the Location module.
+
+Each module encapsulates its own domain entities, services, repositories, and controllers. 
+This modular organization promotes high cohesion within each functional area while maintaining clear boundaries between different parts of the system.
+
+\noindent \textbf{Cuisine Module}
+
+The Cuisine module is responsible for managing cuisine-related data and providing search and retrieval functionality. 
+It represents one of the core functional components of the system.
+
+The Cuisine module is associated with the Cuisine entity, which models a cuisine with attributes such as id, cuisineName, and description. 
+Each Cuisine is associated with a Region, establishing a relationship between cuisine data and geographical classification.
+
+The CuisineService class contains the business logic for cuisine-related operations. 
+It handles tasks such as retrieving cuisines by region or country, fetching detailed cuisine information by name, and integrating caching mechanisms to improve performance. 
+The service depends on the CuisineRepository for database access and on the CacheService for Redis-based caching.
+
+The CuisineRepository interface abstracts persistence operations and defines query methods such as retrieving cuisines by region name, country, or cuisine name. 
+As interaction between the database only occurs at the repository layer, the service layer remains focused on business logic.
+
+The CuisineController acts as the entry point for HTTP requests related to cuisines. 
+It connects all business logic to the service layer and returns response objects to the client.
+
+\noindent \textbf{Review Module}
+
+The Review module manages user-generated reviews associated with cuisines. 
+It lets users to create, retrieve, and delete reviews, extending the functionality of the Cuisine module with user interaction features.
+
+At the review module is associated with Review entity. 
+Each Review contains attributes such as id, rating, comment, and createdAt. 
+A review is associated with a single Cuisine, establishing a many-to-one relationship where multiple reviews can belong to one cuisine.
+
+ReviewService class contains the business logic for handling review-related operations. 
+It coordinates interactions between the ReviewRepository, the CuisineRepository, and the CacheService. 
+For example, when creating a review, the service first retrieves the associated cuisine, constructs the review entity, persists it, and may update or invalidate related cache entries.
+
+add example code?
+
+The ReviewRepository interface abstracts database operations for the Review entity and defines query methods such as retrieving reviews by cuisine ID. 
+This ensures that persistence logic remains isolated from the service layer.
+
+The ReviewController exposes API endpoints for review-related operations. 
+Similar to the CuisineController, it transfers business logic to the service layer and returns appropriate response objects to the client.
+
+To maintain separation between internal data models and API responses, the module uses a ReviewResponse object. 
+This object formats review data for the client
+
+

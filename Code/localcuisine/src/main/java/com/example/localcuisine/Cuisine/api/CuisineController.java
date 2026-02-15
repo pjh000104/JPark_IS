@@ -23,6 +23,8 @@ public class CuisineController {
     public List<String> getByRegion(@PathVariable String regionName) {
         return cuisineService.getCuisinesByRegion(regionName);
     }
-
-    // Need api for countries to show top dishes?
+    @GetMapping("/{cuisineName}")
+    public ResponseEntity<CuisineResponse> getByCuisineName(@PathVariable String cuisineName) {
+        return ResponseEntity.ok(cuisineService.getCuisineByName(cuisineName));
+    }
 }

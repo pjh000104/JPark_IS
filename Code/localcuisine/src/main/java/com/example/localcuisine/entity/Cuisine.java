@@ -7,7 +7,7 @@ import jakarta.persistence.*;
     name = "cuisines",
     indexes = {
         @Index(name = "idx_cuisines_region_id", columnList = "region_id"),
-        @Index(name = "idx_cuisines_region_name", columnList = "region_id, cuisineName")
+        @Index(name = "idx_cuisines_region_name", columnList = "region_id, cuisinename")
     }
 )
 
