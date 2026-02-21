@@ -1,51 +1,35 @@
 "use client";
 
+import Link from "next/link";
+
 type Props = {
   cuisines: string[];
   region: string;
 };
 
-export default function CuisineList({ cuisines, region }: Props) {
-const openGoogleMaps = (cuisine: string) => {
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-
-      const url =
-        `https://www.google.com/maps/search/?api=1` +
-        `&query=${encodeURIComponent(cuisine)}` +
-        `&center=${latitude},${longitude}` +
-        `&radius=5000`;
-
-      window.open(url, "_blank");
-    },
-    () => {
-      // fallback
-      const fallbackQuery = encodeURIComponent(`${cuisine} near me`);
-      window.open(
-        `https://www.google.com/maps/search/?api=1&query=${fallbackQuery}`,
-        "_blank"
-      );
-    }
-  );
-};
-
+export default function CuisineList({ cuisines }: Props) {
   return (
-    <ul>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {cuisines.map((cuisine) => (
-        <li
+        <Link
           key={cuisine}
-          onClick={() => openGoogleMaps(cuisine)}
-          className="cursor-pointer hover:underline"
+          href={`/cuisines/${encodeURIComponent(cuisine)}`}
+          className="
+            block
+            bg-gray-100 
+            p-6 
+            rounded-lg 
+            shadow 
+            hover:shadow-md 
+            transition 
+            border
+            hover:border-gray-300
+            text-gray-900
+          "
         >
-          {cuisine}
-        </li>
+          <h2 className="text-lg font-semibold">{cuisine}</h2>
+        </Link>
       ))}
-    </ul>
+    </div>
   );
 }

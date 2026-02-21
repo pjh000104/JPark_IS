@@ -7,6 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface LocationRepository extends JpaRepository<Region, Long> {
-    // List<Cuisine> findByRegion_RegionName(String regionName);
-    // List<Cuisine> findByRegion_Country(String country);
+    List<Region> findByRegionNameContainingIgnoreCase(String name);
 }

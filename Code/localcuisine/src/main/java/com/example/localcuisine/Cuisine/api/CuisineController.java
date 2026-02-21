@@ -23,8 +23,10 @@ public class CuisineController {
     public List<String> getByRegion(@PathVariable String regionName) {
         return cuisineService.getCuisinesByRegion(regionName);
     }
+
     @GetMapping("/{cuisineName}")
     public ResponseEntity<CuisineResponse> getByCuisineName(@PathVariable String cuisineName) {
+        // System.out.println("Fetching cuisine: '" + cuisineName + "'");
         return ResponseEntity.ok(cuisineService.getCuisineByName(cuisineName));
     }
 }

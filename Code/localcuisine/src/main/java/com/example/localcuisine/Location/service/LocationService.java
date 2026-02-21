@@ -15,16 +15,16 @@ public class LocationService {
         this.locationRepository = locationRepository;
     }
 
-    // public String findByName(String name) {
-    //     String city = locationRepository.findByName(name);
-    //     if (city == null) {
-    //         throw new IllegalArgumentException("Location not found: " + name);
-    //     }
-    //     return city;
-    // }
-
     public List<String> getAllRegions() {
         return locationRepository.findAll()
+                .stream()
+                .map(Region::getRegionName)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> searchRegions(String keyword) {
+        return locationRepository
+                .findByRegionNameContainingIgnoreCase(keyword)
                 .stream()
                 .map(Region::getRegionName)
                 .collect(Collectors.toList());

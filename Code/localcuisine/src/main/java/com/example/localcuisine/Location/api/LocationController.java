@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.localcuisine.Cuisine.api.CuisineResponse;
 import com.example.localcuisine.Location.service.LocationService;
 import java.util.List;
 
@@ -27,7 +29,11 @@ public class LocationController {
         return locationService.getAllRegions();
     }
 
-    // Need api for specific locaion
+    @GetMapping("/{locationName}")
+    public List<String> getByRegionName(@PathVariable String locationname) {
+        return locationService.searchRegions(locationname);
+    }
+
 }
 
 

@@ -579,7 +579,7 @@ In this example, the user searches for ``Hakata ramen''.
 The frontend translates this action into an HTTP request and sends it to the backend API.
 
 \begin{verbatim}
-GET /cuisines?query=ramen
+GET /api/cuisines/Hakata ramen
 \end{verbatim}
 
 The frontend is responsible only for user interaction and request initiation, while all business logic is handled by the backend.
@@ -699,55 +699,354 @@ In the previous subsection, we explored the workflow for a backend request. This
 what happens  how the Java classes interact with each other
 to enable those workflows as a part of the modular monolithic architecture. 
 
+The following UML class diagram provides a visual representation of the structural organization of the local cuisine application.
+It illustrates how classes are organized within the system and how they interact with one another.
+The diagram highlights the relationships between different classes and modules, and clarify the design and the flow of responsibilities across the application.
+
+Different types of arrows in the diagram represent specific relationships between classes.
+The six primary UML relationships and their corresponding arrow notations are as follows:
+
+\begin{itemize}
+    \item \textbf{Inheritance (Generalization):}  Solid line with a hollow triangle pointing to the parent class.
+    \item \textbf{Realization (Implementation):}  Dashed line with a hollow triangle pointing to the interface.
+    \item \textbf{Composition:}  Solid line with a filled diamond at the owning class. Represents a "has-a" relationship with strong ownership, where the contained object’s lifecycle depends on the owning class.
+    \item \textbf{Aggregation:}  Solid line with a hollow diamond at the owning class. Indicates a weaker "has-a" relationship.
+    \item \textbf{Association:}  Solid line connecting two classes, representing a structural relationship.
+    \item \textbf{Dependency:}  Dashed arrow pointing from the dependent class to the class it relies on, indicating a temporary or unidirectional usage.
+\end{itemize}
+
+In this explanation, the meaning of these relationships will be clarified further in context as each module and its layered structure is discussed.
+
 \classFigure
 
-The class diagram reflects the internal structure of the backend system, which follows a modular monolithic architecture. 
-Although the application is deployed as a single backend service,
-it is internally organized into three primary functional modules: the Cuisine module, the Review module, and the Location module.
 
-Each module encapsulates its own domain entities, services, repositories, and controllers. 
-This modular organization promotes high cohesion within each functional area while maintaining clear boundaries between different parts of the system.
-
-\noindent \textbf{Cuisine Module}
-
-The Cuisine module is responsible for managing cuisine-related data and providing search and retrieval functionality. 
-It represents one of the core functional components of the system.
-
-The Cuisine module is associated with the Cuisine entity, which models a cuisine with attributes such as id, cuisineName, and description. 
-Each Cuisine is associated with a Region, establishing a relationship between cuisine data and geographical classification.
-
-The CuisineService class contains the business logic for cuisine-related operations. 
-It handles tasks such as retrieving cuisines by region or country, fetching detailed cuisine information by name, and integrating caching mechanisms to improve performance. 
-The service depends on the CuisineRepository for database access and on the CacheService for Redis-based caching.
-
-The CuisineRepository interface abstracts persistence operations and defines query methods such as retrieving cuisines by region name, country, or cuisine name. 
-As interaction between the database only occurs at the repository layer, the service layer remains focused on business logic.
-
-The CuisineController acts as the entry point for HTTP requests related to cuisines. 
-It connects all business logic to the service layer and returns response objects to the client.
-
-\noindent \textbf{Review Module}
-
-The Review module manages user-generated reviews associated with cuisines. 
-It lets users to create, retrieve, and delete reviews, extending the functionality of the Cuisine module with user interaction features.
-
-At the review module is associated with Review entity. 
-Each Review contains attributes such as id, rating, comment, and createdAt. 
-A review is associated with a single Cuisine, establishing a many-to-one relationship where multiple reviews can belong to one cuisine.
-
-ReviewService class contains the business logic for handling review-related operations. 
-It coordinates interactions between the ReviewRepository, the CuisineRepository, and the CacheService. 
-For example, when creating a review, the service first retrieves the associated cuisine, constructs the review entity, persists it, and may update or invalidate related cache entries.
-
-add example code?
-
-The ReviewRepository interface abstracts database operations for the Review entity and defines query methods such as retrieving reviews by cuisine ID. 
-This ensures that persistence logic remains isolated from the service layer.
-
-The ReviewController exposes API endpoints for review-related operations. 
-Similar to the CuisineController, it transfers business logic to the service layer and returns appropriate response objects to the client.
-
-To maintain separation between internal data models and API responses, the module uses a ReviewResponse object. 
-This object formats review data for the client
+\textbf{Overall System Structure}
 
 
+The local cuisine application is organized into three main modules, and each of them are responsible for a distinct aspect of the system.
+Although these modules are logically separated, they are implemented within a single deployable Spring Boot application, forming a modular monolith. 
+
+Each module follows a layered architecture, which promotes separation of concerns and maintainability.
+This design allows the modules to evolve independently while sharing common resources,
+such as the database and system configuration. The layered structure ensures a clear flow of responsibilities,
+making the system easier to understand and maintain.
+
+The layered architecture within each module organizes classes into four primary layers: Controller, Service, Repository, and Entity.
+These layers clearly separate responsibilities and facilitate maintainability. The UML class diagram illustrates these layers and the relationships between the classes,
+with arrows indicating dependencies and structural associations.
+
+
+\textbf{Controller Layer}
+
+The controller layer handles HTTP requests and maps endpoints to the appropriate service methods
+Each controller is composed of service objects, which it depends on to execute business logic.
+In UML, this relationship is represented by a composition arrow (\texttt{*--}) pointing from the controller to the service class.
+
+For example, in the Review module, the ReviewController has a composition relationship with ReviewService.
+This is implemented in Java via constructor injection: the controller receives a reference to a ReviewService instance when it is created.
+This means that the controllers owns the reference to their corresponding service object for its lifetime and relies on it to handle all requests.
+
+\begin{verbatim}
+// ReviewController.java
+
+@RestController
+@RequestMapping("/api/reviews")
+public class ReviewController {
+
+    private final ReviewService reviewService;
+
+    // Constructor injection
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
+
+    @GetMapping("/cuisine/{cuisineId}")
+    public List<ReviewResponse> getReviewsByCuisine(@PathVariable Long cuisineId) {
+        return reviewService.getReviewsByCuisine(cuisineId);
+    }
+}
+\end{verbatim}
+
+For instance, when a user makes a GET request to view reviews for a certain cuisine,
+the ReviewController invokes the getReviewsByCuisine() method on its ReviewService object.
+The controller does not contain any business logic itself; it passes all such responsibilities to the service.
+Because the service object is initialized along with the controller and maintained as a private final field,
+the UML composition arrow accurately reflects the “has-a” relationship between the controller and the service.
+
+For the reviews module, the ReviewController interacts with data transfer objects (DTOs) for handling input and output.
+DTOs are simple objects that carry data between layers of the application without containing business logic.
+They are necessary to decouple the internal domain entities from external API representations,
+ensuring that changes to the database model do not directly affect the API contract.
+
+For example, a DTO used in the Review module is the CreateReviewRequest, which encapsulates the data needed to create a new review:
+
+\begin{verbatim}
+// CreateReviewRequest.java
+
+public class CreateReviewRequest {
+
+    @NotNull
+    private Long cuisineId;
+
+    @NotNull
+    @Min(1)
+    @Max(5)
+    private Integer rating;
+
+    @Size(max = 1000)
+    private String comment;
+
+    public Long getCuisineId() { return cuisineId; }
+    public void setCuisineId(Long cuisineId) { this.cuisineId = cuisineId; }
+
+    public Integer getRating() { return rating; }
+    public void setRating(Integer rating) { this.rating = rating; }
+
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
+}
+\end{verbatim}
+
+This DTO is used by the controller to receive data from the client in a structured format. 
+It ensures that only valid and necessary data is passed to the service layer, 
+allowing the internal entity objects, such as the Review entity, to remain decoupled from the API contract.
+For example, the @NotNull annotation ensures that none of the fields of the submitted data isn't empty.
+
+This class does not contain any business logic. It simply holds the data returned by the service layer. 
+It is used by the ReviewController to send responses back to clients.
+
+In the Review module, the ReviewController depends on two DTOs: CreateReviewRequest and ReviewResponse.
+When a client sends a POST request to create a new review, the incoming JSON payload is mapped to a CreateReviewRequest object.
+The controller then passes this object to the ReviewService for processing.
+After the service completes the operation, it returns a ReviewResponse object,
+which the controller sends back to the client.
+
+\begin{verbatim}
+// ReviewController.java - POST example
+
+@PostMapping
+public ReviewResponse createReview(@RequestBody @Valid CreateReviewRequest request) {
+    // The controller assigns the processing to the service,
+    // passing the DTO object along.
+    return reviewService.createReview(request);
+}
+\end{verbatim}
+
+This dependency is short-lived. The controller uses the DTO objects only during the handling of each request.
+Because the controller does not own these objects for its entire lifetime, UML represents this relationship with a dependency arrow rather than a composition arrow.
+
+\textbf{Service Layer}
+
+The service layer contains the core business logic of the application.
+Services process requests from controllers, enforce business rules, and prepare data to be returned. 
+All three modules' services maintain composition relationships with their respective repository interfaces to perform database operations. 
+
+\begin{verbatim}
+// CuisineService.java - composition with repositories
+
+@Service
+public class CuisineService {
+
+    private final CuisineRepository cuisineRepository;
+    private final CacheService cacheService;
+    private final ObjectMapper objectMapper;
+
+    // Constructor injection establishes the composition relationship
+    public CuisineService(CacheService cacheService, 
+                          CuisineRepository cuisineRepository, 
+                          ObjectMapper objectMapper) {
+        this.cuisineRepository = cuisineRepository;
+        this.cacheService = cacheService;
+        this.objectMapper = objectMapper;
+    }
+}
+\end{verbatim}
+
+In this example, CuisineService maintains a composition relationship with CuisineRepository
+This means that the service objects owns the reference to the corosponding repository object for its lifetime and relies on it for any database interactions.
+These objects are injected via the constructor and exist for the lifetime of the service, reflecting strong ownership in UML.
+Additionally, CuisineService and the ReviewService also have a composition relationship with CacheService to manage caching of frequently accessed data. 
+
+The service layer also interacts with DTOs for input and output, similar to how controllers depend on request DTOs. 
+For example, just as ReviewController depends on the CreateReviewRequest DTO to temporarily handle incoming data, 
+services depend on output DTOs to return structured data to the controller. 
+Here is a code example that demonstrates these relationships.
+
+\begin{verbatim}
+// CuisineService.java - dependency on DTO
+public CuisineResponse getCuisineByName(String cuisineName) {
+
+    Cuisine cuisine = cuisineRepository
+            .findByCuisineNameIgnoreCase(cuisineName)
+            .orElseThrow(() -> new RuntimeException("Cuisine not found"));
+
+    // Convert entity to DTO
+    return CuisineResponse.from(cuisine);
+}
+\end{verbatim}
+
+\begin{verbatim}
+// CuisineResponse.java - output DTO
+
+public class CuisineResponse {
+
+    private Long id;
+    private String cuisineName;
+    private String description;
+    private String regionName;
+    private String country;
+
+    public CuisineResponse(Long id, String cuisineName, String description,
+                           String regionName, String country) {
+        this.id = id;
+        this.cuisineName = cuisineName;
+        this.description = description;
+        this.regionName = regionName;
+        this.country = country;
+    }
+
+    public static CuisineResponse from(Cuisine cuisine) {
+        return new CuisineResponse(
+                cuisine.getId(),
+                cuisine.getCuisineName(),
+                cuisine.getDescription(),
+                cuisine.getRegion().getRegionName(),
+                cuisine.getRegion().getCountry()
+        );
+    }
+
+    public Long getId() { return id; }
+    public String getCuisineName() { return cuisineName; }
+    public String getDescription() { return description; }
+    public String getRegionName() { return regionName; }
+    public String getCountry() { return country; }
+}
+\end{verbatim}
+
+Unlike composition, the service does not maintain a permanent reference to the DTO object. It only uses the DTO briefly during method execution.
+In this example, the DTO is only used during when there is a get request from a client to get a specific cuisine by name from the controller.
+These relationships are represented in UML by dependency arrows, indicating temporary or usage-based relationships rather than ownership. 
+
+The CuisineResponse DTO is specifically responsible for carrying cuisine data from the service layer to the controller layer. 
+It encapsulates all the fields the API should expose: id, cuisineName, description, regionName, and country. 
+This allows the service to return structured data to the controller without exposing the internal Cuisine entity directly.
+
+The CuisineResponse DTO uses the Cuisine entity to send a respond back to the Cuisine Controller.
+The static from() method in CuisineResponse takes a Cuisine entity as input, reads its fields (id, cuisineName, description, and region), and constructs a new DTO object. 
+Once the DTO is created and returned to the service or controller, the service no longer maintains a reference to the entity.
+Because CuisineResponse only temporarily depends on the Cuisine entity during object creation, UML represents this relationship with a dependency arrow 
+rather than a composition. 
+
+\textbf{Repository Layer}
+
+The repository layer is responsible for handling database access.
+Repositories provide query methods for retrieving and storing entity objects, but they do not contain business logic. 
+Their sole responsibility is to abstract data access from the service layer.
+The CuisineRepository defines several query methods for retrieving 
+Cuisine entities from the database:
+
+\begin{verbatim}
+// CuisineRepository.java
+
+public interface CuisineRepository extends JpaRepository<Cuisine, Long> {
+    List<Cuisine> findByRegion_RegionName(String regionName);
+    List<Cuisine> findByRegion_Country(String country);
+    Optional<Cuisine> findByCuisineNameIgnoreCase(String cuisineName);
+}
+
+\end{verbatim}
+
+These repository methods are invoked within the service layer to implement 
+business logic. For example, the getCuisinesByRegion() method in 
+CuisineService calls findByRegion\_RegionName() to retrieve 
+the corresponding entities:
+
+\begin{verbatim}
+// CuisineService.java
+
+public List<String> getCuisinesByRegion(String regionName) {
+
+    List<Cuisine> cuisines =
+        cuisineRepository.findByRegion_RegionName(regionName);
+
+     List<String> cuisineNames = cuisines.stream()
+         .map(Cuisine::getCuisineName)
+         .collect(Collectors.toList());
+    
+    return cuisineNames;
+
+}
+\end{verbatim}
+
+We can see that the findByRegion\_RegionName method in the CuisineRepository 
+is invoked within the CuisineService as part of the composition relationship between the two classes.
+This demonstrates how the service depends on the repository to access persistent data, while still encapsulating the business logic and data 
+transformation.
+
+Similarly, ReviewService also has a composition relationship with CuisineRepository. 
+This is because creating or retrieving reviews requires access to the associated Cuisine entity. 
+For instance, when a new review is created, the service must first retrieve the corresponding cuisine from the database before associating it with the review. 
+Therefore, both services depend on the same repository, but the repository itself remains independent of them.
+
+\textbf{Entities}
+
+The entity layer defines the application’s persistent data model.
+Each entity maps directly to a database table and specifies the fields, relationships, and constraints that determine how data is stored and structured.
+
+In the UML diagram, the entities are connected to reflect their relationships within the domain model.
+The Region class has an aggregation relationship with the Cuisine class, indicating that a region may contain multiple cuisines. 
+However, the cuisines can conceptually exist independently of the region’s lifecycle.
+The multiplicity 1 near Region and 0..* near Cuisine in the UML diagram shows that each cuisine must belong to exactly one region,
+while a region may have zero or more cuisines. Since a cuisine can exist without a region, there this is aggregation relationship.
+
+In the code, this is implemented using the \texttt{@OneToMany} annotation in the Region entity:
+
+\begin{verbatim}
+// Region.java
+@OneToMany(mappedBy = "region", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+private List<Cuisine> cuisines;
+\end{verbatim}
+
+This code reflects the UML diagram’s relationships, showing how the Region entity contains multiple Cuisine 
+entities while each Cuisine references its owning Region.
+ 
+The Cuisine entity represents a specific type of food and maps to the cuisines table.
+Each cuisine has an id, cuisineName, description, and a reference to its associated region:
+
+\begin{verbatim}
+// Cuisine.java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "region_id", nullable = false)
+private Region region;
+\end{verbatim}
+
+This establishes the many-to-one side of the region-cuisine relationship, allowing the cuisine entity to reference the region entity.
+In the UML diagram, the Cuisine entity has a composition relationship with the Review entity.
+Although the Cuisine entity does not explicitly maintain a collection of review objects, the relationship reflects a strong lifecycle dependency.
+Each review must be associated with exactly one cuisine, and a review cannot exist independently.
+The multiplicity 1 near Cuisine and 0..* near Review indicates that a cuisine may have zero or more reviews, while each review belongs to exactly one cuisine.
+This representation captures the ownership and domain-level dependency between cuisines and reviews.
+
+
+The Review entity saves user feedback on a cuisine and maps to the reviews table.
+Each review has an id, a rating, a comment, and a timestamp. Each review is linked to a specific cuisine:
+
+\begin{verbatim}
+// Review.java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "cuisine_id", nullable = false)
+private Cuisine cuisine;
+\end{verbatim}
+
+Together, these entities form a hierarchical structure in which a Region can contain multiple Cuisine objects,
+representing a one-to-many aggregation. Each Cuisine belongs to a single Region and
+form a many-to-one composition relationship. Cuisines can also have multiple Review objects, indicating another one-to-many composition.
+Each Review, belongs to a single Cuisine, and has the many-to-one composition relationship.
+These relationships maintain integrity in the database and are accurately reflected in the UML diagram through the use of composition and aggregation arrows.
+
+Overall, the UML class diagram provides a clear visualization of the entire backend architecture.
+It shows how controllers, services, repositories, DTOs, and entities interact with each other.
+It also highlights the ownership and dependency relationships between layers,
+such as the composition between services and repositories, the temporary dependencies on DTOs, and the aggregation and composition among entities. 
+By examining the diagram with the code examples, it becomes easier to understand the flow of data through the application,
+the separation of concerns across layers, and how each component contributes to the overall functionality of the local cuisine system.
