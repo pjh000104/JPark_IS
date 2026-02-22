@@ -1,2 +1,197 @@
 \section[Frontend Design]{Frontend Design}\label{sec:newsec}
+The frontend of the local cuisine application is responsible for accurately displaying the data sent from 
+the backend. It is only responsible for presenting the data and managing user interactions,
+while all the business logic and data persistence are handled by the backend. 
+The tech stack used for the frontend development are Next.JS and Tailwind css. 
+
+Next.js was selected as the primary frontend framework primarily for its strong support of modular, component-based development. 
+As a React-based framework, it enables the application to be structured as a collection of independent, reusable components, 
+each responsible for a specific portion of the user interface. This modular structure improves maintainability, 
+as changes to one component can be made with minimal impact on others, and enhances scalability as new features 
+can be added without restructuring the entire system.
+
+The architectural philosophy of Next.js aligns closely with the modular backend implemented using Spring Boot. 
+Just as the backend is organized into clearly separated modules and layers, 
+the frontend is structured into distinct components and pages with well-defined responsibilities. 
+For example, the frontend is divided into two primary modules: regions and cuisines, 
+each responsible for handling its respective presentation logic and user interactions. 
+This structure reflects the modular monolithic architecture of the backend, where related 
+functionalities are grouped into modules while remaining part of a single deployable system. 
+This design allows the similar domain across both layers, as the application maintains a consistent 
+architectural model throughout the stack. 
+
+Both technologies promote separation of concerns and low coupling between modules, 
+resulting in a coherent and maintainable system design. 
+This alignment between frontend and backend architecture enhances overall system clarity 
+and simplifies future extension, testing, and maintenance.
+
+\subsection{Frontend Architecture}
+
+The frontend of the application is organized in a modular structure that mirrors the domain model of the backend. 
+At the top level, the application is divided into two primary modules: regions and cuisines, 
+each corresponding to a distinct functional area of the application. These separate directories in Next.js 
+automatically define the routing structure, simplifying navigation and maintaining a clear correspondence 
+between the file system and URL paths. For example, the folder app/cuisines/[cuisineName]/page.tsx 
+automatically corresponds to the route /cuisines/{cuisineName}, where {cuisineName} 
+is a dynamic segment representing the name of a specific cuisine. This structure allows the application 
+to generate pages for each cuisine dynamically while preserving an intuitive and consistent URL hierarchy.
+
+The regions module is responsible for presenting regional data and navigating between different regions, 
+while the cuisines module handles the display of specific cuisines and their associated interactions. 
+All logic related to reviews is included within the cuisines module, as reviews are inherently 
+tied to individual cuisines. This ensures that each review is associated with its respective cuisine, 
+maintaining a coherent modular structure. Consequently, the cuisines module encapsulates both 
+the presentation of cuisine details and the user interactions related to reviews. This is because each review
+as always associated with a certain cuisine.
+
+Within each module, the application distinguishes between page components and reusable UI components. 
+For example, the cuisines/[cuisineName] folder contains page-level components such as page.tsx, 
+which serves as the base page for rendering the main cuisine information, along with supporting components 
+like ReviewForm.tsx and ReviewList.tsx, which are attached to page.tsx to encapsulate specific UI functionalities. 
+Similarly, the regions/[region] folder contains CuisineList.tsx, a reusable component for displaying 
+a list of cuisines within a region. This separation allows components to be developed and maintained 
+independently, enhancing code readability.
+
+The application also employs a centralized API abstraction through the lib/api.ts file, 
+which handles all communication with the backend REST endpoints. This approach ensures that 
+data fetching logic is decoupled from presentation components, further reinforcing the separation 
+of concerns. Global styling and layout are managed through globals.css and layout.tsx, 
+providing consistent styling and structure across pages without introducing unnecessary complexity in 
+individual components.
+
+
+\subsection{API Communication}
+
+The frontend communicates with the backend exclusively through RESTful APIs exposed by the Spring Boot application. 
+All HTTP requests are centralized in the lib/api.ts file, which abstracts 
+network communication and ensures that individual components remain focused on presentation and user interaction. 
+
+This centralized API abstraction offers several advantages. First, it ensures that page components and 
+reusable UI components do not directly manage network requests; they simply invoke the relevant function 
+from api.ts and receive structured JSON data. Second, it improves maintainability: if a backend 
+endpoint changes, only the corresponding function in api.ts needs to be updated. Third, 
+it facilitates consistent error handling, as all functions check response statuses and log errors appropriately 
+
+A concrete example of this abstraction can be seen in the function getCuisineByName(cuisineName) 
+(Listing~\ref{lst:getCuisineByName}), which retrieves detailed information about a specific cuisine:
+
+\begin{lstlisting}[caption={getCuisineByName -- fetching a single cuisine by name},
+                   label={lst:getCuisineByName},
+                   numbers=left,
+                   firstnumber=1,
+                   breaklines=true,
+                   breakatwhitespace=true]
+export async function getCuisineByName(cuisineName: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/cuisines/${encodeURIComponent(cuisineName)}`, { credentials: "include" });
+    if (!res.ok) { throw new Error(`Failed to fetch cuisine: ${cuisineName}`); }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching cuisine:", error);
+    return null;
+  }
+}
+\end{lstlisting}
+
+In this example, the function constructs the URL dynamically using the provided cuisineName parameter (line 3), 
+performs a fetch request including credentials, checks for a successful response (line 4), and returns the JSON data (line 6). 
+Any errors during the request are caught and logged (lines 7--9), ensuring consistent error handling throughout the frontend. 
+The getCuisineByName function is called in the page.tsx in the cuisines module to load data related to a specific cuisine. 
+The data returned includes the cuisine's unique identifier (id), the name of the cuisine (cuisineName), 
+a textual description (description), the region it belongs to (regionName), and the country (country). 
+This information is used by the cuisines module to render the main content of the page, displaying the 
+cuisine's name, description, and region details to the user. Additionally, the cuisine id (id) is 
+passed to the getReviewsByCuisineId function to fetch all reviews associated with this specific cuisine, 
+ensuring that the displayed reviews are correctly linked to the selected cuisine and maintaining 
+consistency between the main page content and the review components.
+
+Similarly, creating a new review is abstracted through the createReview(data) function 
+(Listing~\ref{lst:createReview}), which sends a POST request with a JSON payload:
+
+\begin{lstlisting}[caption={createReview -- sending a new review to the backend},
+                   label={lst:createReview},
+                   numbers=left,
+                   firstnumber=1,
+                   breaklines=true,
+                   breakatwhitespace=true]
+export async function createReview(data: { cuisineId: number; rating: number; comment: string; }) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/reviews`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }
+  );
+  if (!response.ok) { throw new Error("Failed to create review"); }
+  return response.json();
+}
+\end{lstlisting}
+
+This function takes a structured data object containing the cuisineId, rating, and comment (line 1), 
+serializes it to JSON (line 5), and sends it to the backend (lines 2--6). It also checks for errors (line 7) 
+and returns the response JSON (line 8). By using these abstractions, the frontend components remain 
+clean and focused on rendering, while all network communication and error handling is handled in a 
+single, maintainable location. 
+
+In the application, the createReview function is invoked within the ReviewForm.tsx component 
+of the cuisines module. When a user submits a new review through the form, the component collects 
+the rating and comment values, along with the cuisineId from the currently displayed cuisine, 
+and passes them to createReview. This ensures that the review is correctly associated with the selected 
+cuisine and immediately reflected in the ReviewList component, maintaining a smooth user experience 
+and a consistent connection between the cuisine data and its associated reviews.
+
+This clear separation between data fetching and presentation reinforces the modular architecture 
+of the frontend and maintains consistency with the backend's modular monolithic structure. 
+By centralizing all network requests within api.ts, page and UI components focus solely on rendering 
+and user interactions, while all communication with the backend and error handling is encapsulated 
+in a single location. This approach enhances maintainability, ensures consistent data usage across 
+components, and aligns the frontend and backend architectures, resulting in a coherent and extensible 
+system design.
+
+\subsection{Client-Side Caching}
+
+As discussed in Section 4.4 (Make reference), client-side caching can significantly improve performance 
+by reducing redundant network requests, and enable offline usability. 
+However, since this application is primarily intended to run in an online environment 
+with continuous communication between the frontend and backend, 
+advanced frontend caching mechanisms were not fully implemented in the current version. 
+Instead, the system relies on default browser caching behavior, 
+while remaining open for future integration of additional client-side caching strategies.
+
+The primary form of caching currently utilized in this project 
+is the browser’s automatic caching of static frontend assets. 
+When users access the application for the first time, 
+the compiled Next.js JavaScript bundles (e.g., files under {/\_next/static/}) 
+and the generated CSS stylesheet produced by Tailwind CSS 
+are downloaded and stored in the browser cache.
+Because these assets are static and shared across multiple pages, 
+they do not need to be re-downloaded during subsequent navigation. 
+For example, when a user navigates from the region listing page to a cuisine detail page, 
+the previously loaded JavaScript bundle and stylesheet are reused from the browser cache. 
+Only the dynamic data retrieved from the backend API needs to be fetched again. 
+This reduces loading time and improves responsiveness without requiring additional manual configuration.
+
+Although local storage was not directly implemented in the current version of the application, 
+the existing frontend architecture allows for its straightforward integration. 
+As described in Section~4.4, local storage enables persistent storage of lightweight, non-sensitive data on the client device 
+across browser sessions.
+Local storage could be used to retain user interface preferences in the future, such as theme selection, 
+or to store recently viewed cuisines. 
+It could also be applied to cache infrequently changing API responses 
+in order to reduce repeated network requests. 
+
+In addition to browser-level caching, HTTP Cache-Control headers could be configured on the backend 
+to provide more control over resource freshness. 
+For example, relatively stable data such as region or cuisine listings 
+could be assigned appropriate caching directives (e.g., max-age) 
+to allow temporary reuse without repeated server requests.
+However, data that could change frequently such as user reviews would require stricter caching policies 
+to ensure data consistency and accuracy. 
+Although these cache-control strategies were not explicitly configured in the current implementation, 
+the system architecture supports their future integration. 
+This reflects a design consideration that balances performance optimization with data freshness, as discussed in Section~4.4.
+
+\subsection{User Interface Design Choices}
 
