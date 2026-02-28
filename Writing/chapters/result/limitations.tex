@@ -1,0 +1,56 @@
+\section{Limitations}
+
+While the system successfully implements its core functionalities, several limitations were identified that affect both the user-facing software and the scope of the project itself.
+These limitations are discussed in two categories: software limitations and project limitations.
+
+\textbf{System Limitations}
+
+From the perspective of the implemented software, one key limitation is the limited data available. 
+The application currently supports only a predefined set of geographic regions and a relatively small number of cuisines. 
+Users cannot explore regions or dishes outside of this dataset, which restricts the system's coverage 
+and reduces its usefulness for less common areas or cuisines.
+
+Furthermore, the current dataset remains temporary and externally sourced. 
+The cuisine information was primarily retrieved and verified through the Wikipedia API, 
+rather than being curated, validated, or maintained within a dedicated internal database. 
+As a result, the system depends on third-party data availability and consistency, 
+which may affect long-term reliability, completeness, and accuracy.
+
+Another limitation lies in the available features. 
+Although the system allows users to browse regions and cuisines, submit reviews, and search for restaurants, 
+several advanced functionalities are not implemented. 
+Features such as region or cuisine search, user personalization, review moderation, ranking mechanisms, 
+and real-time updates are missing. 
+In addition, the system does not provide visual representations of the cuisines, 
+such as images of the dishes, which could significantly enhance user understanding 
+and engagement. 
+The absence of visual content reduces the overall user experience, 
+as food-related applications often rely heavily on imagery to attract interest 
+and provide contextual clarity. 
+These omissions limit the interactivity and engagement potential of the system.
+
+Finally, while unit and module-level integration testing was conducted, 
+comprehensive end-to-end testing (from region selection, cuisine exploration, 
+review submission, and restaurant search) was not completed.
+This means that potential issues in complex interactions or combined module behavior may remain undetected.
+
+
+\textbf{Project Limitations}
+
+In terms of the broader project scope, the primary purpose was to explore backend design choices 
+related to architecture, database strategies, and caching mechanisms. 
+While these topics were researched thoroughly, not all strategies could be implemented in practice. 
+
+Some technical approaches, including distributed system design, alternative caching strategies, 
+and different database architectures, were not examined through practical application. 
+Although these concepts were researched at a theoretical level, 
+they were not implemented within the system. 
+If these approaches had been implemented and evaluated in practice, 
+they could have provided deeper insight into scalability, performance trade-offs, 
+and long-term maintainability. 
+However, due to time and scope constraints, practical experimentation with these strategies 
+was not applicable within the duration of the project.
+
+These limitations not only define the current scope of the system 
+but also establish a foundation for future research and system improvement.
+

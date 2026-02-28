@@ -152,7 +152,7 @@ system design.
 
 \subsection{Client-Side Caching}
 
-As discussed in Section 4.4 (Make reference), client-side caching can significantly improve performance 
+As discussed in section \ref{sec:clientside_caching}, client-side caching can significantly improve performance 
 by reducing redundant network requests, and enable offline usability. 
 However, since this application is primarily intended to run in an online environment 
 with continuous communication between the frontend and backend, 
@@ -175,7 +175,7 @@ This reduces loading time and improves responsiveness without requiring addition
 
 Although local storage was not directly implemented in the current version of the application, 
 the existing frontend architecture allows for its straightforward integration. 
-As described in Section~4.4, local storage enables persistent storage of lightweight, non-sensitive data on the client device 
+As described in section \ref{sec:clientside_caching}, local storage enables persistent storage of lightweight, non-sensitive data on the client device 
 across browser sessions.
 Local storage could be used to retain user interface preferences in the future, such as theme selection, 
 or to store recently viewed cuisines. 
@@ -191,7 +191,7 @@ However, data that could change frequently such as user reviews would require st
 to ensure data consistency and accuracy. 
 Although these cache-control strategies were not explicitly configured in the current implementation, 
 the system architecture supports their future integration. 
-This reflects a design consideration that balances performance optimization with data freshness, as discussed in Section~4.4.
+This reflects a design consideration that balances performance optimization with data freshness, as discussed in section \ref{sec:clientside_caching}.
 
-\subsection{User Interface Design Choices}
+% \subsection{User Interface Design Choices}
 

@@ -345,7 +345,7 @@ in the cache on a cache miss. This ensures that subsequent requests for the same
 can be served directly from memory.
 
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- Cache-aside implementation for getCuisinesByRegion}, label={lst:cuisineCacheByRegion}, numbers=left, firstnumber=1]
 public List<String> getCuisinesByRegion(String regionName) {
 
     String cacheKey = "region:" + regionName + ":cuisineNames";
@@ -369,19 +369,19 @@ public List<String> getCuisinesByRegion(String regionName) {
 
     return cuisineNames;
 }
-\end{verbatim}
+\end{lstlisting}
 
 The caching process follows the cache-aside pattern and is implemented in three steps.
-First, a unique cache key is generated using the requested region name. This ensures that
+First, a unique cache key is generated using the requested region name (line 3). This ensures that
 each region’s cuisine list is cached independently.
 
-Next, the application queries the cache using the generated key. If the data exists
+Next, the application queries the cache using the generated key (lines 6--9). If the data exists
 (cache hit), the cached list of cuisine names is returned immediately,
 bypassing the database entirely. This significantly reduces response time and database load.
 
 If the data is not found in the cache (cache miss), the service queries the database
-using the CuisineRepository. The retrieved cuisine entities are then transformed
-into a list of cuisine names. Finally, the result is stored in the cache with time based invalidation of one hour before being returned to the client.
+using the CuisineRepository (lines 12--13). The retrieved cuisine entities are then transformed
+into a list of cuisine names (lines 15--17). Finally, the result is stored in the cache with time-based invalidation of one hour (line 20) before being returned to the client.
 
 This explicit control over cache access and population reflects the cache-aside strategy,
 allowing the application to balance performance improvements with data consistency while
@@ -389,12 +389,10 @@ keeping the caching logic simple and maintainable.
 The same caching approach is also applied to the getCuisinesByName method, which follows a similar structure
 and purpose. This also ensures consistent performance improvements when accessing across different cuisines by the cuisine name.
 
-For the review data, initially, a write-through caching strategy was considered. Because reviews are created and deleted by users, it seemed beneficial to keep
-the cache fully synchronized with the database on every write operation.
 Under this approach, each write operation would immediately update the cached review list, ensuring strong consistency between the cache and the database.
 Here is the original code for the write-through caching strategy.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={ReviewService -- Write-through caching example}, label={lst:reviewWriteThroughCache}, numbers=left, firstnumber=1]
 public ReviewResponse createReview(CreateReviewRequest request) {
 
     Cuisine cuisine = cuisineRepository.findById(request.getCuisineId())
@@ -429,9 +427,9 @@ public ReviewResponse createReview(CreateReviewRequest request) {
             saved.getCreatedAt()
     );
 }
-\end{verbatim}
+\end{lstlisting}
 
-We can see from that a created review is both written in the cache and the database.
+We can see from that a created review is both written in the cache and the database (lines 12, 26).  
 This approach ensured that cached data remained fully up to date, but it introduced significant overhead.
 Each write operation required an additional database query to rebuild the cached review list, followed by a cache update.
 As review activity increased for popular cuisines, I thought that this design could become write-heavy and inefficient.
@@ -439,7 +437,7 @@ As review activity increased for popular cuisines, I thought that this design co
 To address these issues, the caching design was changed to use the cache-aside pattern. Instead of updating the cache on every write, 
 the cache is now updated whenever there is a read request.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={ReviewService -- Cache-aside implementation for createReview}, label={lst:reviewCacheAside}, numbers=left, firstnumber=1]
 public ReviewResponse createReview(CreateReviewRequest request) {
 
     Cuisine cuisine = cuisineRepository.findById(request.getCuisineId())
@@ -463,39 +461,12 @@ public ReviewResponse createReview(CreateReviewRequest request) {
             saved.getCreatedAt()
     );
 }
-\end{verbatim}
+\end{lstlisting}
 
-The difference from the write through database caching method is that new reviews are now only written in the database, and the existing cache is not evicted.
-In this scope, evicted means that the original cache is deleted.
-With this approach, write operations remain lightweight, consisting only of the database transaction and cache eviction.
-The cache is repopulated only when a read request occurs:
-
-\begin{verbatim}
-public List<ReviewResponse> getReviewsByCuisine(Long cuisineId) {
-
-    String cacheKey = "cuisine:" + cuisineId + ":reviews";
-
-    Object cached = cacheService.get(cacheKey);
-    if (cached != null) {
-        return (List<ReviewResponse>) cached;
-    }
-
-    List<ReviewResponse> responses =
-            reviewRepository.findByCuisineId(cuisineId)
-                    .stream()
-                    .map(r -> new ReviewResponse(
-                            r.getId(),
-                            r.getRating(),
-                            r.getComment(),
-                            r.getCreatedAt()
-                    ))
-                    .collect(Collectors.toList());
-
-    cacheService.put(cacheKey, responses, 300);
-    return responses;
-}
-\end{verbatim}
-
+The difference from the write-through database caching method is that new reviews are now only written in the database (line 12), and the existing cache is evicted (line 15).  
+In this scope, evicted means that the original cache is deleted.  
+With this approach, write operations remain lightweight, consisting only of the database transaction and cache eviction.  
+The cache is repopulated only when a read request occurs.
 This cache-aside design reduces write overheads, improves scalability, and aligns more effectively with the read-heavy access patterns of the application.
 By combining explicit cache eviction on writes with time-based expiration,
 the system maintains acceptable data freshness while significantly improving performance.
@@ -510,7 +481,7 @@ event listener respond by evicting or updating the cached reviews for the affect
 
 For example, a review creation event could be created as following:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={ReviewCreatedEvent -- domain event}, label={lst:reviewCreatedEvent}, numbers=left, firstnumber=1]
 public class ReviewCreatedEvent {
     private final Long cuisineId;
 
@@ -522,11 +493,12 @@ public class ReviewCreatedEvent {
         return cuisineId;
     }
 }
-\end{verbatim}
+\end{lstlisting}
+
 
 And a corresponding event listener could invalidate the cache entry:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={ReviewEventListener -- event-based cache invalidation}, label={lst:reviewEventListener}, numbers=left, firstnumber=1]
 @Component
 public class ReviewEventListener {
 
@@ -536,10 +508,10 @@ public class ReviewEventListener {
         // Cache is evicted in response to the event
     }
 }
-\end{verbatim}
+\end{lstlisting}
 
-However, in this system the cache eviction already occurs directly within the review creation workflow.
-Because the system has a single, well-defined write path for reviews, introducing a full event-based validation mechanism would add unnecessary complexity to the application. 
+However, in this system the cache eviction already occurs directly within the review creation workflow (line 15 in Listing~\ref{lst:reviewCacheAside}).
+Because the system has a single, well-defined write path for reviews, introducing a full event-based invalidation mechanism would add unnecessary complexity to the application. 
 The chosen approach achieves the same consistency guarantees while remaining simpler and easier to maintain.
 
 \subsection{Backend Request Workflow}
@@ -573,7 +545,7 @@ When a user initiates a cuisine search, the backend processes the request in the
 \end{enumerate}
 
 
-As shown in the sequential diagram above, the workflow begins when the user initiates a search action from the frontend interface.
+As shown in the sequential diagram figure \ref{fig:sequential-diagram}, the workflow begins when the user initiates a search action from the frontend interface.
 In this example, the user searches for ``Hakata ramen''.
 
 The frontend translates this action into an HTTP request and sends it to the backend API.
@@ -586,7 +558,7 @@ The frontend is responsible only for user interaction and request initiation, wh
 The request is received by the CuisineController, which serves as the entry point to the backend.
 The controller extracts request parameters and sends the request to the service layer.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineController -- Handling incoming HTTP requests}, label={lst:cuisineController}, numbers=left, firstnumber=1]
 @RestController
 @RequestMapping("/api/cuisines")
 public class CuisineController {
@@ -601,19 +573,27 @@ public class CuisineController {
     public List<String> getByRegion(@PathVariable String regionName) {
         return cuisineService.getCuisinesByRegion(regionName);
     }
-    @GetMapping("/{cuisineName}")
-    public ResponseEntity<CuisineResponse> getByCuisineName(@PathVariable String cuisineName) {
-        return ResponseEntity.ok(cuisineService.getCuisineByName(cuisineName));
-    }
 }
-\end{verbatim}
+\end{lstlisting}
+
+The controller contains no business logic, ensuring a clear separation of the layers. 
+As shown in Listing~\ref{lst:cuisineController}, the controller serves as the entry point 
+for requests originating from the frontend. When a user action triggers an HTTP request, 
+it is routed to this class through the defined endpoint mappings (lines 11--12).
+
+The entry into the backend occurs through the methods annotated with @GetMapping 
+(line 11). For example, the endpoint "/byRegion/{regionName}" (line 11) receives a 
+request from the frontend and directs it to the method getByRegion (line 12). At this 
+stage, the controller extracts the request parameter using @PathVariable String 
+regionName (line 12), which binds the value provided in the URL to the method argument. 
+After extraction, the controller immediately forwards the parameter to the service 
+layer by invoking cuisineService.getCuisinesByRegion(regionName) (line 13). 
 
 The controller contains no business logic, ensuring a clear separation of the layers.
+The CuisineService contains the business logic for retrieving a cuisine by name. It first checks the cache using the
+cache-aside pattern.
 
-The CuisineService contains the business logic for retrieving a cuisine by name. 
-It first checks the cache using the cache-aside pattern.
-
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- Cache-aside lookup}, label={lst:cuisineServiceCache}, numbers=left, firstnumber=1]
 public CuisineResponse getCuisineByName(String cuisineName) {
 
     String cacheKey = "cuisine:name:" + cuisineName.toLowerCase();
@@ -629,40 +609,49 @@ public CuisineResponse getCuisineByName(String cuisineName) {
 
     System.out.println("cache miss");
 }
-\end{verbatim}
+\end{lstlisting}
 
-If the cache contains a valid entry, it is converted into a CuisineResponse using ObjectMapper, which is a uitility class of a Java library used for mapping Java objects
+If the cache contains a valid entry (lines 6--12), it is converted into a CuisineResponse 
+using ObjectMapper (line 9), which is a uitility class of a Java library used for mapping Java objects
 and JSON-compatible structures.
-In this contex, it transforms the cached generic object retrieved from Redis back to the CuisineRepsonse type. This will be explained more in detailed in the next step.
+In this context, it transforms the cached generic object retrieved from Redis (line 6) back to the CuisineRepsonse type.
+This will be explained more in detailed in the next step.
 This avoids unnecessary database access and reduces response time.
 
-If the cache does not contain the requested cuisine, the service queries the database through the repository:
-
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- Database fallback}, label={lst:cuisineServiceDb}, numbers=left, firstnumber=1]
 Cuisine cuisine = cuisineRepository
         .findByCuisineNameIgnoreCase(cuisineName)
         .orElseThrow(() -> new RuntimeException("Cuisine not found"));
 
 CuisineResponse response = CuisineResponse.from(cuisine);
-\end{verbatim}
+\end{lstlisting}
 
-Here, the repository retrieves the Cuisine entity by name. If there are no matching entity, an exception is thrown and and propagated back to the controller.
-The controller handles the exception and returns an appropriate HTTP error response to the frontend, typically a 404 Not Found status with a descriptive error message.
+Here, the repository retrieves the Cuisine entity by name (lines 1--3). If there are no matching entity, 
+an exception is thrown (line 3) and and propagated back to the controller.
+The controller handles the exception and returns an appropriate HTTP error response to the frontend, 
+typically a 404 Not Found status with a descriptive error message.
 The error message is sent to the frontend, and the user is informed them that the requested cuisine could not be found.
-If the cuisine data is found in the database that matches the cuisine name, the response is converted into a CuisineResponse object, which is an object that is 
-responsible for transferring data to the frontend. 
+If the cuisine data is found in the database that matches the cuisine name, the response is converted 
+into a CuisineResponse object (line 5), which is an object that is 
+responsible for transferring data to the frontend.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- Caching database result}, label={lst:cuisineServicePut}, numbers=left, firstnumber=1]
 cacheService.put(cacheKey, response, 3600);
-
 return response;
-\end{verbatim}
+\end{lstlisting}
 
-The response is cached with a time invalidation of 3600 seconds (1 hour) in Redis.
-Finally, the controller returns the CuisineResponse to the frontend, which displays it to the user.
-Below is the full FindCuisineByName method. 
+The response is cached with a time invalidation of 3600 seconds (1 hour) in Redis (line 1).
+This particular duration was chosen as a balance between performance and data freshness. 
+It allows frequently requested cuisine data to be served from the cache, reducing 
+database load and improving response times, while ensuring that any updates to 
+cuisine information in the database are reflected to users within a reasonable 
+timeframe. A shorter time invalidation could result in excessive cache misses and higher 
+database queries, and a longer one could serve outdated data for extended periods. 
+Finally, the controller returns the CuisineResponse to the frontend (line 2), which displays it to the user.
+Below is the full FindCuisineByName method.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- Caching database result}, label={lst:cuisineServicePut}, numbers=left, firstnumber=1]
+cacheService.put(cacheKey, response, 3600);
 public CuisineResponse getCuisineByName(String cuisineName) {
 
     String cacheKey = "cuisine:name:" + cuisineName.toLowerCase();
@@ -691,15 +680,15 @@ public CuisineResponse getCuisineByName(String cuisineName) {
     return response;
 }
 
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Modular Architecture Overview}
 
-In the previous subsection, we explored the workflow for a backend request. This section will introduce indepth
-what happens  how the Java classes interact with each other
+In the previous subsection, we explored the workflow for a backend request. This section will introduce in depth
+what happens within the Java classes and how they interact with each other
 to enable those workflows as a part of the modular monolithic architecture. 
 
-The following UML class diagram provides a visual representation of the structural organization of the local cuisine application.
+The following UML class diagram \ref{fig:fig:class-diagram} provides a visual representation of the structural organization of the local cuisine application.
 It illustrates how classes are organized within the system and how they interact with one another.
 The diagram highlights the relationships between different classes and modules, and clarify the design and the flow of responsibilities across the application.
 
@@ -740,13 +729,13 @@ with arrows indicating dependencies and structural associations.
 
 The controller layer handles HTTP requests and maps endpoints to the appropriate service methods
 Each controller is composed of service objects, which it depends on to execute business logic.
-In UML, this relationship is represented by a composition arrow (\texttt{*--}) pointing from the controller to the service class.
+In UML, this relationship is represented by a composition arrow pointing from the controller to the service class.
 
 For example, in the Review module, the ReviewController has a composition relationship with ReviewService.
 This is implemented in Java via constructor injection: the controller receives a reference to a ReviewService instance when it is created.
 This means that the controllers owns the reference to their corresponding service object for its lifetime and relies on it to handle all requests.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={ReviewController -- Composition with ReviewService}, label={lst:reviewController}, numbers=left, firstnumber=1]
 // ReviewController.java
 
 @RestController
@@ -765,13 +754,14 @@ public class ReviewController {
         return reviewService.getReviewsByCuisine(cuisineId);
     }
 }
-\end{verbatim}
+\end{lstlisting}
 
-For instance, when a user makes a GET request to view reviews for a certain cuisine,
-the ReviewController invokes the getReviewsByCuisine() method on its ReviewService object.
-The controller does not contain any business logic itself; it passes all such responsibilities to the service.
-Because the service object is initialized along with the controller and maintained as a private final field,
-the UML composition arrow accurately reflects the “has-a” relationship between the controller and the service.
+For instance, when a user makes a GET request to view reviews for a certain cuisine 
+(lines 14--16), the ReviewController invokes the getReviewsByCuisine() method on its 
+ReviewService object (line 16). The controller does not contain any business logic itself; 
+it passes all such responsibilities to the service. Because the service object is initialized 
+along with the controller (lines 10--11) and maintained as a private final field, the UML 
+composition arrow accurately reflects the “has-a” relationship between the controller and the service.
 
 For the reviews module, the ReviewController interacts with data transfer objects (DTOs) for handling input and output.
 DTOs are simple objects that carry data between layers of the application without containing business logic.
@@ -780,7 +770,7 @@ ensuring that changes to the database model do not directly affect the API contr
 
 For example, a DTO used in the Review module is the CreateReviewRequest, which encapsulates the data needed to create a new review:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CreateReviewRequest -- DTO for Review module}, label={lst:createReviewRequest}, numbers=left, firstnumber=1]
 // CreateReviewRequest.java
 
 public class CreateReviewRequest {
@@ -796,21 +786,14 @@ public class CreateReviewRequest {
     @Size(max = 1000)
     private String comment;
 
-    public Long getCuisineId() { return cuisineId; }
-    public void setCuisineId(Long cuisineId) { this.cuisineId = cuisineId; }
-
-    public Integer getRating() { return rating; }
-    public void setRating(Integer rating) { this.rating = rating; }
-
-    public String getComment() { return comment; }
-    public void setComment(String comment) { this.comment = comment; }
+    // getters and setters
 }
-\end{verbatim}
+\end{lstlisting}
 
 This DTO is used by the controller to receive data from the client in a structured format. 
-It ensures that only valid and necessary data is passed to the service layer, 
+It ensures that only valid and necessary data is passed to the service layer (lines 5--14), 
 allowing the internal entity objects, such as the Review entity, to remain decoupled from the API contract.
-For example, the @NotNull annotation ensures that none of the fields of the submitted data isn't empty.
+For example, the @NotNull annotation (lines 5, 8) ensures that none of the fields of the submitted data is empty.
 
 This class does not contain any business logic. It simply holds the data returned by the service layer. 
 It is used by the ReviewController to send responses back to clients.
@@ -821,7 +804,7 @@ The controller then passes this object to the ReviewService for processing.
 After the service completes the operation, it returns a ReviewResponse object,
 which the controller sends back to the client.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={ReviewController -- POST request handling with DTOs}, label={lst:reviewControllerPost}, numbers=left, firstnumber=1]
 // ReviewController.java - POST example
 
 @PostMapping
@@ -830,9 +813,9 @@ public ReviewResponse createReview(@RequestBody @Valid CreateReviewRequest reque
     // passing the DTO object along.
     return reviewService.createReview(request);
 }
-\end{verbatim}
+\end{lstlisting}
 
-This dependency is short-lived. The controller uses the DTO objects only during the handling of each request.
+This dependency is short-lived. The controller uses the DTO objects only during the handling of each request (lines 4--7). 
 Because the controller does not own these objects for its entire lifetime, UML represents this relationship with a dependency arrow rather than a composition arrow.
 
 \textbf{Service Layer}
@@ -841,15 +824,13 @@ The service layer contains the core business logic of the application.
 Services process requests from controllers, enforce business rules, and prepare data to be returned. 
 All three modules' services maintain composition relationships with their respective repository interfaces to perform database operations. 
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- Composition with Repositories and CacheService}, label={lst:cuisineServiceComposition}, numbers=left, firstnumber=1]
 // CuisineService.java - composition with repositories
 
 @Service
 public class CuisineService {
 
-    private final CuisineRepository cuisineRepository;
-    private final CacheService cacheService;
-    private final ObjectMapper objectMapper;
+    // private variables
 
     // Constructor injection establishes the composition relationship
     public CuisineService(CacheService cacheService, 
@@ -860,11 +841,11 @@ public class CuisineService {
         this.objectMapper = objectMapper;
     }
 }
-\end{verbatim}
+\end{lstlisting}
 
-In this example, CuisineService maintains a composition relationship with CuisineRepository
-This means that the service objects owns the reference to the corosponding repository object for its lifetime and relies on it for any database interactions.
-These objects are injected via the constructor and exist for the lifetime of the service, reflecting strong ownership in UML.
+In this example, CuisineService maintains a composition relationship with CuisineRepository. 
+This means that the service objects owns the reference to the corresponding repository object for its lifetime and relies on it for any database interactions. 
+These objects are injected via the constructor (lines 9--14) and exist for the lifetime of the service, reflecting strong ownership in UML. 
 Additionally, CuisineService and the ReviewService also have a composition relationship with CacheService to manage caching of frequently accessed data. 
 
 The service layer also interacts with DTOs for input and output, similar to how controllers depend on request DTOs. 
@@ -872,7 +853,7 @@ For example, just as ReviewController depends on the CreateReviewRequest DTO to 
 services depend on output DTOs to return structured data to the controller. 
 Here is a code example that demonstrates these relationships.
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- dependency on DTO}, label={lst:cuisineServiceDto}, numbers=left, firstnumber=1]
 // CuisineService.java - dependency on DTO
 public CuisineResponse getCuisineByName(String cuisineName) {
 
@@ -883,27 +864,16 @@ public CuisineResponse getCuisineByName(String cuisineName) {
     // Convert entity to DTO
     return CuisineResponse.from(cuisine);
 }
-\end{verbatim}
+\end{lstlisting}
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineResponse -- Output DTO}, label={lst:cuisineResponseDto}, numbers=left, firstnumber=1]
 // CuisineResponse.java - output DTO
 
 public class CuisineResponse {
 
-    private Long id;
-    private String cuisineName;
-    private String description;
-    private String regionName;
-    private String country;
+    // private variables
 
-    public CuisineResponse(Long id, String cuisineName, String description,
-                           String regionName, String country) {
-        this.id = id;
-        this.cuisineName = cuisineName;
-        this.description = description;
-        this.regionName = regionName;
-        this.country = country;
-    }
+    // constructor
 
     public static CuisineResponse from(Cuisine cuisine) {
         return new CuisineResponse(
@@ -915,15 +885,11 @@ public class CuisineResponse {
         );
     }
 
-    public Long getId() { return id; }
-    public String getCuisineName() { return cuisineName; }
-    public String getDescription() { return description; }
-    public String getRegionName() { return regionName; }
-    public String getCountry() { return country; }
+    // getters and setters
 }
-\end{verbatim}
+\end{lstlisting}
 
-Unlike composition, the service does not maintain a permanent reference to the DTO object. It only uses the DTO briefly during method execution.
+Unlike composition, the service does not maintain a permanent reference to the DTO object. It only uses the DTO briefly during method execution (lines 8--9 in Listing~\ref{lst:cuisineServiceDto}). 
 In this example, the DTO is only used during when there is a get request from a client to get a specific cuisine by name from the controller.
 These relationships are represented in UML by dependency arrows, indicating temporary or usage-based relationships rather than ownership. 
 
@@ -931,11 +897,11 @@ The CuisineResponse DTO is specifically responsible for carrying cuisine data fr
 It encapsulates all the fields the API should expose: id, cuisineName, description, regionName, and country. 
 This allows the service to return structured data to the controller without exposing the internal Cuisine entity directly.
 
-The CuisineResponse DTO uses the Cuisine entity to send a respond back to the Cuisine Controller.
-The static from() method in CuisineResponse takes a Cuisine entity as input, reads its fields (id, cuisineName, description, and region), and constructs a new DTO object. 
+The CuisineResponse DTO uses the Cuisine entity to send a respond back to the Cuisine Controller (lines 9--17 in Listing~\ref{lst:cuisineResponseDto}).
+The static from() method in CuisineResponse takes a Cuisine entity as input, reads its fields (id, cuisineName, description, and region), and constructs a new DTO object.
 Once the DTO is created and returned to the service or controller, the service no longer maintains a reference to the entity.
 Because CuisineResponse only temporarily depends on the Cuisine entity during object creation, UML represents this relationship with a dependency arrow 
-rather than a composition. 
+rather than a composition.
 
 \textbf{Repository Layer}
 
@@ -945,7 +911,7 @@ Their sole responsibility is to abstract data access from the service layer.
 The CuisineRepository defines several query methods for retrieving 
 Cuisine entities from the database:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineRepository -- JPA Repository Interface}, label={lst:cuisineRepository}, numbers=left, firstnumber=1]
 // CuisineRepository.java
 
 public interface CuisineRepository extends JpaRepository<Cuisine, Long> {
@@ -953,15 +919,15 @@ public interface CuisineRepository extends JpaRepository<Cuisine, Long> {
     List<Cuisine> findByRegion_Country(String country);
     Optional<Cuisine> findByCuisineNameIgnoreCase(String cuisineName);
 }
+\end{lstlisting}
 
-\end{verbatim}
 
 These repository methods are invoked within the service layer to implement 
 business logic. For example, the getCuisinesByRegion() method in 
 CuisineService calls findByRegion\_RegionName() to retrieve 
 the corresponding entities:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={CuisineService -- Retrieving cuisines by region}, label={lst:cuisineServiceGetByRegion}, numbers=left, firstnumber=1]
 // CuisineService.java
 
 public List<String> getCuisinesByRegion(String regionName) {
@@ -976,9 +942,9 @@ public List<String> getCuisinesByRegion(String regionName) {
     return cuisineNames;
 
 }
-\end{verbatim}
+\end{lstlisting}
 
-We can see that the findByRegion\_RegionName method in the CuisineRepository 
+We can see that the findByRegion\_RegionName method in the CuisineRepository (line 6)
 is invoked within the CuisineService as part of the composition relationship between the two classes.
 This demonstrates how the service depends on the repository to access persistent data, while still encapsulating the business logic and data 
 transformation.
@@ -999,44 +965,45 @@ However, the cuisines can conceptually exist independently of the region’s lif
 The multiplicity 1 near Region and 0..* near Cuisine in the UML diagram shows that each cuisine must belong to exactly one region,
 while a region may have zero or more cuisines. Since a cuisine can exist without a region, there this is aggregation relationship.
 
-In the code, this is implemented using the \texttt{@OneToMany} annotation in the Region entity:
+In the code, this is implemented using the @OneToMany annotation in the Region entity:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={Region -- One-to-Many relationship with Cuisine}, label={lst:regionCuisine}, numbers=left, firstnumber=1]
 // Region.java
 @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 private List<Cuisine> cuisines;
-\end{verbatim}
+\end{lstlisting}
 
 This code reflects the UML diagram’s relationships, showing how the Region entity contains multiple Cuisine 
 entities while each Cuisine references its owning Region.
+In line 2, the '@OneToMany' annotation defines that a single Region can have many Cuisine objects,
+with the 'mappedBy = "region"' attribute specifying that the Cuisine entity owns the relationship.
  
 The Cuisine entity represents a specific type of food and maps to the cuisines table.
 Each cuisine has an id, cuisineName, description, and a reference to its associated region:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={Cuisine -- Many-to-One relationship with Region}, label={lst:cuisineRegion}, numbers=left, firstnumber=1]
 // Cuisine.java
 @ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "region_id", nullable = false)
 private Region region;
-\end{verbatim}
+\end{lstlisting}
 
-This establishes the many-to-one side of the region-cuisine relationship, allowing the cuisine entity to reference the region entity.
+This establishes the many-to-one side of the region-cuisine relationship (line 3), allowing the cuisine entity to reference the region entity.
 In the UML diagram, the Cuisine entity has a composition relationship with the Review entity.
 Although the Cuisine entity does not explicitly maintain a collection of review objects, the relationship reflects a strong lifecycle dependency.
 Each review must be associated with exactly one cuisine, and a review cannot exist independently.
 The multiplicity 1 near Cuisine and 0..* near Review indicates that a cuisine may have zero or more reviews, while each review belongs to exactly one cuisine.
 This representation captures the ownership and domain-level dependency between cuisines and reviews.
 
-
 The Review entity saves user feedback on a cuisine and maps to the reviews table.
 Each review has an id, a rating, a comment, and a timestamp. Each review is linked to a specific cuisine:
 
-\begin{verbatim}
+\begin{lstlisting}[caption={Review -- Many-to-One relationship with Cuisine}, label={lst:reviewCuisine}, numbers=left, firstnumber=1]
 // Review.java
 @ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "cuisine_id", nullable = false)
 private Cuisine cuisine;
-\end{verbatim}
+\end{lstlisting}
 
 Together, these entities form a hierarchical structure in which a Region can contain multiple Cuisine objects,
 representing a one-to-many aggregation. Each Cuisine belongs to a single Region and
@@ -1050,3 +1017,56 @@ It also highlights the ownership and dependency relationships between layers,
 such as the composition between services and repositories, the temporary dependencies on DTOs, and the aggregation and composition among entities. 
 By examining the diagram with the code examples, it becomes easier to understand the flow of data through the application,
 the separation of concerns across layers, and how each component contributes to the overall functionality of the local cuisine system.
+
+\textbf{Coupling and Cohesion}
+
+The structural relationships represented in the UML diagram not only define module boundaries but also reflect important software design qualities,
+particularly coupling and cohesion.
+These principles are essential for evaluating maintainability in a modular monolithic architecture.
+
+Coupling refers to the degree of interdependence between modules \cite{GeeksforGeeks_2025}. 
+In the presented UML diagram, different relationship types correspond 
+to different levels of coupling strength.
+
+Controller classes maintain a composition relationship with their 
+corresponding services, 
+and services maintain composition with repository interfaces. 
+Composition represents stronger structural coupling, as the lifecycle 
+of the composed object is bound to the owning class. 
+However, this coupling is confined within a single module layer,
+preserving architectural clarity and preventing cross-layer entanglement.
+
+Within the domain model, Region has an aggregation relationship 
+with Cuisine, while Cuisine has a composition relationship with Review. 
+Aggregation indicates a weaker ownership relationship, 
+as cuisines conceptually belong to a region but may exist independently 
+at the persistence level. 
+In contrast, composition represents tighter coupling, 
+as reviews are inherently bound to a specific cuisine and cannot 
+exist meaningfully without it. 
+These structural couplings are intentional and reflect real-world 
+hierarchical dependencies within the domain.
+
+DTO classes such as CreateReviewRequest, ReviewResponse, 
+and CuisineResponse are connected through dependency relationships. 
+Dependency represents looser coupling, since these classes are used 
+only as method parameters or return types without ownership or lifecycle control. 
+This reduces structural rigidity and separates internal domain models from external API contracts.
+
+Overall, the system achieves a balanced coupling strategy. 
+Strong composition and aggregation relationships are confined to the domain and module layers where ownership and lifecycle dependencies are meaningful, 
+while dependency relationships are used for external communication and data transfer. 
+This combination ensures that modules are sufficiently decoupled for maintainability and testability, 
+while allowing stronger coupling where necessary to preserve domain integrity. 
+This supports a clear and coherent modular monolithic architecture.
+
+Cohesion measures how strongly related the responsibilities within a module or class are, 
+with higher cohesion improving maintainability and clarity \cite{GeeksforGeeks_2025}. 
+Modules in this backend primarily demonstrate \textit{functional cohesion}, 
+as each module (Region, Cuisine, Review) focuses on a single domain concept and 
+all components contribute directly to that responsibility. 
+For instance, ReviewService, ReviewRepository, and ReviewController collectively 
+handle review-related operations, without unrelated functionality.
+By organizing the backend into domain-focused modules with clear boundaries, 
+the system ensures high functional cohesion, 
+reinforcing the modular monolithic architecture and coherent business capabilities.

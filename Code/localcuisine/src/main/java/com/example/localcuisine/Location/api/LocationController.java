@@ -30,8 +30,8 @@ public class LocationController {
     }
 
     @GetMapping("/{locationName}")
-    public List<String> getByRegionName(@PathVariable String locationname) {
-        return locationService.searchRegions(locationname);
+    public List<String> getByRegionName(@PathVariable String locationName) {
+        return locationService.searchRegions(locationName);
     }
 
 }

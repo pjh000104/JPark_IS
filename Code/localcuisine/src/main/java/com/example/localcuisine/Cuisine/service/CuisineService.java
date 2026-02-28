@@ -58,9 +58,9 @@ public class CuisineService {
                        .collect(Collectors.toList());
     }
 
-    public List<Cuisine> getFullCuisinesByRegion(String regionName) {
-        return cuisineRepository.findByRegion_RegionName(regionName);
-    }
+    // public List<Cuisine> getFullCuisinesByRegion(String regionName) {
+    //     return cuisineRepository.findByRegion_RegionName(regionName);
+    // }
 
     public CuisineResponse getCuisineByName(String cuisineName) {
 
