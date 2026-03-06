@@ -1,11 +1,12 @@
 \section[Optimization]{Optimization}
 \input{myFigures/FiguresCommand.tex}
 
+In this section, we will be discussing specific ways to optimize the performance of databases.
 Several factors influence the performance of the database.
 The design of the database, including normalization and partitioning, which was discussed in the previous subsection, is one of the factors.
-Indexing is another huge part of increasing the performance of the database as the amount of data increases.
-Lastly, changing the physical query of the database is a way to optimize the performance of the database.
-In this section, we will be discussing specific ways to optimize the performance of databases.
+Indexing is another huge part of increasing the performance of the database as the amount of data increases,
+and avoiding N+1 problems is a way to optimize the performance of the database. These strategies will be discussed in depth in the following subsection.
+
 
 \subsection{Indexing}
 
@@ -84,20 +85,6 @@ The other nodes store keys only for navigation, like the explanations on the int
 (less than equal to six goes left, greater than six goes right) on the figure above. Also, all the leaf nodes are connected to the next leaf node.
 B+trees are commonly used in indexes for modern database management systems such as MYSQL, PostgreSQL, and SQLite. 
 
-\subsection{Query Optimization}
-
-Optimizing the SQL queries could also increase the performance of the database. Here are the 6 queries tune SQL queries. 
-\url{https://www.geeksforgeeks.org/sql/sql-performance-tuning/}
-
-\begin{itemize}
-    \item SELECT fields instead of using SELECT *
-    \item Avoid SELECT DISTINCT
-    \item Use INNER JOIN instead of WHERE for Joins
-    \item Use WHERE instead of HAVING
-    \item Limit Wildcards to the end of a search term
-    \item Use LIMIT for sampling query results
-\end{itemize}
-
 \subsection{N+1 problem}
 
 The N+1 problem is a common problem when using the object relational mapping, or simply ORM. 
@@ -134,7 +121,7 @@ SELECT * FROM courses WHERE student_id = 3;
 \end{verbatim}
 
 This is inefficient since we are performing 1 query (\texttt{SELECT * FROM students}),
-and then performing $n$ queries (\texttt{SELECT * FROM course WHERE student\_id = n;}).
+and then performing n queries (\texttt{SELECT * FROM course WHERE student\_id = n;}).
 The performance of the database will get worse as the size of n increases.
 It might be questioned why the ORM translates to inefficient SQL code, and the reason for this is lazy loading.
 Lazy loading is when the application loads data only when the related data is accessed, and this is a default setting in many ORM frameworks.

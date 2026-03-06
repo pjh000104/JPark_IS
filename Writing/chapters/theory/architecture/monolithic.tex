@@ -1,8 +1,9 @@
 \section[Monolithic]{Monolithic}
 A monolithic application is where all the logical components of the application is deployed as one unit,
-which also means that it will be run in one process. For example, if there is a stand-alone Python Flask application deployed to a server,
-this is monolithic application. This means that the UI components should also be included in the same unit. If there is a separate frontend server,
-this is not a monolithic application anymore. There are multiple reasons to build a project with the monolithic architecture.
+which also means that it will be run in one process. For example, a standalone Python Flask application deployed to a server represents a monolithic backend system.
+The frontend user interface may be served separately (e.g., from a static hosting service or a dedicated frontend server),
+yet the backend can still be considered monolithic as long as its internal components are not independently deployable services.
+There are multiple reasons to build a project with the monolithic architecture.
 
 One of the benefits of the monolithic architecture is its simplicity. Since a typical monolithic application has a single codebase, it is easier for
 the developers and collaborators to understand the overall structure. Even when a developer joins in the middle of the development process or
@@ -13,7 +14,7 @@ Reliability is another aspect, where monolithic applications make few or no netw
 Lastly, it is easier to find bugs compared to distributed systems since all the code is in one place.
 
 On the other hand, there are also disadvantages of using the monolithic architecture. As the monolithic application grows, the application becomes harder to scale.
-Since all the code is in one codebase, it is not possible to adapt different technology stacks to different domains if needed.
+In case different technology stacks are required for separate domains, it would not be possible as all components are contained within a single codebase and deployment unit.
 This also connects to decrease in reliability. A single bug or error occurred in the application could degrade the service and affect the whole application.
 Lastly, when deploying the application, implementing any change will require redeploying the whole application, which could introduce a lot of risk of having reduced uptime of the application. \cite{Gandhi_Richards_Ford_2024}
 
@@ -48,7 +49,7 @@ Furthermore, the layered architecture is quick to build particularly among the p
 
 There are also disadvantages to consider. The layer could add complexity to the application compared to a simple monolithic application. 
 Building a large application using layered monolithic architecture could end up in a confusing relationship between layers and result in challenges maintaining and scale the application.
-However, this would still be less complicated compared to the complexity of distributed systems discussed in section 2.2.
+However, this would still be less complicated compared to the complexity of distributed systems discussed in section \ref{sec:distributed_systems}.
 Testing is another problem since most layers are dependent on each other, testing a specific layer requires mock data or simulation of
 the related layers, which could decrease the quality of the testing.
 
@@ -60,8 +61,9 @@ such as the presentation layer being separated from the other layers. Each struc
 Modular monolith is when an application is divided into different modules within the monolithic system. A module is one domain of the application,
 and each domain will have its independent code base. For instance, an application for a restaurant might have different domains such as orders, deliveries, or recipes.
 In this case, there could be separate databases for each module, or multiple schemas within a single database.
-It is important to keep in mind that only the code base is independent in the software structure, meaning that since modular monolithics
-still follows the monolithic architecture, the code will be compiled together as a single application and run in one process.
+It is important to note that in a modular monolith, only the internal code organization is separated into modules.
+Although the structure promotes logical independence, the application still follows the monolithic architectural model,
+meaning it is compiled as a single unit and executed within one process.
 
 One of the benefits of using the modular monolithic structure is the domain partitioning. Similar to the layered architecture, this allows to have
 separate development teams that specializes in one or more of these domains, which will increase the efficiency of the work.

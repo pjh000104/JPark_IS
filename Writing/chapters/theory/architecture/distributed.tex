@@ -1,9 +1,9 @@
-\section[Distributed Systems]{Distributed Systems}\label{sec:newsec}
+\section[Distributed Systems]{Distributed Systems}\label{sec:distributed_systems}
 Distributed architecture is a design approach where the logical components of an application are divided into multiple units.
 These units each run in their individual process and communicate with each other over the network.
 This architecture style encourages loose coupling of each service, which could be a huge benefit.
 
-There are multiple advantages to choosing distributed systems. The one that contrasts with the monolithic architecture is
+There are multiple advantages when choosing to implement distributed systems. The one that contrasts with the monolithic architecture is
 scalability. Since distributed architectures deploy different logical components separately from one another, it is easy to add new services.
 Furthermore, similar to modular monolithics, distributed architecture encourages a high degree of modularity.
 This is because distributed systems have loosely coupled logical components.
@@ -16,7 +16,6 @@ depending on the coupling.
 On the other hand, there are also disadvantages when choosing to build a distributed systems architecture.
 Performance is generally slower than a monolithic application since distributed system architectures involve
 lots of small services that communicate with each other over the network.
-This can affect performance, but there are ways to improve this.
 Another aspect is cost, since more servers are needed to deploy multiple units.
 These services will need to talk to each other, which entails setting up and maintaining network infrastructure.
 This leads to more complexity in the system, and makes it more challenging for the developers harder to understand the overall design.
@@ -45,7 +44,7 @@ Each types of subcategories, have their own advantages and disadvantages.
 
 \subsection[Microservices Architecture]{Microservices Architecture}
 
-A microservice is a service that is a separately deployed unit of software that performs some business or infrastructure process \cite{Gandhi_Richards_Ford_2024}.
+A microservice is a service that is a separately deployed unit of software that performs business or infrastructure process \cite{Gandhi_Richards_Ford_2024}.
 % (chapter 10).
 Microservices architecture is part of the layered system, where microservices communicate with each other to make an application.
 Since the system is divided into multiple parts, it is essential when making decisions how to divide the application,
@@ -63,7 +62,7 @@ so it does not get too complicated when managing the information. Finally, if on
 or scale faster than the others, it is good to consider having a separate microservice for that application,
 since testing the entire microservice would be much more challenging compared to a small portion of the microservice.
 
-On the other hand, there are times when it is encouraged to make the microservices bigger: Database transactions, data dependencies, and workflow.
+On the other hand, there are certain situations when it is encouraged to make the microservices bigger: Database transactions, data dependencies, and workflow.
 It is not possible to perform a single database commit or rollback when a request involves multiple microservices.
 For data consistency and integrity, it is important to combine functionalities that require this kind of behavior into a single microservice.
 If a part of a microservice has highly coupled data, such as when a database table refers to the key of another database table,
@@ -85,7 +84,7 @@ this request is coupled and recommended to kept in the same service. \\
 
 After setting up multiple microservices, the next question is how these microservices communicate with each other
 to make the whole application. This is a crucial part of the microservices architecture,
-and this is where workflow comes in.
+and where workflow is integrated.
 The term workflow means when two or more microservices are called for a single request.
 Workflows are in charge of navigating which microservice to start, which one to call next, and which one to end with.
 There are two ways to handle workflows: centralized workflow management and decentralized workflow management.
@@ -118,14 +117,13 @@ it has better responsiveness, meaning less delay and better performance.
 On the other hand, this pattern lacks in error handling, since each microservice is responsible for managing the error workflow,
 which could lead to too much communication between services. Also, because there is no central microservice that has the order
 of microservices that is need to be called, it is hard to tell which state the response is at, which decreases the ability to recover
-when the request is delayed and needs to be restarted.
+when the request is delayed and needs to be restarted.\\
 
 
 \noindent \textbf{Sharing functionalities}
 
-There are many times when the same code has to be used in multiple microservices.
-There are mainly two ways for sharing code when building a microservice architecture.
-Creating a shared service or a shared library.
+In a microservice architecture, shared functionality often needs to be reused across multiple services, which can be achieved in two main ways:
+creating a shared service or a shared library.
 A shared service is a separate microservice that contains a shared functionality that other microservices can call remotely.
 One advantage of the shared service is that even though code may change in the shared microservices, code in other microservices are not needed to be changed.
 Also, this shared service could be written in any language, which is useful when microservices are implemented in multiple languages.
@@ -135,7 +133,7 @@ Furthermore, when the shared service is down for some reason, the microservices 
 
 % Another disadvantage is network latency, ….
 
-A shared library is a more common way for code reuse. A library will be built, including all the code that is reused in different microservices.
+A shared library is a more common way of code reuse. A library will be built, including all the code that is reused in different microservices.
 Once the microservices are deployed, each microservice will have all the shared functionality available.
 The biggest advantage of using a shared library is that network performance and scalability are better than shared service,
 since it is not remote, and the code is included in the compile time of the microservice.
@@ -143,7 +141,7 @@ However, multiple shared libraries will be needed if microservices are written i
 Also, managing dependencies between microservices and shared libraries could be a challenge if there are multiple microservices using the shared code.\\
 
 
-\noindent \textbf{Pros and Cons of Microservice Architecture.}
+\noindent \textbf{Advantages and Disadvantages of Microservice Architecture.}
 
 Microservice architectures are commonly used as they have several advantages.
 Loose coupling is one of them. Each microservice is single-purpose, and they are deployed separately,
@@ -155,8 +153,10 @@ it does not break the whole system. Furthermore, microservice architecture is ea
 modify a microservice related to the area.
 
 However, there are also disadvantages when using the microservice architecture. 
-This architecture is complex. It requires multiple decisions, such as the aspects discussed above (workflow, shared code etc.)
-depending on the situation. Because of its complexity, as microservices communicate with each other, the performance also decreases.
+This architecture is complex. It requires numerous architectural decisions that must be made based on the specific context,
+including how workflows are orchestrated and how shared code is managed.
+For example, decisions may vary based on the expected service scale, team organization, or the need for independent deployment cycles.
+Because of its complexity, as microservices communicate with each other, the performance also decreases.
 The request might have to wait for the network or undergo additional security checks and make extra database calls.
 Lastly, deploying all of these microservices will increase the cost of the entire application.  
 
@@ -164,7 +164,7 @@ Lastly, deploying all of these microservices will increase the cost of the entir
 \noindent \textbf{What is an Event}
 
 An event in computer science is a way for a service to let the rest of the system know that something important has just happened.
-In EDA, events are the means of passing information to other services \cite{Gandhi_Richards_Ford_2024} .
+In EDA, events are defined as passing information to other services \cite{Gandhi_Richards_Ford_2024}.
 % (head first chapter11).
 The event contains data, and it is broadcast to services using topics that are connected to the sender of the event.
 However, events are asynchronous, which means that although the services are connected,
@@ -179,9 +179,9 @@ EDA relies on asynchronous communication when sending and receiving events. This
 and is built for loose coupling.
 Asynchronous communications do not need to wait for a response, even though the receiving services are available or not.
 These kinds of communications are also called Fire and Forget. On the other hand, synchronous communication needs to stop and wait for the response,
-which means that the service in response must be available. This make tighter coupling between services, making it not suitable for EDA. \\
+which means that the service in response must be available. This makes tighter coupling between services, making it not suitable for EDA. \\
 
-\noindent \textbf{Pros and Cons of EDA}
+\noindent \textbf{Advantages and Disadvantages of EDA}
 
 Asynchronous communications have advantages in responsiveness compared to synchronous communications.
 Since responses by the receiving services are unnecessary, it takes less time to complete a request.
