@@ -85,9 +85,11 @@ Each module could contain these layers within its own module, which allows modul
 of the layered architecture. Here is the structure of the modular monolithic architecture for the local cuisine application.
 
 % Include directory tree after pushing.
+\input{myFigures/FiguresCommand.tex}
+\directoryTreeFigure
 
-The figure above shows three modules in the local cuisine application: the region, cuisine, and reviews.
-Within each module, the API, service, and domain packages are included. The api package is a part of the presentation layer, where 
+The figure \ref{fig:directoryTree} shows three modules in the local cuisine application: the region, cuisine, and reviews.
+Within each module, the API, service, and domain packages are included. The API package is a part of the presentation layer, where 
 information is organized and sent to the front end. The service package is the workflow layer where all the business logic is included.
 Finally, the domain package is the persistent layer where entities are mapped persistently to the relational database.
 
@@ -107,7 +109,6 @@ Practical considerations, including personal learning goals and the desire to ex
 
 \subsubsection{Database Systems}
 
-\input{myFigures/FiguresCommand.tex}
 
 % relational vs non relational
 
