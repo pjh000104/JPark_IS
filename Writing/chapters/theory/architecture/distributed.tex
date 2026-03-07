@@ -62,7 +62,7 @@ so it does not get too complicated when managing the information. Finally, if on
 or scale faster than the others, it is good to consider having a separate microservice for that application,
 since testing the entire microservice would be much more challenging compared to a small portion of the microservice.
 
-On the other hand, there are certain situations when it is encouraged to make the microservices bigger: Database transactions, data dependencies, and workflow.
+On the other hand, there are certain situations when it is encouraged to make the microservices bigger: database transactions, data dependencies, and workflow.
 It is not possible to perform a single database commit or rollback when a request involves multiple microservices.
 For data consistency and integrity, it is important to combine functionalities that require this kind of behavior into a single microservice.
 If a part of a microservice has highly coupled data, such as when a database table refers to the key of another database table,
