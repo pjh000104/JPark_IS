@@ -16,7 +16,7 @@ Supabase was chosen as the database hosting solution to leverage a managed cloud
 logic rather than data and infrastructure management. Redis was selected as the caching solution due to its widespread industry adoption,
 proven performance, and suitability for implementing efficient caching strategies within the application.
 
-\subsubsection{Software Architecture}
+\subsection{Software Architecture}
 
 \noindent \textbf{Monolithic vs Distributed}
 
@@ -34,32 +34,43 @@ Through the study of software architecture theory, it became clear that adopting
 which may not be justified for a system of this scale. 
 The benefits that I would gain by setting up the distributed system architecture outweigh the drawbacks.
 
-First, Modular monolithic architecture is appropriate for the local cuisine application compared to the distributed system architecture in terms of scaling.
-Scalability is one of the primary advantages of a distributed system architecture. It is possible that the local cuisine application could grow significantly and attract thousands of daily users,
+First, modular monolithic architecture is appropriate for the local cuisine application compared to the distributed system architecture.
+It is possible that the local cuisine application could grow significantly and attract thousands of daily users,
 and a distributed architecture could provide clear benefits in handling increased traffic and workload. However, in the current stage of development where the aim of 
-average users is less than thousands of users, the modular monolithic architecture is easier to maintain the application.  
+average users is in the thousands which can be handled by, the modular monolithic architecture is easier to maintain than a distributed application.  
 
 Furthermore, as the local cuisine application is still relatively small, it would not benefit from the loose coupling that the distributed system architecture has.
-It is possible to divide each part of the application into different services, such as having an individual service for cuisines, regions, and reviews. 
-However, introducing this level of separation would be unnecessary at the current stage unless the applications scales.
-The distributed architecture approach becomes more valuable only when the application scales significantly and requires independently evolving services.
-For the present scope of the local cuisine application, the advantages of loose coupling provided by a distributed architecture do not outweigh the added complexity
-such as inter-service communication or network latency.
+While it is possible to divide each part of the application into different services, such as having an individual service for cuisines, regions, and reviews,
+introducing this level of separation is unnecessary.
+The distributed architecture approach is appropriate only when the application scales significantly and requires independently evolving services.
+For the present scope of the local cuisine application, the current feature set doesn't warrant the added complexity
+such as inter-service communication and associated network latency.
 
-Another big reason the monolithic architecture was chosen was the cost. Although a distributed system architecture offers several advantages,
-the associated infrastructure costs are critical. Deploying and maintaining multiple servers to support distributed services can rapidly increase the cost,
-that exceeds the scope of a personal project. On the other hand, the monolithic architecture only needs one server, which is cost-effective and easier
-to maintain over the long term.
-
-Finally, the modular monolithic architecture was chosen since it preserves the possibility of futer evolution into a distributed system architecture.
-In case the local cuisine application needs to scale, the existing modular structure provides two options: maintain the current monolithic deployjment, 
-or incrementally refactoring modules into independent services.
-The clear separation of concerns within the modular monolith allows potential transition, as the well-defined module boundaries can serve as a foundation for service extraction.
-This flexibility allows architectural decisions to be revisited based on observed system growth, performance requirements, and usage patterns, rather than being determined from the beginning.
+Another big reason the monolithic architecture was chosen was the cost. 
+Although a distributed system architecture offers several advantages,
+the associated infrastructure costs are critical. Deploying and maintaining 
+multiple servers to support distributed services can rapidly increase the cost,
+that exceeds the scope of a personal project.
+For example, a small Amazon EC2 instance such as t3.small, which provides 
+2 vCPUs and 2 GB of memory, costs approximately \$0.0208 per hour 
+(about \$15 per month) when running continuously according to Amazon Web 
+Services EC2 pricing \cite{Amazon_Web_Services}. 
+A minimal distributed deployment consisting of several backend instances, 
+caching services, and a load balancer could therefore exceed 
+\$75--\$100 per month in infrastructure costs.
+On the other hand, a monolithic architecture can be deployed on a single 
+server instance, keeping the infrastructure cost close to \$15 per month.
+This option was more cost-effective and easier to maintain over the long term.
 
 Fault tolerance was the main trade-off considered in the architectural decision-making process.
 While a distributed system architecture provides stronger fault tolerance,
-the overall requirements and constraints of the project led to the selection of a monolithic architecture for the local cuisine application. \\
+the overall requirements and constraints of the project led to the selection of a monolithic architecture for the local cuisine application. 
+
+Overall, the modular monolithic architecture was chosen since it preserves the possibility of future evolution into a distributed system architecture.
+In case the local cuisine application needs to scale, the existing modular structure provides two options: maintain the current monolithic deployment, 
+or incrementally refactoring modules into independent services.
+The clear separation of concerns within the modular monolith allows potential transition, as the well-defined module boundaries can serve as a foundation for service extraction.
+This flexibility allows architectural decisions to be revisited based on observed system growth, performance requirements, and usage patterns, rather than being determined from the beginning. \\
 
 \noindent \textbf{Layered or Modular Monolithic}
 
@@ -71,11 +82,11 @@ The application is composed of three main components: regions, which allow users
 cuisines, which provide detailed information about the culinary offerings within a selected region;
 and reviews, which enable users to interact with one another by submitting and viewing feedback on specific cuisines.
 
-The modular architecture is well-suited to this application, since the local cuisine application
-has a clear separation of functional domains: region, cuisine, and reviews. If this were implemented using a layered architecture,
+The modular architecture is well-suited to this application. If this were implemented using a layered architecture,
 the application would be organized strictly by technical layers (such as controller, service, and repository)
 rather than being structured around the distinct functional domains of the system. 
-This structure not only mirrors the real-world organization of the application but also improves maintainability by isolating changes to individual modules
+The modular monolith not only mirrors the real-world organization of the application
+but also improves maintainability by isolating changes to individual modules
 and reducing the risk of unintended side effects across the system.
 
 Furthermore, the modular monolithic architecture could also retain the organizational benefits of a layered architecture.
@@ -84,7 +95,6 @@ ensuring clear separation of concerns and consistent layering practices across t
 Each module could contain these layers within its own module, which allows modular monolithic inherit the advantages 
 of the layered architecture. Here is the structure of the modular monolithic architecture for the local cuisine application.
 
-% Include directory tree after pushing.
 \input{myFigures/FiguresCommand.tex}
 \directoryTreeFigure
 
@@ -92,7 +102,6 @@ The figure \ref{fig:directoryTree} shows three modules in the local cuisine appl
 Within each module, the API, service, and domain packages are included. The API package is a part of the presentation layer, where 
 information is organized and sent to the front end. The service package is the workflow layer where all the business logic is included.
 Finally, the domain package is the persistent layer where entities are mapped persistently to the relational database.
-
 This architecture of the modular monolithic structure allows separation of modules and layers, which makes it easier to maintain the code.
 The separation is also beneficial when the application would be developed collaboratively in the future as well.
 
@@ -107,7 +116,7 @@ Practical considerations, including personal learning goals and the desire to ex
 
 % Could include how it could be done with the micro service architecture?
 
-\subsubsection{Database Systems}
+\subsection{Database Systems}
 
 
 % relational vs non relational
@@ -119,7 +128,7 @@ Practical considerations, including personal learning goals and the desire to ex
 
 The database for the local cuisine application is designed to store three main pieces of information: the region, the cuisine, and the reviews.
 Accordingly, there are three main tables: the regions table, the cuisines table, and the reviews table. 
-As shown in the entity relationship diagram, the regions table has a one-to-many relationship with the cuisines table, 
+As shown in the entity relationship diagram \ref{fig:erd}, the regions table has a one-to-many relationship with the cuisines table, 
 since one region can contain multiple cuisines, while each cuisine belongs to a single region. 
 The cuisines table also has a similar relationship with the reviews table. Each cuisine will have multiple reviews,
 but each review is associated with one cuisine. 
@@ -130,15 +139,13 @@ The cuisines table contains details about individual cuisines, including id, cui
 and description, and references the associated region through region\_id.
 The reviews table stores reviews for each cuisine and includes the attributes id, rating, comment, reviewer\_name, and created\_at.
 
-To enforce the integrity of databases, normalization the data is crutial.
+To enforce the integrity of databases, normalization the data is crucial.
 In the local cuisine database, each table satisfies the requirements of 3NF.
 All non-key attributes in the regions table depend solely on the primary key region\_id.
 Similarly, in the cuisines table, attributes such as cuisine name and description depend only on cuisine\_id,
 while the region\_id is used as a foreign key to represent relationships rather than introducing transitive dependencies.
 Finally, in the reviews table, attributes related to the reviews (such as rating and comment) depend only on the primary key review\_id.
-
-As a result, the database structure avoids transitive dependencies, minimizes redundancy, and ensures data integrity.
-This fulfills the requirements of the third normal form. The third normalization form for the database ensures that redundant storage of
+The third normalization form for the database ensures that redundant storage of
 region or cuisine data across multiple tables to reduce the risk of inconsistent data, and allows the database to scale without adding or 
 restructuring existing tables. This database design also goes well with the modular design of the application
 since each module (region, cuisine, and review) is clearly separated.
@@ -157,13 +164,13 @@ When testing the API endpoints of the local cuisine application, there weren't a
 tested locally. However, considering that the database will grow and there will be multiple clients connecting to the API 
 simultaneously in the future, a few database optimization techniques were implemented. 
 
-The local cuisine application is designed that the cuisines and the reviews are searched the most and make database queries.
+The local cuisine application is designed such that the cuisines and the reviews are searched the most and make database queries.
 When the user searches for the cuisines, the cuisines table is accessed and the reviews of each cuisine are also loaded from 
 the reviews table. Furthermore, the cuisines table currently has only about 30 rows, but will expand in the future.
 The reviews table will also grow exponentially as the number of cuisines and the active users increase over time.
 This is why the cuisines table and the reviews table need to be optimized.
 
-Among the database optimization and the evolution techniques discussed in the theory section, indexing is used for the 
+Among the database optimization and the evolution techniques discussed in the theory section \ref{sec:dbOptimization}, indexing is used for the 
 cuisines table. Indexing is applied to the cuisines table to improve search performance and reduce query execution time.
 One of the core features of the system is retrieving all cuisines belonging to a specific region, and this requires frequent filtering using the region\_id attribute.
 
@@ -184,9 +191,9 @@ This optimization is effective for the application, since cuisine data is querie
 As a result, the application has minimal write overhead while providing faster search and retrieval times. As the dataset scales, this indexing strategy
 helps maintain consistent performance and improves the overall responsiveness of the application.
 
-Another optimization done in the local cuisine application is avoiding the N+1 prohblem.
-As mentioned in the query section, the N+1 query problem is a common performance issue in ORM-based applications, and this application uses the Hibernate ORM.
-When fetching the cuisines, the cuisine repository uses the following gmethods.
+Another optimization done in the local cuisine application is avoiding the N+1 problem.
+As mentioned in Section~\ref{subsec:nplusone}, the N+1 query problem is a common performance issue in ORM-based applications, and this application uses the Hibernate ORM.
+When fetching the cuisines, the cuisine repository uses the following methods.
 
 \begin{verbatim}
 public interface CuisineRepository extends JpaRepository<Cuisine, Long> {
@@ -242,7 +249,6 @@ private Region region;
 
 When a Cuisine is fetched, only the region\_id foreign key is retrieved from the database, 
 and the full Region entity is loaded only if it is explicitly accessed in the application. 
-
 Of course, eager loading could be used instead of lazy loading to prevent any potential N+1 problems, but this approach would be inefficient because
 all region data would be loaded for every cuisine, even if the region information is not needed for the operation. 
 
@@ -250,8 +256,7 @@ The combination of lazy loading and repository-level filtering allows the applic
 which makes sure that the performance is efficient while still avoiding N+1 queries. 
 The repository query returns all relevant Cuisine records in a single SQL statement, 
 and the service layer only accesses the fields it needs. This will never traverse the Region entity unless explicitly required and avoid the N+1 problem.
-
-Batch fetching was also not necessary in this design because the repository query already fetches all required data in a single call. 
+Furthermore, batch fetching was also not necessary in this design because the repository query already fetches all required data in a single call. 
 The total size of the data (number of cuisines and regions) is small enough that performance is not a concern as of now. \\
 
 \noindent \textbf{Evolution}
@@ -286,9 +291,12 @@ As a result, each review record is assigned to one of the four partitions as sho
 This will distribute the reviews data evenly across each partition, and also reduce the probability of hot spots. This way of partitioning will improve
 scalability as data increases.
 Hash-based partitioning also aligns with how the application accesses data in the database, since most queries retrieve reviews by a specific cuisine identifier.
-By distributing reviews across partitions, query can be processed parallel, and improve query performance as well.
+By distributing reviews across partitions, queries can be processed parallel, and improves overall query performance as well.
+Four partitions specifically are chosen in consideration of the size of the application,
+as it distributes records across multiple partitions while avoiding the additional complexity and management overhead associated with a larger number of partitions.
+A smaller number of partitions would result in larger partitions and reduce the performance benefits of partitioning.
 
-At the current stage of development, secondary indexes were not introdueced into the database design.
+At the current stage of development, secondary indexes were not introduced into the database design.
 Although secondary indexes can significantly improve query performance when filtering or sorting data by multiple attributes,
 they also add complexity to partitioned systems, particularly in terms of request routing and index maintenance.
 In this application, reviews are mostly accessed through their associated cuisine, and there is no requirement to sort or
@@ -312,11 +320,10 @@ if multiple replicas are deployed \cite{Supabase_2026}.
 
 
 
-\subsubsection{Caching}
+\subsection{Caching}
 
 Caching is implemented in the local cuisine application to enhance performance and 
 reduce latency for frequently accessed data.  
-
 Caching in the local cuisine application improves performance by reducing database access for frequently requested data.
 By storing frequently accessed information in memory, such as cuisine names by region,
 the application can serve responses faster, leading to a smoother user experience and reduced database load.
@@ -324,8 +331,8 @@ This is particularly effective for operations that are read-heavy, such as displ
 when users browse popular regions.
 
 Cuisine data and the reviews data implemented the caching strategy in the local cuisine application.
-Among the caching strategy discussed in the theory section, the cache-aside pattern for the cuisine data.
-As the cuisine data won't be written or updated by the users, all the caching strategies that involved writting was not applicable,
+Among the caching strategy discussed in the theory section, the cache-aside pattern is used for the cuisine data.
+As the cuisine data won't be written or updated by the users, all the caching strategies that involved writing was not applicable,
 and the cuisine data is primarily read-heavy.
 Unlike read-through caching, where the cache automatically loads data on a miss,
 cache-aside allows the service to explicitly control when and how data is loaded and stored in the cache.
@@ -430,7 +437,7 @@ public ReviewResponse createReview(CreateReviewRequest request) {
 }
 \end{lstlisting}
 
-We can see from that a created review is both written in the cache and the database (lines 12, 26).  
+We can see that a created review is both written in the cache and the database (lines 12, 26).  
 This approach ensured that cached data remained fully up to date, but it introduced significant overhead.
 Each write operation required an additional database query to rebuild the cached review list, followed by a cache update.
 As review activity increased for popular cuisines, I thought that this design could become write-heavy and inefficient.
@@ -521,7 +528,7 @@ Now that it is clear which decisions were made when building the backend of the 
 that is executed when a user makes a request to the system. It outlines the sequence of interactions between the client and the backend components, 
 including the controller, service, repository, caching, and database layers. 
 
-The following sequence diagram shows the lifecycle of a backend request starting from a user. 
+The following sequential diagram \ref{fig:sequential-diagram} shows the lifecycle of a backend request starting from a user. 
 It shows the order in which the client interacts with the backend components and how the request processes through the 
 controller, service, caching, repository, and database layers.
 This diagram focuses on a single request of a cuisine search, and highlights the responsibilities of each component involved.
@@ -546,7 +553,7 @@ When a user initiates a cuisine search, the backend processes the request in the
 \end{enumerate}
 
 
-As shown in the sequential diagram figure \ref{fig:sequential-diagram}, the workflow begins when the user initiates a search action from the frontend interface.
+As shown in the sequential diagram \ref{fig:sequential-diagram}, the workflow begins when the user initiates a search action from the frontend interface.
 In this example, the user searches for ``Hakata ramen''.
 
 The frontend translates this action into an HTTP request and sends it to the backend API.
@@ -689,7 +696,7 @@ In the previous subsection, we explored the workflow for a backend request. This
 what happens within the Java classes and how they interact with each other
 to enable those workflows as a part of the modular monolithic architecture. 
 
-The following UML class diagram \ref{fig:fig:class-diagram} provides a visual representation of the structural organization of the local cuisine application.
+The following UML class diagram \ref{fig:class-diagram} provides a visual representation of the structural organization of the local cuisine application.
 It illustrates how classes are organized within the system and how they interact with one another.
 The diagram highlights the relationships between different classes and modules, and clarify the design and the flow of responsibilities across the application.
 
@@ -707,8 +714,6 @@ The six primary UML relationships and their corresponding arrow notations are as
 
 In this explanation, the meaning of these relationships will be clarified further in context as each module and its layered structure is discussed.  \\
 
-\classFigure
-
 
 \noindent \textbf{Overall System Structure}
 
@@ -722,15 +727,17 @@ such as the database and system configuration. The layered structure ensures a c
 making the system easier to understand and maintain.
 
 The layered architecture within each module organizes classes into four primary layers: Controller, Service, Repository, and Entity.
-These layers clearly separate responsibilities and facilitate maintainability. The UML class diagram illustrates these layers and the relationships between the classes,
+These layers clearly separate responsibilities and facilitate maintainability. The UML class diagram \ref{fig:class-diagram} illustrates these layers and the relationships between the classes,
 with arrows indicating dependencies and structural associations.  \\
 
 
-\textbf{Controller Layer}
+\noindent \textbf{Controller Layer}
 
 The controller layer handles HTTP requests and maps endpoints to the appropriate service methods
 Each controller is composed of service objects, which it depends on to execute business logic.
 In UML, this relationship is represented by a composition arrow pointing from the controller to the service class.
+
+\umlControllerFigure
 
 For example, in the Review module, the ReviewController has a composition relationship with ReviewService.
 This is implemented in Java via constructor injection: the controller receives a reference to a ReviewService instance when it is created.
@@ -762,7 +769,7 @@ For instance, when a user makes a GET request to view reviews for a certain cuis
 ReviewService object (line 16). The controller does not contain any business logic itself; 
 it passes all such responsibilities to the service. Because the service object is initialized 
 along with the controller (lines 10--11) and maintained as a private final field, the UML 
-composition arrow accurately reflects the “has-a” relationship between the controller and the service.
+composition arrow in the diagram \ref{fig:uml-controller} above accurately reflects the “has-a” relationship between the controller and the service.
 
 For the reviews module, the ReviewController interacts with data transfer objects (DTOs) for handling input and output.
 DTOs are simple objects that carry data between layers of the application without containing business logic.
@@ -817,13 +824,15 @@ public ReviewResponse createReview(@RequestBody @Valid CreateReviewRequest reque
 \end{lstlisting}
 
 This dependency is short-lived. The controller uses the DTO objects only during the handling of each request (lines 4--7). 
-Because the controller does not own these objects for its entire lifetime, UML represents this relationship with a dependency arrow rather than a composition arrow.  \\
+Because the controller does not own these objects for its entire lifetime, UML diagram \ref{fig:uml-controller} represents this relationship with a dependency arrow rather than a composition arrow.  \\
 
-\textbf{Service Layer}
+\noindent \textbf{Service Layer}
 
 The service layer contains the core business logic of the application.
 Services process requests from controllers, enforce business rules, and prepare data to be returned. 
 All three modules' services maintain composition relationships with their respective repository interfaces to perform database operations. 
+
+\umlServiceFigure
 
 \begin{lstlisting}[caption={CuisineService -- Composition with Repositories and CacheService}, label={lst:cuisineServiceComposition}, numbers=left, firstnumber=1]
 // CuisineService.java - composition with repositories
@@ -901,10 +910,10 @@ This allows the service to return structured data to the controller without expo
 The CuisineResponse DTO uses the Cuisine entity to send a respond back to the Cuisine Controller (lines 9--17 in Listing~\ref{lst:cuisineResponseDto}).
 The static from() method in CuisineResponse takes a Cuisine entity as input, reads its fields (id, cuisineName, description, and region), and constructs a new DTO object.
 Once the DTO is created and returned to the service or controller, the service no longer maintains a reference to the entity.
-Because CuisineResponse only temporarily depends on the Cuisine entity during object creation, UML represents this relationship with a dependency arrow 
+Because CuisineResponse only temporarily depends on the Cuisine entity during object creation, UML diagram \ref{fig:uml-service} represents this relationship with a dependency arrow 
 rather than a composition.  \\
 
-\textbf{Repository Layer}
+\noindent \textbf{Repository Layer}
 
 The repository layer is responsible for handling database access.
 Repositories provide query methods for retrieving and storing entity objects, but they do not contain business logic. 
@@ -955,15 +964,17 @@ This is because creating or retrieving reviews requires access to the associated
 For instance, when a new review is created, the service must first retrieve the corresponding cuisine from the database before associating it with the review. 
 Therefore, both services depend on the same repository, but the repository itself remains independent of them.  \\
 
-\textbf{Entities}
+\noindent \textbf{Entities}
 
 The entity layer defines the application’s persistent data model.
 Each entity maps directly to a database table and specifies the fields, relationships, and constraints that determine how data is stored and structured.
 
+\umlEntityFigure
+
 In the UML diagram, the entities are connected to reflect their relationships within the domain model.
 The Region class has an aggregation relationship with the Cuisine class, indicating that a region may contain multiple cuisines. 
 However, the cuisines can conceptually exist independently of the region’s lifecycle.
-The multiplicity 1 near Region and 0..* near Cuisine in the UML diagram shows that each cuisine must belong to exactly one region,
+The multiplicity 1 near Region and 0..* near Cuisine in the UML diagram \ref{fig:uml-entity} shows that each cuisine must belong to exactly one region,
 while a region may have zero or more cuisines. Since a cuisine can exist without a region, there this is aggregation relationship.
 
 In the code, this is implemented using the @OneToMany annotation in the Region entity:
@@ -1024,9 +1035,8 @@ the separation of concerns across layers, and how each component contributes to 
 The structural relationships represented in the UML diagram not only define module boundaries but also reflect important software design qualities,
 particularly coupling and cohesion.
 These principles are essential for evaluating maintainability in a modular monolithic architecture.
-
 Coupling refers to the degree of interdependence between modules \cite{GeeksforGeeks_2025}. 
-In the presented UML diagram, different relationship types correspond 
+In the presented UML diagram \ref{fig:class-diagram}, different relationship types correspond 
 to different levels of coupling strength.
 
 Controller classes maintain a composition relationship with their 
@@ -1063,7 +1073,7 @@ This supports a clear and coherent modular monolithic architecture.
 
 Cohesion measures how strongly related the responsibilities within a module or class are, 
 with higher cohesion improving maintainability and clarity \cite{GeeksforGeeks_2025}. 
-Modules in this backend primarily demonstrate \textit{functional cohesion}, 
+Modules in this backend primarily demonstrate functional cohesion, 
 as each module (Region, Cuisine, Review) focuses on a single domain concept and 
 all components contribute directly to that responsibility. 
 For instance, ReviewService, ReviewRepository, and ReviewController collectively 
@@ -1071,3 +1081,5 @@ handle review-related operations, without unrelated functionality.
 By organizing the backend into domain-focused modules with clear boundaries, 
 the system ensures high functional cohesion, 
 reinforcing the modular monolithic architecture and coherent business capabilities.
+
+\classFigure

@@ -89,7 +89,7 @@
 }
 
 \providecommand{\seqFigure}{
-\begin{figure}[p]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{myFigures/sequential_diagram.png}
     \caption{Figure of the backend workflow sequential diagram for the local cuisine application.}
@@ -106,8 +106,35 @@
         height=\dimexpr\textheight-2em,  
         keepaspectratio,            
     ]{myFigures/class_diagram.png}
-    \caption{Figure of the Java class relationship diagram for the local cuisine application.}
+    \caption{Figure of the full UML class diagram for the local cuisine application.}
     \label{fig:class-diagram}
+\end{figure}
+}
+
+\providecommand{\umlControllerFigure}{
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{myFigures/uml_controller.png} 
+    \caption{Figure of partial UML class diagram showing controller classes and their interactions}
+    \label{fig:uml-controller}
+\end{figure}
+}
+
+\providecommand{\umlServiceFigure}{
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{myFigures/uml_service.png} 
+    \caption{Figure of partial UML class diagram showing service classes and their interactions}
+    \label{fig:uml-service}
+\end{figure}
+}
+
+\providecommand{\umlEntityFigure}{
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.35\textheight]{myFigures/uml_entity.png} 
+    \caption{Figure of partial UML class diagram showing entity classes and their relationships}
+    \label{fig:uml-entity}
 \end{figure}
 }
 
