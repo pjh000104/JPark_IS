@@ -14,9 +14,12 @@ Reliability is another aspect, where monolithic applications make few or no netw
 Lastly, it is easier to find bugs compared to distributed systems since all the code is in one place.
 
 On the other hand, there are also disadvantages of using the monolithic architecture. As the monolithic application grows, the application becomes harder to scale.
-In case different technology stacks are required for separate domains, it would not be possible as all components are contained within a single codebase and deployment unit.
-This also connects to decrease in reliability. A single bug or error occurred in the application could degrade the service and affect the whole application.
-Lastly, when deploying the application, implementing any change will require redeploying the whole application, which could introduce a lot of risk of having reduced uptime of the application. \cite{Gandhi_Richards_Ford_2024}
+If different domains require different technology stacks, a monolithic architecture makes this difficult to achieve. Because all components are part of a single codebase and deployment unit,
+they must typically use the same language, framework, and runtime environment. Trying to mix multiple technologies within one application can introduce dependency conflicts
+and significantly increase system complexity.
+Reliability is another disadvantage of the monolithic architecture.
+A single bug or error occurred in the application could degrade the service and affect the whole application.
+Lastly, when deploying the application, implementing any change will require redeploying the whole application, which could introduce a lot of risk of having reduced uptime of the application \cite{Gandhi_Richards_Ford_2024}.
 
 \subsection[Layered Architecture]{Layered Architecture}
 
@@ -42,20 +45,25 @@ In MVC, the model represents business logic and entities in the application; the
 and the controller handles the workflow, stitching model elements together to provide the application’s functionality.
 % (head first software architecture chapter 6)
 
-The layered architecture has several advantages. One of them is the feasibility of the application. Since the structure is organized into distinct layers
+The layered architecture has several advantages. One of them is feasibility, referring to the ease with which the system can be designed, implemented, and understood.
+Since the structure is organized into distinct layers
 with specific responsibilities, it is clear for developers to understand the overall structure of the code. This separation also allows technical partitioning, which makes it
 much easier to manage and maintain big projects. 
 Furthermore, the layered architecture is quick to build particularly among the projects that have clear relationships among the components, as different development teams can work on different layers in parallel.
 
-There are also disadvantages to consider. The layer could add complexity to the application compared to a simple monolithic application. 
-Building a large application using layered monolithic architecture could end up in a confusing relationship between layers and result in challenges maintaining and scale the application.
+There are also disadvantages to consider. The layered design could add complexity to the application compared to a simple monolithic application. 
+Building a large application using the layered monolithic architecture could end up in a confusing relationship between layers and result in challenges maintaining and scale the application.
+For example, if the Local Cuisine application were to be implemented in the layered architecture, the controller layer might begin
+handling caching logic or directly querying the database instead of delegating responsibilities to the service and repository layers.
+This kind of design change can confuse layer boundaries and increase coupling, making the system harder to maintain as it grows.
 However, this would still be less complicated compared to the complexity of distributed systems discussed in section \ref{sec:distributed_systems}.
-Testing is another problem since most layers are dependent on each other, testing a specific layer requires mock data or simulation of
+Isolation of testing is another problem since most layers are dependent on each other, testing a specific layer requires mock data or simulation of
 the related layers, which could decrease the quality of the testing.
 
-Some applications using the layered architecture may have different structure from the original presentation, workflow, persistence, and database layer.
-Some layers might be separated,
-such as the presentation layer being separated from the other layers. Each structure will have advantages and disadvantages within the layered architecture.
+Applications that adopt a layered architecture do not always follow the exact structure from the original presentation, workflow, persistence, and database layer.
+Some layers might be separated and reorganized differently.
+For example, the presentation layer may be deployed independently from the rest of the application,
+while other layers remain combined. Each variation introduces its own advantages and trade-offs within the layered architecture.
 
 \subsection[Modular Monolith]{Modular Monolith}
 Modular monolith is when an application is divided into different modules within the monolithic system. A module is one domain of the application,
@@ -65,13 +73,13 @@ It is important to note that in a modular monolith, only the internal code organ
 Although the structure promotes logical independence, the application still follows the monolithic architectural model,
 meaning it is compiled as a single unit and executed within one process.
 
-One of the benefits of using the modular monolithic structure is the domain partitioning. Similar to the layered architecture, this allows to have
-separate development teams that specializes in one or more of these domains, which will increase the efficiency of the work.
+One of the benefits of using the modular monolithic structure is the domain partitioning. Similar to the layered architecture,
+separate development teams that specialize in one or more of these domains, which increases the efficiency of the work.
 Similar to other monolithic applications, the performance of the application will be fast since there are no network calls within the application.
 Furthermore, since all modules are separated from each other, it is easier to maintain the code.
 
 However, code could be hard to reuse since each module have its own code. The logic and utilities could be tightly coupled to each domain,
-decreasing the flexibility to reuse the code across modules compared to the modular monolithic structure \cite{Gandhi_Richards_Ford_2024}. Also, similar to other modular monolithic architecture
+decreasing the flexibility to reuse the code across modules compared to other monolithic structures \cite{Gandhi_Richards_Ford_2024}. Also, similar to other modular monolithic architecture
 applications, as the applications grows, the logics and the databases could become complicated since all the code base is in one single application.
 
 

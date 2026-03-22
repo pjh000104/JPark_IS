@@ -84,7 +84,11 @@ A concrete example of this abstraction can be seen in the function getCuisineByN
                    breakatwhitespace=true]
 export async function getCuisineByName(cuisineName: string) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/cuisines/${encodeURIComponent(cuisineName)}`, { credentials: "include" });
+    const res = await fetch(
+      `${API_BASE_URL}/api/cuisines/` +
+      `${encodeURIComponent(cuisineName)}`,
+      { credentials: "include" }
+    );
     if (!res.ok) { throw new Error(`Failed to fetch cuisine: ${cuisineName}`); }
     const data = await res.json();
     return data;
@@ -95,9 +99,9 @@ export async function getCuisineByName(cuisineName: string) {
 }
 \end{lstlisting}
 
-In this example, the function constructs the URL dynamically using the provided cuisineName parameter (line 3), 
-performs a fetch request including credentials, checks for a successful response (line 4), and returns the JSON data (line 6). 
-Any errors during the request are caught and logged (lines 7--9), ensuring consistent error handling throughout the frontend. 
+In this example, the function constructs the URL dynamically using the provided cuisineName parameter (line 3--7), 
+performs a fetch request including credentials, checks for a successful response (line 8), and returns the JSON data (line 10). 
+Any errors during the request are caught and logged (lines 11--13), ensuring consistent error handling throughout the frontend. 
 The getCuisineByName function is called in the page.tsx in the cuisines module to load data related to a specific cuisine. 
 The data returned includes the cuisine's unique identifier (id), the name of the cuisine (cuisineName), 
 a textual description (description), the region it belongs to (regionName), and the country (country). 

@@ -27,7 +27,8 @@ For example, when a blog post is updated, the old cached version of the post sho
 This ensures that the content stays consistent with changes happening inside the system.
 
 Another type is group-based invalidation, which removes cache based on a larger group or category.
-This is helpful when many cache entries belong to the same section of the application, and clearing them one by one would be inefficient \cite{Redis_2025}.
+This is helpful when many cache entries belong to the logical group or category of data (e.g., a feature or content type within the application),
+and clearing them one by one would be inefficient \cite{Redis_2025}.
 This type of cache invalidation technique is commonly used when a larger group of data must be invalidated at once.
 For example, on a news website, if the politics section is updated, all cached articles under that section should be
 invalidated to make sure the latest content is displayed. In eCommerce systems, updating a product category may require invalidating all caches related to that category.

@@ -1,14 +1,14 @@
 \section[Database Caching Strategies]{Database Caching Strategies}
 
-There are multiple database caching strategies that could be applied when designing cache systems.
-Depending on the type of request (read, write) of the user, and which part of the application is responsible for fetching data from the database or managing the cache,
+There are multiple database caching strategies that can be applied when designing cache systems.
+Depending on the type of request (read, write) from the user, and which part of the application is responsible for fetching data from the database or managing the cache,
 there are five main database caching strategies.\\
 
 
 % \subsection{Cache Aside}
 \noindent \textbf{Cache Aside}
 
-Cache Aside is also called Lazy Loading. The application is in control of managing the cache. Let’s look at the diagram below.
+Cache Aside is also called Lazy Loading. The application is in control of managing the cache.
 
 % \begin{center}
 % (put cache aside diagram)
@@ -19,15 +19,15 @@ Cache Aside is also called Lazy Loading. The application is in control of managi
 
 \cacheAsideFigure
 
-As the diagram shown above, the client first checks the cache to see if the read request data is in the cache.
+As shown in figure \ref{fig:cache-aside}, the client first checks the cache to see if the read request data is in the cache.
 If the cache exists, this is called a cache hit, and the client uses it right away.
 If the cache does not exist, this is called a cache miss. When a cache miss occurs, the client then sends a request to the database server to fetch the data.
-After that, the client transfers the data to the cache, so that there could be a cache hit the next time the data is needed.
-This will increase the performance of the application when the same data is called multiple times.
+After that, the client transfers the data to the cache, so there can be a cache hit the next time the data is needed.
+This will increase the performance of the application when the same data is requested multiple times.
 When there is a write request, the application will first communicate with the database and then update the cache.
 
 This strategy is useful when the application requires a lot of read requests from the database,
-since the application could just check the cache instead of querying the database.
+since the application can just check the cache instead of querying the database.
 One disadvantage of this approach is that there could be an inconsistency between the cache and the database.
 Data directly written in the database might not be consistent with the data in the cache,
 since writing data to the database and writing data to the cache does not happen at the same time.\\
@@ -35,7 +35,7 @@ since writing data to the database and writing data to the cache does not happen
 % \subsection{Read-Through}
 \noindent \textbf{Read-Through}
 
-In the read-through strategy, the cache level manages fetching data from the database. Here is a diagram of how the read-through strategy works:
+In the read-through strategy, the cache level manages fetching data from the database.
 
 % \begin{center}
 % (put read-through diagram)
@@ -43,7 +43,9 @@ In the read-through strategy, the cache level manages fetching data from the dat
 
 \readThroughFigure
 
-Whenever there is a read request from the application, the application first checks the cache. If there is a cache hit, it simply returns the data back to the application. If there is a cache miss, the cache level fetches the data from the database. Since the cache manages fetching data, it simplifies the application logic when retrieving data compared to when the application handles fetching data.
+Whenever there is a read request from the application, the application first checks the cache.
+If there is a cache hit, it simply returns the data back to the application as shown in figure \ref{fig:read-through}. If there is a cache miss, the cache level fetches the data from the database.
+Since the cache manages fetching data, it simplifies the application logic when retrieving data compared to when the application handles fetching data.
 
 This strategy only involves read requests from the application, which means that other strategies could be used for write requests.
 The write-through strategy is generally great to be used with the read-through strategy.\\
@@ -66,7 +68,7 @@ Using these strategies for all database queries could result in a decrease in pe
 % \subsection{Write-Back}
 \noindent \textbf{Write-Back}
 
-The write-back strategy is similar to the write-through strategy, but the writes to the database happen with a delay. The cache is still in charge of writing data to the database. Let’s look at the diagram:
+The write-back strategy is similar to the write-through strategy, but the writes to the database happen with a delay. The cache is still in charge of writing data to the database.
 
 % \begin{center}
 % (write-back diagram)
@@ -107,7 +109,8 @@ hashes can store user profile objects, and sorted sets can maintain real-time ra
 Because Redis supports many data structures, it is not limited to simple key–value caching.
 It can also function as a fast and lightweight data engine that handles situations that require complex caching.
 
-Reliability is another reason Redis is chosen for database caching. Redis provides persistence options (RDB snapshots and AOF logs)
+Reliability is another reason Redis is chosen for database caching. Redis provides persistence options (Relational DB snapshots and append-only file (AOF) logs, 
+where AOF logs record every write operation by appending it to a log file for later recovery)
 so cached data or application-critical information can survive server restarts. It also supports replication and clustering,
 which distribute data across multiple nodes to achieve both high availability and horizontal scalability.
 These features ensure that the caching layer does not become a single point of failure.

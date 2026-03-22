@@ -2,9 +2,9 @@
 \label{sec:dbOptimization}
 \input{myFigures/FiguresCommand.tex}
 
-In this section, we will be discussing specific ways to optimize the performance of databases.
+In this section, we discuss specific ways to optimize the performance of databases.
 Several factors influence the performance of the database.
-The design of the database, including normalization and partitioning, which was discussed in the previous subsection, is one of the factors.
+The design of the database, including normalization and partitioning, discussed in the previous section \ref{sec:db design and evolution}, is one of the factors.
 Indexing is another huge part of increasing the performance of the database as the amount of data increases,
 and avoiding N+1 problems is a way to optimize the performance of the database. These strategies will be discussed in depth in the following subsection.
 
@@ -95,7 +95,6 @@ The definition of the problem is when an application retrieves a list, then perf
 (1 + N queries instead of optimized joins).  
 
 Similar to the example above, assume there is a students table with keys student\_id, student\_name, and another table called courses with the keys course\_id, student\_id, and course\_name. 
-
 If we were to get all students and courses they are taking in plain SQL, we would write something like this:
 
 \begin{verbatim}

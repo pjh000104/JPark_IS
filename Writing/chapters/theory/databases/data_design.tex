@@ -1,15 +1,15 @@
-\section{Database Design and Evolution}
-The design of databases and querying the database are the ones that have the most impact on the performance of the database.
-This section investigates strategies to design the database to increase performance and efficiency,
+\section{Database Design and Evolution} \label{sec:db design and evolution}
+The design and querying of databases has the largest impact on the performance of the database.
+This section investigates strategies for database design to increase performance and efficiency,
 consider scalability, evolution of databases, and ways to optimize the database and queries.
 
 \subsection[Normalization]{Normalization}
 Compared to a non-relational database, relational databases benefit from integrity with the process of normalization.
 The definition of normalization is a way of organizing data in a database.
-During this process, redundant data will be reduced to improve data quality and optimize database performance.
+During this process, redundant data is reduced to improve data quality and optimize database performance.
 There are several levels of normalization, and as the normalization form gets higher,
-it generally indicates a more refined relational design. However, most databases tend to be needed until the third normal form,
-which avoids most of the problems common to bad relational designs \cite{Harrington_2016}.\\
+it indicates a more refined relational design. However, most databases tend to require up to the third normal form,
+which avoids most of the problems common in bad relational designs \cite{Harrington_2016}.\\
 
 \textbf{The First Normal Form (1NF)}
 
@@ -21,19 +21,19 @@ The two criteria that 1NF meet are the following:
 \end{enumerate}
 % (rddI chapt 7) \cite{Harrington_2016} 
 
-Here, the repeating groups mean that if an attribute has more than one value in each column of a row \cite{Harrington_2016}. 
+Here, the repeating groups mean that an attribute has more than one value in each column of a row \cite{Harrington_2016}. 
 % (relational database design and implementation 4th) 
 For instance, if there is a column that requires more than one value, such as items (instead of item), this will be a repeating group.
 
 \input{tables/1nfbefore.tex}
 
-This table shows the example of a table before the first normalized form. We can see that students have multiple classes in the same column separated by a comma.
+The table \ref{tab:order_before_1nf} shows the example of a table before the first normalized form. We can see that students have multiple classes in the same column separated by a comma.
 Having three or more dimensions or having repeated groups for a single table results in more complexity and difficulties when querying the database. 
 This is why we need the 1NF normalization. The 1NF is the simplest normalization that could be done in a relational database, and it is pretty clear. 
 
 \input{tables/1nfafter.tex}
 
-As we can see on the table above, there is only one course in the course column by creating a new record for each item.
+As we can see from the table \ref{tab:order_after_1nf} above, there is only one course in the course column by creating a new record for each item.
 However, the first normalization form is not enough to benefit from using relational databases.\\
 
 \textbf{Problems with 1NF}
@@ -42,7 +42,7 @@ Data could become redundant even though repeated rows are deleted.
 For example, if there is a table called students with columns(id, name, birthday, course id, course name), every time the same student adds a class, 
 their name will be repeated in each record. Furthermore, there are anomalies in update, insertion, and deletion. 
 Making an update to one of the records (student name) 
-would require updating other records that are associated. Missing any of the records with the student name will result in data inconsistency. 
+would require updating other duplicate records. Missing any of the records with the student name will result in data inconsistency. 
 Inserting a new entity could be difficult unless there is related data. For instance, adding a new course to the table is not possible until
 there is a student taking the course. This is because the primary key will be the student’s id, and there could not be a row without a primary key. 
 Deletion could also be a problem when the row deleted contained the last data for a certain column. For example, 
@@ -62,12 +62,12 @@ The two criteria that 2NF meet are the following:
 Functional dependency is the key term in the 2NF. A functional dependency is a one-way relationship between two attributes, 
 such that at any given time, for each unique value of attribute A, only one value of attribute B is associated with it throughout the relation \cite{Harrington_2016}.
 % (RDDI chapt7). 
-In other words, this means that all other columns except the columns of the primary key or keys, are dependent on the primary key or the candidate key.
+In other words, all other columns except the columns of the primary key or keys, are dependent on the primary key or the candidate key.
 
 By using the functional dependencies, we could create the second normal form relations. After analyzing the functional dependencies,
 primary keys would be decided. It is common to decide on attributes that have dependencies
 for the primary key of the table, and the all the other attributes will be the non-key attributes.
-For example, going back to the student table example, the Student name and birthday would be dependent on the student id, so the student id will be the primary key.
+For example, going back to the student table example, the student name and birthday would be dependent on the student id, so the student id will be the primary key.
 The courses the student takes do not depend on the student id, but rather on the course id.
 We could create another table using the course id as the primary key and the course name as the functional dependencies.
 However, the courses the student takes will be dependent on the courses, so there will be a foreign key to construct that relationship.
@@ -158,12 +158,12 @@ This is the same type of relationship where we had problems with 2NF. For exampl
     \]
 \end{itemize}
 
-Going back to this example, we can see that a non-key attribute in the \textbf{Student} table (\textit{room\_num}) depends on another non-key attribute (\textit{course\_id}).  
+Going back to this example, we can see that a non-key attribute in the \textbf{Student} table \ref{tab:order_before_3nf}, (\textit{room\_num}) depends on another non-key attribute (\textit{course\_id}).  
 
 To remove transitive dependencies, we should break the relations into separate tables. In this case, we can:
 
 \begin{itemize}
-    \item Remove the \textit{room\_num} column from the \textbf{Student} table to remove the relationship between non-key attributes.
+    \item Remove the \textit{room\_num} column from the \textbf{Student} table \ref{tab:order_before_3nf} to remove the relationship between non-key attributes.
     \item Alternatively, make the second determinant in a table a candidate key so that no non-key attribute depends on another non-key attribute within the same table.
 \end{itemize}
 
@@ -204,12 +204,12 @@ There are multiple ways to implement this strategy in different situations. The 
 
 Going deeper into how the replicas are established, it is important to ensure that each of the replicas have the same data.
 For example when a user updates a table, this should include all the other replicas to update the same table.
-Here is an example how the leader follower replication setup could look like:
+Here is an example how the leader and follower replication setup could look like:
 
 \leaderFollowerFigure
 
 The leader and follower structure has one lead node (leader) that allows writes to the database,
-and the rest of the nodes are assigned as followers. If there is a change data in the leader, the followers are updated accordingly.
+and the rest of the nodes are assigned as followers shown in figure \ref{fig:leader follower}. If there is a change data in the leader, the followers are updated accordingly.
 Reading the database could be done by any of the nodes including the leader node,
 but writing the database could only be done by through the leader node. \\
 
@@ -229,8 +229,8 @@ Although it is rare for a multi-leader replication structure to outweigh the ben
     \item Collaborative editing
 \end{itemize}
 
-In situations where there are multiple datacenter operation, multi-leader replication allows each datacenter to process write requests locally,
-which will reduce latency and improve availability during datacenter or network failures. Also, for applications that are necessary to support offline operation, 
+In situations with a multiple datacenter operation, multi-leader replication allows each datacenter to process write requests locally,
+which reduces latency and improve availability during datacenter or network failures. Also, for applications that support offline operation, 
 each device can function as an independent leader, enabling uninterrupted read and write access when disconnected. If this were to be a single-leader replication, 
 clients would not be able to perform write operations offline, limiting usability in environments with low network connectivity. 
 Finally, in collaborative editing systems, multi-leader replication enables multiple users to make concurrent updates with low latency. 
@@ -238,7 +238,7 @@ If using a single-leader replication, all edits would need to pass through the l
 This will increase latency and reduce the responsiveness of real-time collaboration \cite{Kleppmann_2017}.
 
 However, the biggest issue in the multi-leader replication structure is handling multiple write query conflict.
-For instance, if a same record was modified by multiple users on different leader replicas, 
+For instance, if the same record is modified by multiple users on different leader replicas, 
 there will be different data among replicas resulting in data inconsistency.
 This was not an issue for a single leader and followers structure since only one leader accepted write queries, and they were processed one by one. However, if multiple leaders receive queries at the same time, the conflict should be resolved. There are multiple ways to handle write conflicts.
 
@@ -248,9 +248,9 @@ This would work until a particular records needs to change its designated leader
 
 The next strategy is to converge toward a consistent state. When there is a situation where avoiding conflicts do not work, 
 the conflicts should be handled. There are various ways to converge the replicas into a consistent state.
-One way could be to simply give each write query a unique ID, and if there is a conflict, 
-the higher unique ID overwrites the conflict. Another way is to give each replica a unique ID, 
-and the higher unique ID overwrites the conflict.
+One way could be to simply give a unique ID to each write queries, and if there is a conflict, 
+the higher unique ID overwrites the conflict.
+Another way is similar, but instead give each replica node a unique ID, and the higher unique ID overwrites the conflict.
 Or, there could be another explicit data structure that preserves the information and write application code to resolve 
 the conflict in a certain logic. There are trade-offs such as which part of the data is going to be saved over the other, 
 so it is essential to choose the write way to handle write conflicts in a multi-leader replica structure. \\
@@ -265,38 +265,39 @@ leader and follower setup or multi-leader setup. The two types of communication 
 After the leader receives a write query, synchronous replication waits until all the followers are updated and synced.
 The leader will not take any queries before this process is finished.
 However, asynchronous replication keeps taking queries regardless of the status of the followers.
-Although handling requests to copy status of the leader on the database replicas are fast, which usually happens less than a second \cite{Kleppmann_2017},
+Although the process of replicating the leader’s write operations to the database replicas are fast, which usually takes less than a second \cite{Kleppmann_2017},
 % (Designing Data-Intensive Applications ch 5),
 there is no guarantee of how long it would take depending on the physical status of the replica and the network.
-This is an advantage of synchronous replication, since it is certain that all database replications are up-to-date with the leader database,
-but it could be a disadvantage in a perspective where the database queries will be slow.
-If all of the followers are synchronous, the system would be too slow. Most of the times,
-one of the followers will be set to being synchronous so that there will be at least two replications(one leader, one follower)
-up-to-date with all the write queries, and the rest of the followers being asynchronous. This configuration is sometimes also called semi-synchronous.(Designing Data-Intensive App ch5) 
+This is an advantage of synchronous replication, as it ensures that all replicas remain up-to-date with the leader database.
+However, it can also be a disadvantage, as it slows down query processing.
+Most of the times,
+one of the followers will be set to being synchronous so that there will be at least two replications (one leader, one follower)
+up-to-date with all the write queries, and the rest of the followers being asynchronous. This configuration is sometimes also called semi-synchronous \cite{Kleppmann_2017}.
 
 Asynchronous replications on the other hand are very fast since the leader does not have to wait until the followers have synced data.
-However, it does have a disadvantage that all of the followers might not be up-to-date right away, which is also known as the replication lag.
+However, it does have a disadvantage that all of the followers might not be up-to-date, which is also known as replication lag.
 This might sound like a huge disadvantage, but asynchronous replication is often times used if there are many followers or if they are geographically distributed.
 Eventually, all the followers will have a synced replication of the leader, since inconsistency is just a temporary state.
 This effect is called as eventual consistency \cite{Kleppmann_2017}.
 % (Designing Data-Intensive App ch5).
-If the application that is being created is okay with possibility of inconsistency due to replication lag,
+If the application that is being created tolerates the possibility of inconsistency due to replication lag,
 asynchronous replication is perfect. However, if consistency is crucial to the application, other solutions such as synchronous or semi-synchronous
-replication will be the go-to when using leaders and followers method. 
+replication should be used for the leaders and followers method. 
 
 
 \subsubsection{Partitioning}
 
-Partitioning is when a data is divided into multiple smaller pieces of data such as a record, a row, or a document.
-Replication is used for scalability and performance, but as the size of the database increases, 
-only replication itself become inefficient since all the data has to be copied to the replicas.
+Partitioning is the process of dividing a database’s data into multiple smaller partitions, each containing a subset of records, rows, or documents.
+Replication is used for scalability and performance, but as the size of the database increases,
+relying solely on replication becomes inefficient since all the data has to be copied to the replicas.
 In order to scale database applications, partitioning is commonly used.
 As the data is distributed among multiple partitions, multiple queries could be run at the same time. \\
 
 % \subparagraph{Partitioning by Key-Value Data}
 \noindent \textbf{Partitioning by Key-Value Data}
 
-Using a key-value data is one way to create partitions. The reason for partitioning is to scale the database by distributing the query load on one node.
+Using key-value data is one way to create partitions. The reason for partitioning is to scale the database by distributing the query load
+across multiple nodes instead of concentrating it on a single node.
 One way to achieve this is to have a key range for each partition. For example, when we think of a dictionary,
 we know that words starting with the letter “a” is in the beginning, the letter “m” is somewhere in the middle, and the letter “z” is at the end.
 By dividing the range of partitions by the key-value data, it will be easier to locate which partition contains the data and distribute the query.
@@ -324,7 +325,7 @@ Secondary indexes make partitioning more complicated since they don’t identify
 
 Scatter/gather is a technique where each partition has its own secondary indexes. In this case, writing data would be efficient since only the partition containing that specific part of the index is where the data is written. However, reading queries are less efficient.  If queries require searching on different partitions, each partition is searched separately which is inefficient. 
 
-It is also possible to partition secondary indexes by the term.
+It is also possible to partition secondary indexes by a term in the job board.
 Instead of having distributed secondary indexes across the partitions, 
 this approach has a global index that covers all the partitions.
 Having a range of secondary indexes separated in multiple partitions make read queries more efficient 
@@ -337,7 +338,8 @@ partitioning indexes by term is the structure to choose. \\
 % \paragraph{Request Routing}
 \noindent \textbf{Request Routing}
 
-After partitioning the dataset into multiple nodes, it is important to make sure the request connects to the right partition. On a high level there are mainly three ways to achieve this. 
+After partitioning the dataset into multiple nodes, it is important to make sure the request connects to the right partition.
+At a high level there are three main ways to achieve this. 
 \begin{enumerate}
     \item Allow clients to contact any node (e.g., via a round-robin load balancer, which distributes incoming requests evenly across nodes without considering partition ownership.). If that node coincidentally owns the partition to which the request applies, it can handle the request directly; otherwise, it forwards the request to the appropriate node, receives the reply, and passes the reply along to the client.
     \item Send all requests from clients to a routing tier first, which determines the node that should handle each request and forwards it accordingly. This routing tier does not itself handle any requests; it only acts as a partition-aware load balancer.
@@ -345,11 +347,11 @@ After partitioning the dataset into multiple nodes, it is important to make sure
     % (Designing Data-Intensive App Ch 6)
 \end{enumerate}
 
-The key problem is that how the component, (which could be the routing tier, the client, or the partition in the node)
+The key problem is how the component, (which could be the routing tier, the client, or the partition in the node)
 knows about changes in the other partitions in other nodes. If the deciding component is not up-to-date with the location where data that the client is requesting,
 this could lead into data inconsistency. 
 
-To solve this problem, many distributed data systems use a separate coordination service such as the ZooKeeper, which registers each node
+To solve this problem, many distributed data systems use a separate coordination service such as ZooKeeper, which registers each node
 and maintains the authoritative mapping of partitions to nodes, to keep track of the data \cite{Kleppmann_2017}.
-Whenever a partition changes or a node is added or removed the ZooKeeper is updated to keep data consistency. 
+Whenever a partition changes or a node is added or removed ZooKeeper is updated to keep data consistency. 
 

@@ -18,10 +18,8 @@ Performance is generally slower than a monolithic application since distributed 
 lots of small services that communicate with each other over the network.
 Another aspect is cost, since more servers are needed to deploy multiple units.
 These services will need to talk to each other, which entails setting up and maintaining network infrastructure.
-This leads to more complexity in the system, and makes it more challenging for the developers harder to understand the overall design.
-Also, errors could happen in any unit involved in servicing a request. Since logical components are deployed in separate units,
-tracing errors could become complicated.
-
+This leads to more complexity in the system, and makes it more challenging for the developers to understand the overall design.
+Additionally, errors can occur in any unit involved in servicing a request, as logical components are deployed in separate units, making tracing errors more complicated.
 
 % Pros:
 % -	Scalability: Distributed architectures deploy different logical components separately from one another, so it is easy to add new services.
@@ -44,21 +42,20 @@ Each types of subcategories, have their own advantages and disadvantages.
 
 \subsection[Microservices Architecture]{Microservices Architecture}
 
+Microservices architecture is a subcategory of distributed system architecture, where microservices communicate with each other to form an application.
 A microservice is a service that is a separately deployed unit of software that performs business or infrastructure process \cite{Gandhi_Richards_Ford_2024}.
-% (chapter 10).
-Microservices architecture is part of the layered system, where microservices communicate with each other to make an application.
 Since the system is divided into multiple parts, it is essential when making decisions how to divide the application,
 such as deciding how small or how big each microservices could get. Generally, it is better to make microservices smaller for
 multiple reasons. Some of the factors that are considered to make microservices
 smaller are the following: cohesiveness, fault tolerance, access control, code volatility, and scalability.
 
 If a part of the software has lack of cohesiveness and loosely coupled, it is a good idea to separate it into smaller microservices. 
-Here, cohesiveness means that how close the parts of the application are related to each other \cite{Gandhi_Richards_Ford_2024}.
+Here, cohesiveness is based on how close the parts of the application are related to each other \cite{Gandhi_Richards_Ford_2024}.
 This will allow higher scalability, since separated microservices could be built independently based on the workload and resource requirements.
 If a certain part of the application produces fatal errors,
 having those parts in a separate microservice will decrease the probability of shutting down the whole system.
 For security and authentication, it is important to have these access controls in a single microservice,
-so it does not get too complicated when managing the information. Finally, if one part of the microservice change,
+so it does not get too complicated when managing the information. Finally, if one part of the microservice changes,
 or scale faster than the others, it is good to consider having a separate microservice for that application,
 since testing the entire microservice would be much more challenging compared to a small portion of the microservice.
 
@@ -85,7 +82,7 @@ this request is coupled and recommended to kept in the same service. \\
 After setting up multiple microservices, the next question is how these microservices communicate with each other
 to make the whole application. This is a crucial part of the microservices architecture,
 and where workflow is integrated.
-The term workflow means when two or more microservices are called for a single request.
+A workflow refers to two or more microservices called for a single request.
 Workflows are in charge of navigating which microservice to start, which one to call next, and which one to end with.
 There are two ways to handle workflows: centralized workflow management and decentralized workflow management.
 
@@ -114,9 +111,9 @@ The advantage of using this workflow pattern is that it is loosely coupled compa
 which has better scalability. Also, since the microservices do not have to connect back to the central microservice,
 it has better responsiveness, meaning less delay and better performance.
 
-On the other hand, this pattern lacks in error handling, since each microservice is responsible for managing the error workflow,
-which could lead to too much communication between services. Also, because there is no central microservice that has the order
-of microservices that is need to be called, it is hard to tell which state the response is at, which decreases the ability to recover
+On the other hand, this pattern is lacking in unified error handling, since each microservice is responsible for managing the error workflow,
+which could lead to excessive communication between services. Also, because there is no central microservice that has the order
+of microservices that is need to be called, it is hard to tell the current state of the response, which decreases the ability to recover
 when the request is delayed and needs to be restarted.\\
 
 
@@ -124,7 +121,7 @@ when the request is delayed and needs to be restarted.\\
 
 In a microservice architecture, shared functionality often needs to be reused across multiple services, which can be achieved in two main ways:
 creating a shared service or a shared library.
-A shared service is a separate microservice that contains a shared functionality that other microservices can call remotely.
+A shared service is a separate microservice that contains shared functionality that other microservices can call remotely.
 One advantage of the shared service is that even though code may change in the shared microservices, code in other microservices are not needed to be changed.
 Also, this shared service could be written in any language, which is useful when microservices are implemented in multiple languages.
 A disadvantage of using a shared service is the coupling that happens between the microservices and the shared service.
@@ -133,7 +130,7 @@ Furthermore, when the shared service is down for some reason, the microservices 
 
 % Another disadvantage is network latency, ….
 
-A shared library is a more common way of code reuse. A library will be built, including all the code that is reused in different microservices.
+A shared library is a more common method of code reuse. A library will be built, including all the code that is reused in different microservices.
 Once the microservices are deployed, each microservice will have all the shared functionality available.
 The biggest advantage of using a shared library is that network performance and scalability are better than shared service,
 since it is not remote, and the code is included in the compile time of the microservice.
@@ -163,12 +160,12 @@ Lastly, deploying all of these microservices will increase the cost of the entir
 \subsection[Event-Driven Architecture (EDA)]{Event-Driven Architecture (EDA)}
 \noindent \textbf{What is an Event}
 
-An event in computer science is a way for a service to let the rest of the system know that something important has just happened.
+Event-Driven Architecture (EDA) is a subcategory of microservices architecture that enables communication between services through events.
+In computer science, an event is a way for a service to let the rest of the system know that something important has just happened.
 In EDA, events are defined as passing information to other services \cite{Gandhi_Richards_Ford_2024}.
 % (head first chapter11).
 The event contains data, and it is broadcast to services using topics that are connected to the sender of the event.
-However, events are asynchronous, which means that although the services are connected,
-the sender of the event does not wait for the response of the receiving service.
+However, events are asynchronous, which will be discussed in more detail in the following paragraph.
 This is the key difference between an event and a message. Messages include a command or some kind of request for the receiving service,
 and the service sending out the messages requires a response, making it synchronous.
 Messages are also sent to only a single service using queues. \\

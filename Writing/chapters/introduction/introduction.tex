@@ -2,37 +2,39 @@
 \chapter{Introduction}\label{intro}
 
 My first web application was a Python Flask application with a simple backend, frontend, a database connected to it, and a few API calls.
-I thought that web development was simpler than it sounds. However, I changed my mind within a few months of learning 
-the frontend and the backend side of web applications.
+I thought that web development was simpler than it sounds. However, as I learned more about 
+the frontend and the backend side of web applications, I changed my mind.
 As I worked on projects, new problems arose as I try to make the scale of the project larger.
 Also, depending on the project, I had to learn new strategies and technologies to achieve the goal I wanted.
-More things were there to learn, and I started realizing that several design choices could be made in every situation.
+The more I learn, I observed that several design choices could be made in every situation.
 Realizing that I could not always answer “why this specific choice?” for some of the decisions I made highlighted that my understanding of the available options in web development was incomplete, which led me to further research this topic.
 
 Covering all the topics in web development was the primary goal, but it could be a lot to process a deep understanding in one year of the Independent Study period. I narrowed down my subjects to target the topics I encountered the most and personal interests, with the help of the backend roadmap \cite{Ahmed_2025}. Software architecture choices were a personal choice of interest. Although most of my applications were monolithic due to a smaller scale, I wanted to dig deeper into the structures of monolithic applications and also distributed systems, so that I could apply the knowledge when I start to work with larger-scale applications.
 
-The second topic is database systems. I have taken the database class during my sophomore year, but web development required much deeper knowledge. Types of databases to choose, ways to structure the database for performance and scalability were always a confusion for me. To fully understand the decisions I am making, I researched this topic to be able to make logical decisions in the future when creating applications.
+Another important topic is database systems. I took the database class during my sophomore year, but using databases in web development required much deeper knowledge.
+The types of databases to choose, ways to structure the database for performance and scalability were always a confusion for me.
+To fully understand the decisions I am making, I researched this topic to make logical decisions in the future when creating applications.
 
 The last topic is about caching systems.
 There were multiple times in my past projects where the application was slow due to database queries or functions to fetch data from external APIs.
 Caching is one of the solutions to solve this problem, and it will be discussed throughout this project.
-Caching data that calls database queries or API calls often makes the application significantly faster, 
+Caching data from database queries or API calls often makes the application significantly faster, 
 and I want to investigate which strategies and types of caching systems are sufficient in every scenario. 
 
 A web application that uses these three technologies is the best way to show that I have a full understanding of the choices I have made.
-I developed a local cuisine recommender web application to show the knowledge and research done in these areas.
+I developed a cuisine recommender web application called the Local Cuisine App to show the knowledge and research done in these areas.
 The motivation for creating an application in this domain arises from the discomfort of finding local cuisines when traveling to foreign countries.
 It is a good experience to try out the local cuisines of the destination area, especially for people who love food.
 However, searching directly on Google Maps does not accurately show the famous dishes in the specific region,
-but rather recommends restaurants. Going straight to the restaurants sometimes works,
+but rather recommends restaurants. Going straight to the restaurants can work,
 but sometimes it is helpful if there is a set of cuisines to try, already layout and choose the restaurant where the cuisines are available.
 This needs a two-step search: first on a search engine such as Google to find the famous food in the area, and second, searching the name of the dish on Google Maps.
 The purpose of the Local Cuisine application is to make the process of searching restaurants more efficient, as well as allowing users to explore diverse cuisines in the world.
 
-This research article will be written in the following structure: Chapters 2, 3, and 4 will investigate the theories of topics that I have chosen, 
+This work is structured as follows: Chapters 2, 3, and 4 will investigate the theories of topics that I have chosen, 
 which will include backend software design and architecture, database systems, and caching systems, respectively. Each chapter of the theory will thoroughly research the 
 design choices that could be made within each topic and how to make decisions based on each situation. Chapter 5 will discuss how the local cuisine web application
-is implemented, the design choices that are made are based on the theory introduced in the previous chapters. The outcome and explanation of the final software will be addressed in 
+is implemented, and the design choices made based on the theory introduced in the previous chapters. The outcome and explanation of the final software will be addressed in 
 chapter 6, including snapshots and images of the web application. Chapter 6 will also include the conclusion and the challenges throughout the whole research project and the lessons learned.
 
 
