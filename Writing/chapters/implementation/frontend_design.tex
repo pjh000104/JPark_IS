@@ -1,6 +1,6 @@
 \clearpage
 \section[Frontend Design]{Frontend Design}\label{sec:newsec}
-The frontend of the local cuisine application is responsible for accurately displaying the data sent from 
+The frontend of the Local Cuisine App is responsible for accurately displaying the data sent from 
 the backend. It is only responsible for presenting the data and managing user interactions,
 while all the business logic and data persistence are handled by the backend. 
 The tech stack used for the frontend development are Next.JS and Tailwind css. 
@@ -99,7 +99,7 @@ export async function getCuisineByName(cuisineName: string) {
 }
 \end{lstlisting}
 
-In this example, the function constructs the URL dynamically using the provided cuisineName parameter (line 3--7), 
+In Listing \ref{lst:getCuisineByName}, the function constructs the URL dynamically using the provided cuisineName parameter (line 3--7), 
 performs a fetch request including credentials, checks for a successful response (line 8), and returns the JSON data (line 10). 
 Any errors during the request are caught and logged (lines 11--13), ensuring consistent error handling throughout the frontend. 
 The getCuisineByName function is called in the page.tsx in the cuisines module to load data related to a specific cuisine. 

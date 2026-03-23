@@ -27,13 +27,13 @@ For instance, if there is a column that requires more than one value, such as it
 
 \input{tables/1nfbefore.tex}
 
-The table \ref{tab:order_before_1nf} shows the example of a table before the first normalized form. We can see that students have multiple classes in the same column separated by a comma.
+The Table \ref{tab:order_before_1nf} shows the example of a table before the first normalized form. We can see that students have multiple courses in the same column separated by a comma.
 Having three or more dimensions or having repeated groups for a single table results in more complexity and difficulties when querying the database. 
 This is why we need the 1NF normalization. The 1NF is the simplest normalization that could be done in a relational database, and it is pretty clear. 
 
 \input{tables/1nfafter.tex}
 
-As we can see from the table \ref{tab:order_after_1nf} above, there is only one course in the course column by creating a new record for each item.
+As we can see from the Table \ref{tab:order_after_1nf} above, there is only one course in the course column by creating a new record for each item.
 However, the first normalization form is not enough to benefit from using relational databases.\\
 
 \textbf{Problems with 1NF}
@@ -67,15 +67,15 @@ In other words, all other columns except the columns of the primary key or keys,
 By using the functional dependencies, we could create the second normal form relations. After analyzing the functional dependencies,
 primary keys would be decided. It is common to decide on attributes that have dependencies
 for the primary key of the table, and the all the other attributes will be the non-key attributes.
-For example, going back to the student table example, the student name and birthday would be dependent on the student id, so the student id will be the primary key.
+For example, in the student Table \ref{tab:order_before_2nf}, the student name and birthday would be dependent on the student id, so the student id will be the primary key.
 The courses the student takes do not depend on the student id, but rather on the course id.
-We could create another table using the course id as the primary key and the course name as the functional dependencies.
+We could create another table using the course id as the primary key and the course name as the functional dependencies, resulting in Table \ref{tab:order_after_2nf}.
 However, the courses the student takes will be dependent on the courses, so there will be a foreign key to construct that relationship.
 So far, we can identify the relationship of the tables as the following:
 
 \begin{itemize}
-    \item \textbf{Student}(\textit{student\_id} (PK), \textit{course\_id} (FK), \textit{name}, \textit{birthday}, \textit{room\_num}) 
-    \item \textbf{Courses}(\textit{course\_id} (PK), \textit{name})
+    \item \textbf{Student}(\textit{student\_id} (PK), \textit{course\_id} (FK), \textit{student\_name}, \textit{birthday}, \textit{room\_num}) 
+    \item \textbf{Courses}(\textit{course\_id} (PK), \textit{course\_name})
 \end{itemize}
 
 \noindent
@@ -158,16 +158,17 @@ This is the same type of relationship where we had problems with 2NF. For exampl
     \]
 \end{itemize}
 
-Going back to this example, we can see that a non-key attribute in the \textbf{Student} table \ref{tab:order_before_3nf}, (\textit{room\_num}) depends on another non-key attribute (\textit{course\_id}).  
+Going back to this example, we can see that a non-key attribute in the \textbf{Student} Table \ref{tab:order_before_3nf}, (\textit{room\_num}) depends on another non-key attribute (\textit{course\_id}).  
 
 To remove transitive dependencies, we should break the relations into separate tables. In this case, we can:
 
 \begin{itemize}
-    \item Remove the \textit{room\_num} column from the \textbf{Student} table \ref{tab:order_before_3nf} to remove the relationship between non-key attributes.
+    \item Remove the \textit{room\_num} column from the \textbf{Student} Table \ref{tab:order_before_3nf} to remove the relationship between non-key attributes.
     \item Alternatively, make the second determinant in a table a candidate key so that no non-key attribute depends on another non-key attribute within the same table.
 \end{itemize}
 
-Applying either method will resolve the anomalies we encountered in the second normalization form (2NF).
+Applying either method will resolve the anomalies we encountered in 2NF and result In Table \ref{tab:after_3nf}.
+
 
 \input{tables/3nfafter.tex}
 
@@ -209,7 +210,7 @@ Here is an example how the leader and follower replication setup could look like
 \leaderFollowerFigure
 
 The leader and follower structure has one lead node (leader) that allows writes to the database,
-and the rest of the nodes are assigned as followers shown in figure \ref{fig:leader follower}. If there is a change data in the leader, the followers are updated accordingly.
+and the rest of the nodes are assigned as followers shown in Figure \ref{fig:leader follower}. If there is a change data in the leader, the followers are updated accordingly.
 Reading the database could be done by any of the nodes including the leader node,
 but writing the database could only be done by through the leader node. \\
 

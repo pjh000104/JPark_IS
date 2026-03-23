@@ -1,16 +1,17 @@
 \begin{table}[h!]
 \centering
 \caption{Decomposition into 2NF}
-\begin{tabular}{|c|c|c|c|}
+\label{tab:order_after_2nf}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{4}{|c|}{\textbf{Student Table}} \\
+\multicolumn{5}{|c|}{\textbf{Students Table}} \\
 \hline
-\textbf{Student\_ID (PK)} & \textbf{Student\_Name} & \textbf{Birthday} & \textbf{Course\_ID (FK)} \\
+\textbf{student\_id (PK)} & \textbf{course\_id (FK)} & \textbf{student\_name} & \textbf{birthday} & \textbf{room\_num} \\
 \hline
-S001 & Alice & 2002-03-14 & C101 \\
-S002 & Bob & 2001-06-02 & C102 \\
-S003 & Charlie & 2002-07-22 & C101 \\
-S004 & Diana & 2003-01-18 & C103 \\
+S001 & C101 & Alice & 2002-03-14 & R12 \\
+S002 & C102 & Bob & 2001-06-02 & R14 \\
+S003 & C101 & Charlie & 2002-07-22 & R12 \\
+S004 & C103 & Diana & 2003-01-18 & R15 \\
 \hline
 \end{tabular}
 

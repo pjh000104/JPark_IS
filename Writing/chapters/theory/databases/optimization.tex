@@ -11,8 +11,7 @@ and avoiding N+1 problems is a way to optimize the performance of the database. 
 
 \subsection{Indexing}
 
-Suppose that there is a table called students with the following keys: id, name, grade.
-Here is an example table: 
+The students Table \ref{tab:students_original} has the following keys: id, name, grade.
 \begin{table}[H]
 \centering
 \begin{tabular}{|c|c|c|}
@@ -43,7 +42,6 @@ This is where indexing is applied.
 An index could be created where the grades are sorted in order, each having a reference to the row of the student table.
 This way, whenever we want to find the name of the students with a certain grade, instead of looking at the Students table, we can look at the index,
 where the grades are sorted, find rows with a certain grade, for each row, find the reference of the student table, and return the name of the student.
-Here is an example how the index might look like:
 
 \begin{table}[H]
 \centering
@@ -60,7 +58,7 @@ Here is an example how the index might look like:
 \label{tab:students_index}
 \end{table}
 
-In this index, grades are sorted by order, and they include a reference to the student table's primary key, which is the student's id.
+In the index for Table \ref{tab:students_index}, grades are sorted by order, and they include a reference to the student table's primary key, which is the student's id.
 This will significantly improve the read queries for databases for large sets of data.
 
 However, indexes take up additional memory and can slow down write operations, such as inserts, updates, or deletes. It is important to use indexes on every column.
@@ -69,11 +67,11 @@ Indexes should be used in situations where they could significantly increase the
 There are multiple data structures that could be used to implement indexes,
 but the most common ones are B+trees. In order to understand why B+trees are used the most we have to learn what are B trees.
 B trees are somewhat similar to the binary search trees.
-However, instead of having one value for every node, it contains multiple values for each node.
+However, instead of having one value for every node like the binary tree Figure \ref{fig:binaryTree}, it contains multiple values for each node.
 \binaryTreeFigure
 \bTreeFigure
 
-As we can see from the figures above, B trees can hold multiple nodes, such as nodes 2 and 4, or 10 and 15.
+As we can see from Figure \ref{fig:bTree} B trees can hold multiple nodes, such as nodes 2 and 4, or 10 and 15.
 This allows multiple partitions, allowing a balanced and faster search.
 Furthermore, as multiple values could be in a single node, the height of the tree would be smaller.
 This means that there are fewer disk I/O’s per file operation as the database stores data on disk, resulting in faster query execution \cite{Garcia-Molina_Ullman_Widom_2014}.
@@ -81,7 +79,7 @@ This means that there are fewer disk I/O’s per file operation as the database 
 One down side of B trees is when making range queries, such as finding all students who have grades 20 to 80.
 If these two data are separated from the root, this could be inefficient. B+trees are a variation of B trees to solve this issue.
 \bPlusTreeFigure
-B+trees store data only in the leaf node, which are the bottom most nodes without any children.
+As shown in Figure \ref{fig:b+Tree}, B+trees store data only in the leaf node, which are the bottom most nodes without any children.
 The other nodes store keys only for navigation, like the explanations on the internal node 
 (less than equal to six goes left, greater than six goes right) on the figure above. Also, all the leaf nodes are connected to the next leaf node.
 B+trees are commonly used in indexes for modern database management systems such as MYSQL, PostgreSQL, and SQLite. 
