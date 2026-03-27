@@ -258,8 +258,9 @@
       \begin{singlespace}
         \begin{center}
           Presented in Partial Fulfillment of the Requirements for \\
-          the Degree \d@greetoobtain in the \\
-          \@program\ at \@school
+          the Degree \d@greetoobtain in Computer Science in \\
+          the Department of Mathematical \& Computational Sciences \\
+          at \@school
         \end{center}
       \end{singlespace}
     \end{textblock}
