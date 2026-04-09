@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./localcuisine
+      dockerfile: Dockerfile  # your Spring Boot Dockerfile
+    container_name: localcuisine-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    
+
+  redis:
+    image: redis:8-alpine
+    container_name: localcuisine-redis
+    ports:
+      - "6379:6379"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile  # your Next.js Dockerfile
+    container_name: frontend-next
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

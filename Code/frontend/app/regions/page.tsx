@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getRegions } from "../lib/api"; 
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
   const regions = await getRegions(); 
 

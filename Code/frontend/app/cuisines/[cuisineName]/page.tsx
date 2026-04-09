@@ -2,6 +2,7 @@ import {getCuisineByName, getReviewsByCuisineId,} from "@/app/lib/api";
 import GoogleMapsButton from "./GoogleMapsButton";
 import ReviewForm from "./ReviewForm";
 
+export const dynamic = 'force-dynamic';
 
 export default async function CuisineDetailPage({ params }: any) {
   const { cuisineName } = await params;

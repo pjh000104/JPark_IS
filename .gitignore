@@ -353,3 +353,6 @@ original_build.json
 
 ## Draw io files ##
 *.drawio
+
+# Spring Boot config
+Code/localcuisine/src/main/resources/application.properties
