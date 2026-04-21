@@ -1,4 +1,5 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_POST_URL = process.env.NEXT_PUBLIC_API_POST_URL;
 
 export async function getRegions() {
   const res = await fetch(`${API_BASE_URL}/api/locations/all`, {
@@ -77,7 +78,8 @@ export async function createReview(data: {
   comment: string;
 }) {
   const response = await fetch(
-    `${API_BASE_URL}/api/reviews`,
+    // put `${API_BASE_URL}API_POST_URL/api/reviews` for local dev
+    `/api/reviews`,
     {
       method: "POST",
       headers: {
@@ -89,6 +91,5 @@ export async function createReview(data: {
   if (!response.ok) {
     throw new Error("Failed to create review");
   }
-
   return response.json();
 }
